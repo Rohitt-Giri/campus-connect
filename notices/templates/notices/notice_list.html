@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notices | Campus Connect</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body { background: #f7fbf8; }
+    .card-soft { border-radius: 16px; border: 1px solid rgba(15,23,42,.08); box-shadow: 0 10px 24px rgba(15,23,42,.06); }
+    .badge-soft { background: rgba(34,197,94,.12); color: #166534; border: 1px solid rgba(34,197,94,.2); }
+  </style>
+</head>
+<body>
+<div class="container py-4">
+
+  {% if messages %}
+    <div class="mb-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+    <div>
+      <h2 class="fw-bold mb-0">Notices</h2>
+      <div class="text-muted">Official announcements for students and staff.</div>
+    </div>
+
+    <div class="d-flex gap-2">
+      {% if can_manage %}
+        <a href="{% url 'notices:create' %}" class="btn btn-success">+ Create Notice</a>
+      {% endif %}
+      <a href="javascript:history.back()" class="btn btn-outline-dark">Back</a>
+    </div>
+  </div>
+
+  <div class="card card-soft p-3 mb-3">
+    <form method="get" class="row g-2">
+      <div class="col-md-6">
+        <input name="q" value="{{ q }}" class="form-control" placeholder="Search notices (title/content)">
+      </div>
+      <div class="col-md-4">
+        <select name="category" class="form-select">
+          <option value="">All categories</option>
+          <option value="GENERAL" {% if cat == "GENERAL" %}selected{% endif %}>General</option>
+          <option value="EVENT" {% if cat == "EVENT" %}selected{% endif %}>Event</option>
+          <option value="LOST_FOUND" {% if cat == "LOST_FOUND" %}selected{% endif %}>Lost & Found</option>
+          <option value="PAYMENT" {% if cat == "PAYMENT" %}selected{% endif %}>Payment</option>
+          <option value="URGENT" {% if cat == "URGENT" %}selected{% endif %}>Urgent</option>
+        </select>
+      </div>
+      <div class="col-md-2 d-grid">
+        <button class="btn btn-dark">Filter</button>
+      </div>
+    </form>
+  </div>
+
+  {% if notices %}
+    <div class="row g-3">
+      {% for n in notices %}
+        <div class="col-md-6 col-lg-4">
+          <a href="{% url 'notices:detail' n.pk %}" class="text-decoration-none text-dark">
+            <div class="card card-soft h-100 p-3">
+              <div class="d-flex justify-content-between align-items-start">
+                <span class="badge badge-soft">{{ n.get_category_display }}</span>
+                <small class="text-muted">{{ n.created_at|date:"M d, Y" }}</small>
+              </div>
+              <h5 class="fw-bold mt-2 mb-1">{{ n.title }}</h5>
+              <p class="text-muted mb-0" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
+                {{ n.content }}
+              </p>
+            </div>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="alert alert-info">No notices yet.</div>
+  {% endif %}
+
+</div>
+</body>
+</html>

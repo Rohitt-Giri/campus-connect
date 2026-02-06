@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Campus Connect | Login</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    :root{ --cc-bg-1:#fdfbfb; --cc-bg-2:#e7ffe9; --cc-bg-3:#f6f0ff; --cc-dark:#0f172a; --cc-muted:#6b7280; }
+    body{
+      min-height:100vh;
+      background: linear-gradient(120deg,var(--cc-bg-1) 0%,var(--cc-bg-2) 50%,var(--cc-bg-3) 100%);
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--cc-dark);
+    }
+    .cc-wrap{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem 1rem; }
+    .cc-card{
+      max-width: 1050px; width:100%;
+      border:0; border-radius:18px; overflow:hidden;
+      box-shadow:0 18px 45px rgba(15,23,42,.12);
+      background: rgba(255,255,255,0.92);
+    }
+    .cc-hero{
+      background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(16,185,129,0.65));
+      color:#fff;
+      padding:2.25rem;
+    }
+    .cc-form{
+      padding:2.25rem;
+      background: radial-gradient(circle at top left, #fef9c3, #ecfeff 55%, #f5f3ff 95%);
+    }
+    .cc-logo{
+      width:44px;height:44px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      background:var(--cc-dark);color:#fff;font-weight:800;
+      letter-spacing:.5px;
+    }
+    .cc-pill{ border-radius:999px; padding:.6rem 1.4rem; }
+    .cc-input{ border-radius:999px; padding:.65rem 1rem; }
+    .cc-muted{ color:var(--cc-muted); }
+    @media(max-width:992px){ .cc-hero{ display:none; } .cc-card{ max-width:600px; } }
+  </style>
+</head>
+
+<body>
+  <div class="cc-wrap">
+    <div class="cc-card row g-0">
+      <div class="col-lg-6 cc-hero">
+        <div class="d-flex align-items-center gap-3 mb-4">
+          <div class="cc-logo">CC</div>
+          <div>
+            <div class="fw-bold fs-5">Campus Connect</div>
+            <div style="opacity:.85;">Secure campus portal</div>
+          </div>
+        </div>
+        <h2 class="fw-bold mb-3">Welcome back</h2>
+        <p style="opacity:.9;">
+          Login to access your role-based dashboard and manage campus activities securely.
+        </p>
+        <div class="mt-4" style="opacity:.9;">
+          Modules: Events • Notices • Lost &amp; Found • Payments
+        </div>
+      </div>
+
+      <div class="col-lg-6 cc-form">
+        <h3 class="fw-bold text-center mb-1">Login</h3>
+        <p class="text-center cc-muted mb-4">Sign in with your username and password</p>
+
+        {% if messages %}
+          <div class="mb-3">
+            {% for message in messages %}
+              <div class="alert
+                {% if message.tags == 'error' %}alert-danger
+                {% elif message.tags == 'warning' %}alert-warning
+                {% elif message.tags == 'success' %}alert-success
+                {% else %}alert-info{% endif %}
+                alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        <form method="post" novalidate>
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">Username</label>
+            <input class="form-control cc-input" type="text" name="username" placeholder="e.g. rohitgiri" required>
+          </div>
+
+          <div class="mb-2">
+            <label class="form-label fw-semibold d-flex justify-content-between">
+              <span>Password</span>
+              <a href="#" class="small text-decoration-none" tabindex="-1">Forgot password?</a>
+            </label>
+            <input class="form-control cc-input" type="password" name="password" placeholder="Enter password" required>
+          </div>
+
+          <button class="btn btn-dark cc-pill w-100 mt-3" type="submit">Sign In</button>
+
+          <div class="text-center mt-3 cc-muted">
+            Don’t have an account?
+            <a class="text-decoration-none fw-semibold" href="{% url 'accounts:register' %}">Register</a>
+          </div>
+
+          <div class="text-center mt-2">
+            <a class="small text-decoration-none" href="{% url 'core:landing' %}">Back to Home</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
