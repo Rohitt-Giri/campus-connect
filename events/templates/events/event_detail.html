@@ -57,6 +57,11 @@
             <a class="btn btn-cc px-4" href="{% url 'events:register' event.pk %}">Register</a>
           {% endif %}
         {% endif %}
+
+        {% if request.user.role == "staff" or request.user.role == "admin" %}
+          <a class="btn btn-outline-dark rounded-pill" href="{% url 'events:registrations' event.pk %}">View Registrations</a>
+        {% endif %}
+
       </div>
     </div>
   </div>

@@ -75,15 +75,20 @@ def event_create_view(request):
 
 @login_required
 def event_register_view(request, pk):
-    event = get_object_or_404(Event, pk=pk, status="published")
-
-    # Staff shouldn't register as student
-    if _is_staff_like(request.user):
-        messages.error(request, "Staff/admin accounts cannot register for events.")
+    # Only students should register
+    if request.user.role != User.Role.STUDENT:
+        messages.error(request, "Only students can register for events.")
         return redirect("events:detail", pk=pk)
 
-    existing = EventRegistration.objects.filter(event=event, user=request.user).first()
-    if existing:
+    event = get_object_or_404(Event, pk=pk, status="published")
+
+    # close registration after event started
+    if event.start_datetime <= timezone.now():
+        messages.error(request, "Registration closed. This event already started.")
+        return redirect("events:detail", pk=pk)
+
+    # prevent duplicates
+    if EventRegistration.objects.filter(event=event, user=request.user).exists():
         messages.info(request, "You are already registered for this event.")
         return redirect("events:detail", pk=pk)
 
@@ -94,13 +99,38 @@ def event_register_view(request, pk):
             reg.event = event
             reg.user = request.user
             reg.save()
-            messages.success(request, "Registered successfully 🎉")
+            messages.success(request, "Registered successfully! 🎉")
             return redirect("events:detail", pk=pk)
     else:
-        # Pre-fill name/email from user if you want
-        initial = {}
-        if hasattr(request.user, "email") and request.user.email:
-            initial["email"] = request.user.email
-        form = EventRegistrationForm(initial=initial)
+        # prefill email if available
+        form = EventRegistrationForm(
+            initial={
+                "email": getattr(request.user, "email", "") or "",
+                "full_name": getattr(request.user, "get_full_name", lambda: "")() or request.user.username,
+            }
+        )
 
     return render(request, "events/event_register.html", {"event": event, "form": form})
+
+@login_required
+def event_registrations_view(request, pk):
+    # Staff/Admin only
+    if request.user.role not in [User.Role.STAFF, User.Role.ADMIN]:
+        messages.error(request, "You are not allowed to view event registrations.")
+        return redirect("events:list")
+
+    event = get_object_or_404(Event, pk=pk)
+
+    regs = (
+        EventRegistration.objects
+        .filter(event=event)
+        .select_related("user")
+        .order_by("-registered_at")
+    )
+
+    context = {
+        "event": event,
+        "regs": regs,
+        "total_regs": regs.count(),
+    }
+    return render(request, "events/event_registrations.html", context)
