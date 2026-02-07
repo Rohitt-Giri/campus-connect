@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Staff Claims | Lost & Found</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="py-4" style="background:#f6fbf8;">
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="fw-bold mb-0">Claims</h3>
+    <a href="{% url 'lostfound:staff_items' %}" class="btn btn-outline-dark rounded-pill">View Items</a>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover bg-white rounded-3 overflow-hidden">
+      <thead class="table-light">
+        <tr>
+          <th>Item</th>
+          <th>Student</th>
+          <th>Status</th>
+          <th>Submitted</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in claims %}
+          <tr>
+            <td><a href="{% url 'lostfound:detail' c.item.pk %}">{{ c.item.title }}</a></td>
+            <td>{{ c.student.username }}</td>
+            <td>{{ c.get_status_display }}</td>
+            <td>{{ c.created_at|date:"M d, Y" }}</td>
+            <td class="text-end">
+              {% if c.status == "pending" %}
+                <a class="btn btn-sm btn-success rounded-pill" href="{% url 'lostfound:claim_approve' c.pk %}">Approve</a>
+                <a class="btn btn-sm btn-outline-danger rounded-pill" href="{% url 'lostfound:claim_reject' c.pk %}">Reject</a>
+              {% else %}
+                <span class="text-muted small">Reviewed</span>
+              {% endif %}
+            </td>
+          </tr>
+        {% empty %}
+          <tr><td colspan="5" class="text-muted">No claims yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+</body>
+</html>

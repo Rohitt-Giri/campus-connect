@@ -17,6 +17,9 @@ Including another URLconf
 from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import path, include
+from django.conf.urls.static import static
+
+from campus_connect import settings
 
 urlpatterns = [
     path("", include("core.urls")),
@@ -26,4 +29,8 @@ urlpatterns = [
     path("staff/", include("staff.urls")),
     path("notices/", include(("notices.urls", "notices"), namespace="notices")),
     path("events/", include("events.urls")),
+     path("lostfound/", include("lostfound.urls")),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
