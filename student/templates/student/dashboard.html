@@ -1,88 +1,38 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Student Dashboard | Campus Connect</title>
-
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
   <style>
-    body{
-      background: radial-gradient(circle at top left, #e9fff2 0%, #f4fff8 30%, #f7fbff 70%, #ffffff 100%);
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-      min-height: 100vh;
-    }
-    .topbar{
-      background: rgba(255,255,255,.85);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid rgba(15,23,42,.08);
-    }
-    .brand-badge{
-      width: 44px; height: 44px;
-      border-radius: 14px;
-      background: #16a34a;
-      color: #fff;
-      display:flex; align-items:center; justify-content:center;
-      font-weight: 800;
-      box-shadow: 0 10px 24px rgba(22,163,74,.18);
-    }
-    .wrap{ max-width: 1180px; margin: 0 auto; padding: 24px 16px 40px; }
-
-    .card-soft{
-      border-radius: 18px;
-      border: 1px solid rgba(15,23,42,.08);
-      background: rgba(255,255,255,.94);
-      box-shadow: 0 14px 30px rgba(15,23,42,.06);
-    }
-    .muted{ color:#64748b; }
-    .pill{
-      border-radius: 999px;
-      padding: 8px 14px;
-      font-weight: 800;
-    }
-    .tag{
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-weight: 800;
-      font-size: .85rem;
-      background: rgba(34,197,94,.12);
-      color: #166534;
-      border: 1px solid rgba(34,197,94,.18);
-      white-space: nowrap;
-    }
-    .mini-item{
-      padding: 12px 0;
-      border-top: 1px solid rgba(15,23,42,.08);
-    }
-    .mini-item:first-child{ border-top: 0; padding-top: 0; }
-    .link-green{ color:#16a34a; font-weight:900; text-decoration:none; }
-    .link-green:hover{ text-decoration:underline; }
+    :root{--g:#16a34a;--bd:rgba(15,23,42,.10);}
+    body{background: radial-gradient(circle at top left,#e9fff2 0%,#f4fff8 30%,#f7fbff 70%,#fff 100%); font-family:system-ui;}
+    .wrap{max-width:1180px; margin:0 auto; padding:28px 16px;}
+    .cardx{border-radius:18px; border:1px solid var(--bd); background:rgba(255,255,255,.92); box-shadow:0 14px 30px rgba(15,23,42,.06);}
+    .pill{border-radius:999px;}
+    .tag{border-radius:999px; padding:.32rem .65rem; font-weight:800; font-size:.85rem; background:rgba(34,197,94,.12); color:#166534; border:1px solid rgba(34,197,94,.18);}
+    .muted{color:#64748b;}
+    .item{padding:12px 0; border-top:1px solid rgba(15,23,42,.08);}
+    .item:first-child{border-top:0;}
   </style>
 </head>
-
 <body>
-  <!-- Topbar -->
-  <div class="topbar">
-    <div class="container-fluid px-3 py-2 d-flex align-items-center justify-content-between">
-      <div class="d-flex align-items-center gap-2">
-        <div class="brand-badge">CC</div>
+  <div class="wrap">
+
+    <div class="cardx p-3 mb-3 d-flex justify-content-between align-items-center">
+      <div class="d-flex gap-2 align-items-center">
+        <div style="width:44px;height:44px;border-radius:14px;background:var(--g);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;">CC</div>
         <div>
           <div class="fw-bold">Campus Connect</div>
-          <div class="small text-muted">Student Portal</div>
+          <div class="small muted">Student Portal</div>
         </div>
       </div>
-
-      <div class="d-flex align-items-center gap-3">
-        <div class="small fw-semibold text-dark">
-          Student: <span class="text-muted">{{ request.user.username }}</span>
-        </div>
-        <a class="btn btn-outline-dark pill" href="{% url 'accounts:logout' %}">Logout</a>
+      <div class="d-flex gap-2 align-items-center">
+        <div class="d-none d-md-block small fw-semibold">Student: <span class="muted">{{ request.user.username }}</span></div>
+        <a class="btn btn-outline-dark pill px-3" href="{% url 'accounts:logout' %}">Logout</a>
       </div>
     </div>
-  </div>
-
-  <div class="wrap">
 
     {% if messages %}
       <div class="mb-3">
@@ -92,65 +42,63 @@
       </div>
     {% endif %}
 
-    <!-- Header -->
-    <div class="card-soft p-4 mb-4">
+    <div class="cardx p-4 mb-3">
       <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
         <div>
           <h2 class="fw-bold mb-1">Student Dashboard</h2>
-          <div class="muted">Browse events, register, and stay updated with notices.</div>
+          <div class="muted">Notices, events, and your registrations.</div>
         </div>
         <div class="d-flex gap-2 flex-wrap">
-          <a class="btn btn-outline-dark pill" href="{% url 'events:list' %}">Browse Events</a>
-          <a class="btn btn-success pill" href="{% url 'notices:list' %}">View Notices</a>
+          <a class="btn btn-outline-dark pill px-3" href="{% url 'notices:list' %}">View Notices</a>
+          <a class="btn btn-success pill px-3" href="{% url 'events:list' %}">Browse Events</a>
         </div>
       </div>
     </div>
 
-    <!-- KPI -->
-    <div class="row g-3 mb-4">
+    <div class="row g-3 mb-3">
       <div class="col-md-4">
-        <div class="card-soft p-4">
+        <div class="cardx p-4">
           <div class="muted fw-semibold">Upcoming Events</div>
-          <div class="display-6 fw-bold mb-0">{{ upcoming_events_count|default:0 }}</div>
+          <div class="display-6 fw-bold">{{ upcoming_events_count|default:0 }}</div>
+          <div class="small muted">Published & upcoming</div>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card-soft p-4">
+        <div class="cardx p-4">
           <div class="muted fw-semibold">My Registrations</div>
-          <div class="display-6 fw-bold mb-0">{{ my_registrations_count|default:0 }}</div>
+          <div class="display-6 fw-bold">{{ my_registrations_count|default:0 }}</div>
+          <div class="small muted">Events you registered</div>
         </div>
       </div>
       <div class="col-md-4">
-        <div class="card-soft p-4">
-          <div class="muted fw-semibold">Notices Available</div>
-          <div class="display-6 fw-bold mb-0">{{ notices_count|default:0 }}</div>
+        <div class="cardx p-4">
+          <div class="muted fw-semibold">Payments Pending</div>
+          <div class="display-6 fw-bold">{{ payments_pending_count|default:0 }}</div>
+          <div class="small muted">Payments module later</div>
         </div>
       </div>
     </div>
 
     <div class="row g-3">
-      <!-- Upcoming Events -->
-      <div class="col-lg-6">
-        <div class="card-soft p-4">
+      <div class="col-lg-7">
+        <div class="cardx p-4">
           <div class="d-flex justify-content-between align-items-center mb-2">
             <h5 class="fw-bold mb-0">Upcoming Events</h5>
-            <a class="link-green" href="{% url 'events:list' %}">View all</a>
+            <a class="text-decoration-none fw-bold" style="color:var(--g);" href="{% url 'events:list' %}">View all</a>
           </div>
 
           {% if upcoming_events %}
             {% for e in upcoming_events %}
-              <div class="mini-item">
-                <div class="d-flex justify-content-between gap-3">
-                  <div>
-                    <div class="fw-bold">
-                      <a class="text-decoration-none text-dark" href="{% url 'events:detail' e.pk %}">{{ e.title }}</a>
-                    </div>
-                    <div class="muted small">
-                      {{ e.start_datetime|date:"M d, Y • H:i" }}{% if e.location %} • {{ e.location }}{% endif %}
-                    </div>
+              <div class="item d-flex justify-content-between gap-3">
+                <div>
+                  <div class="fw-bold">
+                    <a class="text-decoration-none text-dark" href="{% url 'events:detail' e.pk %}">{{ e.title }}</a>
                   </div>
-                  <span class="tag">{{ e.get_status_display }}</span>
+                  <div class="small muted">
+                    {{ e.start_datetime|date:"M d, Y • H:i" }}{% if e.location %} • {{ e.location }}{% endif %}
+                  </div>
                 </div>
+                <span class="tag">{{ e.get_status_display }}</span>
               </div>
             {% endfor %}
           {% else %}
@@ -159,30 +107,25 @@
         </div>
       </div>
 
-      <!-- My Registered Events -->
-      <div class="col-lg-6">
-        <div class="card-soft p-4">
+      <div class="col-lg-5">
+        <div class="cardx p-4 h-100">
           <div class="d-flex justify-content-between align-items-center mb-2">
             <h5 class="fw-bold mb-0">My Registered Events</h5>
-            <a class="link-green" href="{% url 'events:list' %}">Browse</a>
+            <a class="text-decoration-none fw-bold" style="color:var(--g);" href="{% url 'events:list' %}">Browse</a>
           </div>
 
           {% if my_regs %}
             {% for r in my_regs %}
-              <div class="mini-item">
-                <div class="d-flex justify-content-between gap-3">
-                  <div>
-                    <div class="fw-bold">
-                      <a class="text-decoration-none text-dark" href="{% url 'events:detail' r.event.pk %}">
-                        {{ r.event.title }}
-                      </a>
-                    </div>
-                    <div class="muted small">
-                      Registered: {{ r.registered_at|date:"M d, Y" }} • Event: {{ r.event.start_datetime|date:"M d, Y • H:i" }}
-                    </div>
+              <div class="item d-flex justify-content-between gap-3">
+                <div>
+                  <div class="fw-bold">
+                    <a class="text-decoration-none text-dark" href="{% url 'events:detail' r.event.pk %}">
+                      {{ r.event.title }}
+                    </a>
                   </div>
-                  <span class="tag">Registered</span>
+                  <div class="small muted">Registered: {{ r.registered_at|date:"M d, Y" }}</div>
                 </div>
+                <span class="tag">Registered</span>
               </div>
             {% endfor %}
           {% else %}
@@ -190,36 +133,24 @@
           {% endif %}
         </div>
       </div>
+    </div>
 
-      <!-- Recent Notices -->
-      <div class="col-lg-12">
-        <div class="card-soft p-4">
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <h5 class="fw-bold mb-0">Recent Notices</h5>
-            <a class="link-green" href="{% url 'notices:list' %}">View all</a>
-          </div>
-
-          {% if recent_notices %}
-            {% for n in recent_notices %}
-              <div class="mini-item">
-                <div class="d-flex justify-content-between gap-3">
-                  <div>
-                    <div class="fw-bold">
-                      <a class="text-decoration-none text-dark" href="{% url 'notices:detail' n.pk %}">{{ n.title }}</a>
-                    </div>
-                    <div class="muted small">
-                      {{ n.created_at|date:"M d, Y" }}{% if n.created_by %} • {{ n.created_by.username }}{% endif %}
-                    </div>
-                  </div>
-                  <span class="tag">{% if n.get_category_display %}{{ n.get_category_display }}{% else %}Notice{% endif %}</span>
-                </div>
-              </div>
-            {% endfor %}
-          {% else %}
-            <div class="muted">No notices yet.</div>
-          {% endif %}
-        </div>
+    <div class="cardx p-4 mt-3">
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <h5 class="fw-bold mb-0">Recent Notices</h5>
+        <a class="text-decoration-none fw-bold" style="color:var(--g);" href="{% url 'notices:list' %}">View all</a>
       </div>
+
+      {% if recent_notices %}
+        {% for n in recent_notices %}
+          <div class="item">
+            <div class="fw-bold">{{ n.title }}</div>
+            <div class="small muted">{{ n.created_at|date:"M d, Y" }}</div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="muted">No notices posted yet.</div>
+      {% endif %}
     </div>
 
   </div>

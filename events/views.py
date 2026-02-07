@@ -2,41 +2,27 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count
 from django.shortcuts import get_object_or_404, redirect, render
+from django.utils import timezone
 
+from accounts.models import User
 from .forms import EventForm, EventRegistrationForm
 from .models import Event, EventRegistration
 
 
-def _is_staff_like(user):
-    if user.is_superuser or user.is_staff:
-        return True
-    # If you have custom role field
-    role = getattr(user, "role", None)
-    if role in ("STAFF", "ADMIN"):
-        return True
-    return False
+def _is_staff_like(user) -> bool:
+    return getattr(user, "role", None) in (User.Role.STAFF, User.Role.ADMIN) or user.is_staff or user.is_superuser
 
 
 @login_required
 def events_list_view(request):
-    # Students see only published
+    # Students: only published upcoming
     qs = Event.objects.filter(status="published").order_by("start_datetime")
-
-    # Staff can see all events
-    if _is_staff_like(request.user):
-        qs = Event.objects.all().order_by("-created_at")
-
     return render(request, "events/events_list.html", {"events": qs})
 
 
 @login_required
 def event_detail_view(request, pk):
-    event = get_object_or_404(Event, pk=pk)
-
-    # Students shouldn't open draft events
-    if (not _is_staff_like(request.user)) and event.status != "published":
-        messages.error(request, "This event is not published.")
-        return redirect("events:list")
+    event = get_object_or_404(Event, pk=pk, status="published")
 
     already_registered = EventRegistration.objects.filter(event=event, user=request.user).exists()
     reg_count = event.registrations.count()
@@ -44,50 +30,20 @@ def event_detail_view(request, pk):
     return render(
         request,
         "events/event_detail.html",
-        {
-            "event": event,
-            "already_registered": already_registered,
-            "reg_count": reg_count,
-            "is_staff_like": _is_staff_like(request.user),
-        },
+        {"event": event, "already_registered": already_registered, "reg_count": reg_count},
     )
 
 
 @login_required
-def event_create_view(request):
-    if not _is_staff_like(request.user):
-        messages.error(request, "Only staff/admin can create events.")
-        return redirect("events:list")
-
-    if request.method == "POST":
-        form = EventForm(request.POST)
-        if form.is_valid():
-            obj = form.save(commit=False)
-            obj.created_by = request.user
-            obj.save()
-            messages.success(request, "Event created successfully ✅")
-            return redirect("events:detail", pk=obj.pk)
-    else:
-        form = EventForm()
-
-    return render(request, "events/event_form.html", {"form": form})
-
-
-@login_required
 def event_register_view(request, pk):
-    # Only students should register
+    # Only students can register
     if request.user.role != User.Role.STUDENT:
         messages.error(request, "Only students can register for events.")
         return redirect("events:detail", pk=pk)
 
     event = get_object_or_404(Event, pk=pk, status="published")
 
-    # close registration after event started
-    if event.start_datetime <= timezone.now():
-        messages.error(request, "Registration closed. This event already started.")
-        return redirect("events:detail", pk=pk)
-
-    # prevent duplicates
+    # Avoid duplicate
     if EventRegistration.objects.filter(event=event, user=request.user).exists():
         messages.info(request, "You are already registered for this event.")
         return redirect("events:detail", pk=pk)
@@ -101,36 +57,48 @@ def event_register_view(request, pk):
             reg.save()
             messages.success(request, "Registered successfully! 🎉")
             return redirect("events:detail", pk=pk)
+        messages.error(request, "Please fix the errors below.")
     else:
-        # prefill email if available
-        form = EventRegistrationForm(
-            initial={
-                "email": getattr(request.user, "email", "") or "",
-                "full_name": getattr(request.user, "get_full_name", lambda: "")() or request.user.username,
-            }
-        )
+        # Prefill email if available
+        initial = {"email": getattr(request.user, "email", "") or ""}
+        form = EventRegistrationForm(initial=initial)
 
-    return render(request, "events/event_register.html", {"event": event, "form": form})
+    return render(request, "events/event_register_form.html", {"event": event, "form": form})
+
+
+@login_required
+def event_create_view(request):
+    # Staff/Admin only
+    if not _is_staff_like(request.user):
+        messages.error(request, "You are not allowed to create events.")
+        return redirect("core:landing")
+
+    if request.method == "POST":
+        form = EventForm(request.POST)
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.created_by = request.user
+            obj.save()
+            messages.success(request, "Event saved ✅")
+            return redirect("events:detail", pk=obj.pk)
+        messages.error(request, "Please fix the errors below.")
+    else:
+        form = EventForm()
+
+    return render(request, "events/event_form.html", {"form": form})
+
 
 @login_required
 def event_registrations_view(request, pk):
     # Staff/Admin only
-    if request.user.role not in [User.Role.STAFF, User.Role.ADMIN]:
-        messages.error(request, "You are not allowed to view event registrations.")
-        return redirect("events:list")
+    if not _is_staff_like(request.user):
+        messages.error(request, "You are not allowed to view registrations.")
+        return redirect("core:landing")
 
     event = get_object_or_404(Event, pk=pk)
-
     regs = (
-        EventRegistration.objects
-        .filter(event=event)
+        EventRegistration.objects.filter(event=event)
         .select_related("user")
         .order_by("-registered_at")
     )
-
-    context = {
-        "event": event,
-        "regs": regs,
-        "total_regs": regs.count(),
-    }
-    return render(request, "events/event_registrations.html", context)
+    return render(request, "events/event_registrations.html", {"event": event, "regs": regs})
