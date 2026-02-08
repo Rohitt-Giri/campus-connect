@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'notices',
     'events',
     'lostfound',
+    'payments',
     
 ]
 

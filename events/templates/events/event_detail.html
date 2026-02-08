@@ -48,10 +48,35 @@
       {% endif %}
 
       {% if already_registered %}
-        <button class="btn btn-secondary rounded-pill" disabled>Already Registered</button>
+        <div class="alert alert-success">You are registered ✅</div>
+
+        {% if event.is_paid %}
+          {% if proof %}
+            {% if proof.status == "approved" %}
+              <div class="alert alert-success">Payment Approved ✅ You’re confirmed!</div>
+            {% elif proof.status == "rejected" %}
+              <div class="alert alert-danger">Payment Rejected ❌ Please re-upload proof.</div>
+              <a class="btn btn-success rounded-pill" href="{% url 'payments:upload' registration.id %}">
+                Re-Upload Payment Proof (Rs {{ event.price }})
+              </a>
+            {% else %}
+              <div class="alert alert-warning">Payment Pending ⏳</div>
+              <a class="btn btn-success rounded-pill" href="{% url 'payments:upload' registration.id %}">
+                Update Payment Proof (Rs {{ event.price }})
+              </a>
+            {% endif %}
+          {% else %}
+            <a class="btn btn-success rounded-pill" href="{% url 'payments:upload' registration.id %}">
+              Upload Payment Proof (Rs {{ event.price }})
+            </a>
+          {% endif %}
+        {% endif %}
+
       {% else %}
-        <a class="btn btn-success rounded-pill px-4" href="{% url 'events:register' event.pk %}">Register Now</a>
+        <a class="btn btn-primary rounded-pill" href="{% url 'events:register' event.pk %}">Register</a>
       {% endif %}
+
+
     </div>
   </div>
 </body>

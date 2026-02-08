@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.db import models
-
+from decimal import Decimal
 
 class Event(models.Model):
     STATUS_CHOICES = (
@@ -31,6 +31,10 @@ class Event(models.Model):
 
     def __str__(self):
         return self.title
+    
+    is_paid = models.BooleanField(default=False)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
 
 
 class EventRegistration(models.Model):

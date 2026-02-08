@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Review Payment</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body{background:#f6fbf7}
+    .cardx{border:1px solid rgba(15,23,42,.08);border-radius:18px;box-shadow:0 14px 30px rgba(15,23,42,.06)}
+    .btnx{border-radius:999px;font-weight:800}
+  </style>
+</head>
+<body class="py-4">
+<div class="container" style="max-width:950px;">
+  <a href="{% url 'payments:staff_list' %}" class="text-decoration-none">← Back</a>
+
+  <div class="card cardx p-4 mt-3">
+    <h4 class="fw-bold mb-1">Review Payment</h4>
+    <div class="text-muted mb-3">
+      Student: <b>{{ payment.registration.user.username }}</b> •
+      Event: <b>{{ payment.registration.event.title }}</b> •
+      Amount: <b>Rs {{ payment.amount }}</b>
+    </div>
+
+    <div class="mb-2"><b>Status:</b> {{ payment.get_status_display }}</div>
+    <div class="mb-2"><b>Transaction ID:</b> {{ payment.transaction_id|default:"—" }}</div>
+    <div class="mb-3"><b>Notes:</b> {{ payment.notes|default:"—" }}</div>
+
+    {% if payment.proof_image %}
+      <div class="mb-3">
+        <div class="fw-semibold mb-2">Proof Screenshot:</div>
+        <img src="{{ payment.proof_image.url }}" class="img-fluid rounded" style="max-height:420px;">
+      </div>
+    {% else %}
+      <div class="text-muted mb-3">No proof image uploaded.</div>
+    {% endif %}
+
+    <form method="post" class="d-flex gap-2">
+      {% csrf_token %}
+      <button class="btn btn-success btnx px-4" name="action" value="approve">Approve</button>
+      <button class="btn btn-outline-danger btnx px-4" name="action" value="reject">Reject</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>

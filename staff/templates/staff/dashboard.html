@@ -7,17 +7,20 @@
   <title>Staff Dashboard | Campus Connect</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    :root{--g:#16a34a;--g2:#22c55e;--bd:rgba(15,23,42,.10);}
+    :root{--g:#16a34a;--g2:#22c55e;--bd:rgba(15,23,42,.10);--muted:#64748b;}
     body{background:radial-gradient(900px 450px at 15% 10%, rgba(34,197,94,0.16), transparent 55%),linear-gradient(120deg,#fff 0%,#f7fbf8 65%,#fff 100%); font-family:system-ui;}
-    .wrap{max-width:1180px; margin:0 auto; padding:28px 16px;}
-    .cardx{border-radius:18px; border:1px solid var(--bd); background:rgba(255,255,255,.92); box-shadow:0 14px 30px rgba(15,23,42,.06);}
+    .wrap{max-width:1180px; margin:0 auto; padding:26px 16px 40px;}
+    .cardx{border-radius:18px; border:1px solid var(--bd); background:rgba(255,255,255,.95); box-shadow:0 14px 30px rgba(15,23,42,.06);}
+    .pill{border-radius:999px;}
+    .kpi{padding:18px;}
+    .kpi .label{color:var(--muted); font-weight:700;}
+    .kpi .value{font-size:2rem; font-weight:900; margin-top:4px;}
+    .row-title{font-weight:900; letter-spacing:-.02em;}
+    .item{padding:14px 0; border-top:1px solid rgba(15,23,42,.08);}
+    .item:first-child{border-top:0;}
+    .tag{border-radius:999px; padding:.35rem .7rem; font-weight:800; font-size:.85rem; background:rgba(34,197,94,.12); color:#166534; border:1px solid rgba(34,197,94,.18);}
     .brand{display:flex; gap:.7rem; align-items:center; text-decoration:none; color:#0f172a; font-weight:950;}
     .badgeCC{width:44px;height:44px;border-radius:14px;background:linear-gradient(135deg,var(--g),var(--g2));display:flex;align-items:center;justify-content:center;font-weight:950;color:#06120a;}
-    .pill{border-radius:999px;}
-    .tag{border-radius:999px; padding:.32rem .65rem; font-weight:800; font-size:.85rem; background:rgba(34,197,94,.12); color:#166534; border:1px solid rgba(34,197,94,.18);}
-    .muted{color:#64748b;}
-    .item{padding:12px 0; border-top:1px solid rgba(15,23,42,.08);}
-    .item:first-child{border-top:0;}
   </style>
 </head>
 <body>
@@ -28,59 +31,63 @@
         <div class="badgeCC">CC</div>
         <div>
           <div>Campus Connect</div>
-          <div class="small muted">Staff Portal</div>
+          <div class="small" style="color:var(--muted);font-weight:700;">Staff Portal</div>
         </div>
       </a>
       <div class="d-flex gap-2 align-items-center">
-        <div class="d-none d-md-block small fw-semibold">Staff: <span class="muted">{{ request.user.username }}</span></div>
+        <div class="d-none d-md-block small fw-semibold">Staff: <span style="color:var(--muted)">{{ request.user.username }}</span></div>
         <a class="btn btn-outline-dark pill px-3" href="{% url 'accounts:logout' %}">Logout</a>
       </div>
     </div>
 
     <div class="cardx p-4 mb-3">
-      <div class="d-flex flex-column flex-lg-row justify-content-between gap-3">
+      <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-start">
         <div>
-          <h2 class="fw-bold mb-1">Staff Dashboard</h2>
-          <div class="muted">Manage events and publish notices.</div>
+          <h2 class="row-title mb-1">Staff Dashboard</h2>
+          <div style="color:var(--muted); font-weight:650;">Events, notices, claims, and payments review.</div>
         </div>
         <div class="d-flex gap-2 flex-wrap">
           <a class="btn btn-success pill px-3" href="{% url 'events:create' %}">+ Create Event</a>
-          <a class="btn btn-outline-dark pill px-3" href="{% url 'events:list' %}">View Events</a>
+          <a class="btn btn-outline-dark pill px-3" href="{% url 'events:list' %}">Events</a>
           <a class="btn btn-outline-dark pill px-3" href="{% url 'notices:list' %}">Notices</a>
           <a class="btn btn-success pill px-3" href="{% url 'notices:create' %}">+ Create Notice</a>
+          <a class="btn btn-outline-dark pill px-3" href="{% url 'lostfound:staff_items' %}">Lost&Found</a>
+          <a class="btn btn-outline-dark pill px-3" href="{% url 'payments:staff_list' %}">Payments</a>
         </div>
       </div>
     </div>
 
     <div class="row g-3 mb-3">
-      <div class="col-md-4">
-        <div class="cardx p-4">
-          <div class="muted fw-semibold">Active Events</div>
-          <div class="display-6 fw-bold">{{ active_events|default:0 }}</div>
-          <div class="small muted">Published & upcoming</div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="cardx p-4">
-          <div class="muted fw-semibold">Published Notices</div>
-          <div class="display-6 fw-bold">{{ published_count|default:0 }}</div>
-          <div class="small muted">Visible to students</div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="cardx p-4">
-          <a class="btn btn-outline-dark" href="{% url 'lostfound:staff_claims' %}">Claims</a>
-          <div class="display-6 fw-bold">{{ pending_claims|default:0 }}</div>
-          <a class="btn btn-outline-dark" href="{% url 'lostfound:staff_items' %}">Lost & Found Items</a>
-        </div>
-      </div>
+      <div class="col-md-3"><div class="cardx kpi">
+        <div class="label">Active Events</div>
+        <div class="value">{{ active_events|default:0 }}</div>
+        <div class="small" style="color:var(--muted);font-weight:650;">Published & upcoming</div>
+      </div></div>
+
+      <div class="col-md-3"><div class="cardx kpi">
+        <div class="label">Published Notices</div>
+        <div class="value">{{ published_count|default:0 }}</div>
+        <div class="small" style="color:var(--muted);font-weight:650;">Visible to students</div>
+      </div></div>
+
+      <div class="col-md-3"><div class="cardx kpi">
+        <div class="label">Pending Claims</div>
+        <div class="value">{{ pending_claims|default:0 }}</div>
+        <div class="small" style="color:var(--muted);font-weight:650;">Lost&Found claims</div>
+      </div></div>
+
+      <div class="col-md-3"><div class="cardx kpi">
+        <div class="label">Pending Payments</div>
+        <div class="value">{{ pending_payments_count|default:0 }}</div>
+        <div class="small" style="color:var(--muted);font-weight:650;">Waiting review</div>
+      </div></div>
     </div>
 
     <div class="row g-3">
       <div class="col-lg-7">
         <div class="cardx p-4">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <h5 class="fw-bold mb-0">Recent Events</h5>
+            <h5 class="row-title mb-0">Recent Events</h5>
             <a class="text-decoration-none fw-bold" style="color:var(--g);" href="{% url 'events:list' %}">View all</a>
           </div>
 
@@ -88,10 +95,8 @@
             {% for e in recent_events %}
               <div class="item d-flex justify-content-between gap-3">
                 <div>
-                  <div class="fw-bold">
-                    {{ e.title }}
-                  </div>
-                  <div class="small muted">
+                  <div class="fw-bold">{{ e.title }}</div>
+                  <div class="small" style="color:var(--muted); font-weight:650;">
                     {{ e.start_datetime|date:"M d, Y • H:i" }}{% if e.location %} • {{ e.location }}{% endif %}
                   </div>
                 </div>
@@ -99,7 +104,7 @@
               </div>
             {% endfor %}
           {% else %}
-            <div class="muted">No events yet.</div>
+            <div style="color:var(--muted); font-weight:650;">No events yet.</div>
           {% endif %}
         </div>
       </div>
@@ -107,8 +112,8 @@
       <div class="col-lg-5">
         <div class="cardx p-4 h-100">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <h5 class="fw-bold mb-0">Top Events</h5>
-            <span class="small muted">by registrations</span>
+            <h5 class="row-title mb-0">Top Events</h5>
+            <span class="small" style="color:var(--muted); font-weight:650;">by registrations</span>
           </div>
 
           {% if top_events %}
@@ -116,13 +121,13 @@
               <div class="item d-flex justify-content-between gap-3">
                 <div>
                   <div class="fw-bold">{{ e.title }}</div>
-                  <div class="small muted">Registrations: <b>{{ e.reg_count }}</b></div>
+                  <div class="small" style="color:var(--muted); font-weight:650;">Registrations: <b>{{ e.reg_count }}</b></div>
                 </div>
                 <a class="btn btn-outline-dark pill btn-sm" href="{% url 'events:registrations' e.pk %}">View</a>
               </div>
             {% endfor %}
           {% else %}
-            <div class="muted">No registrations yet.</div>
+            <div style="color:var(--muted); font-weight:650;">No registrations yet.</div>
           {% endif %}
         </div>
       </div>
@@ -130,7 +135,7 @@
 
     <div class="cardx p-4 mt-3">
       <div class="d-flex justify-content-between align-items-center mb-2">
-        <h5 class="fw-bold mb-0">Recent Notices</h5>
+        <h5 class="row-title mb-0">Recent Notices</h5>
         <a class="text-decoration-none fw-bold" style="color:var(--g);" href="{% url 'notices:list' %}">View all</a>
       </div>
 
@@ -138,15 +143,14 @@
         {% for n in recent_notices %}
           <div class="item">
             <div class="fw-bold">{{ n.title }}</div>
-            <div class="small muted">{{ n.created_at|date:"M d, Y" }}</div>
+            <div class="small" style="color:var(--muted); font-weight:650;">{{ n.created_at|date:"M d, Y" }}</div>
           </div>
         {% endfor %}
       {% else %}
-        <div class="muted">No notices posted yet.</div>
+        <div style="color:var(--muted); font-weight:650;">No notices posted yet.</div>
       {% endif %}
     </div>
 
-    <div class="text-center small muted mt-3">© {{ year|default:"2026" }} Campus Connect</div>
   </div>
 </body>
 </html>

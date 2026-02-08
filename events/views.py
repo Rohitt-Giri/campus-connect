@@ -9,13 +9,8 @@ from .forms import EventForm, EventRegistrationForm
 from .models import Event, EventRegistration
 
 
-def _is_staff_like(user) -> bool:
-    return getattr(user, "role", None) in (User.Role.STAFF, User.Role.ADMIN) or user.is_staff or user.is_superuser
-
-
 @login_required
 def events_list_view(request):
-    # Students: only published upcoming
     qs = Event.objects.filter(status="published").order_by("start_datetime")
     return render(request, "events/events_list.html", {"events": qs})
 
@@ -24,27 +19,35 @@ def events_list_view(request):
 def event_detail_view(request, pk):
     event = get_object_or_404(Event, pk=pk, status="published")
 
-    already_registered = EventRegistration.objects.filter(event=event, user=request.user).exists()
+    registration = EventRegistration.objects.filter(event=event, user=request.user).first()
+    already_registered = registration is not None
+    proof = getattr(registration, "payment_proof", None) if registration else None
+
     reg_count = event.registrations.count()
 
-    return render(
-        request,
-        "events/event_detail.html",
-        {"event": event, "already_registered": already_registered, "reg_count": reg_count},
-    )
+    return render(request, "events/event_detail.html", {
+        "event": event,
+        "already_registered": already_registered,
+        "registration": registration,
+        "proof": proof,
+        "reg_count": reg_count,
+    })
 
 
 @login_required
 def event_register_view(request, pk):
-    # Only students can register
     if request.user.role != User.Role.STUDENT:
         messages.error(request, "Only students can register for events.")
         return redirect("events:detail", pk=pk)
 
     event = get_object_or_404(Event, pk=pk, status="published")
 
-    # Avoid duplicate
-    if EventRegistration.objects.filter(event=event, user=request.user).exists():
+    if event.start_datetime <= timezone.now():
+        messages.error(request, "Registration closed. This event already started.")
+        return redirect("events:detail", pk=pk)
+
+    existing = EventRegistration.objects.filter(event=event, user=request.user).first()
+    if existing:
         messages.info(request, "You are already registered for this event.")
         return redirect("events:detail", pk=pk)
 
@@ -57,21 +60,17 @@ def event_register_view(request, pk):
             reg.save()
             messages.success(request, "Registered successfully! 🎉")
             return redirect("events:detail", pk=pk)
-        messages.error(request, "Please fix the errors below.")
     else:
-        # Prefill email if available
-        initial = {"email": getattr(request.user, "email", "") or ""}
-        form = EventRegistrationForm(initial=initial)
+        form = EventRegistrationForm(initial={"email": request.user.email or ""})
 
-    return render(request, "events/event_register_form.html", {"event": event, "form": form})
+    return render(request, "events/event_register.html", {"event": event, "form": form})
 
 
 @login_required
 def event_create_view(request):
-    # Staff/Admin only
-    if not _is_staff_like(request.user):
-        messages.error(request, "You are not allowed to create events.")
-        return redirect("core:landing")
+    if request.user.role not in [User.Role.STAFF, User.Role.ADMIN]:
+        messages.error(request, "Only staff/admin can create events.")
+        return redirect("events:list")
 
     if request.method == "POST":
         form = EventForm(request.POST)
@@ -81,7 +80,6 @@ def event_create_view(request):
             obj.save()
             messages.success(request, "Event saved ✅")
             return redirect("events:detail", pk=obj.pk)
-        messages.error(request, "Please fix the errors below.")
     else:
         form = EventForm()
 
@@ -90,15 +88,10 @@ def event_create_view(request):
 
 @login_required
 def event_registrations_view(request, pk):
-    # Staff/Admin only
-    if not _is_staff_like(request.user):
-        messages.error(request, "You are not allowed to view registrations.")
-        return redirect("core:landing")
+    if request.user.role not in [User.Role.STAFF, User.Role.ADMIN]:
+        messages.error(request, "Access denied.")
+        return redirect("events:list")
 
     event = get_object_or_404(Event, pk=pk)
-    regs = (
-        EventRegistration.objects.filter(event=event)
-        .select_related("user")
-        .order_by("-registered_at")
-    )
+    regs = EventRegistration.objects.filter(event=event).select_related("user").order_by("-registered_at")
     return render(request, "events/event_registrations.html", {"event": event, "regs": regs})
