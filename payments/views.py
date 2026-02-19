@@ -106,35 +106,23 @@ def payment_submit_view(request, registration_id):
 @login_required
 def staff_payments_list_view(request):
     if not _staff_or_admin(request.user):
-        messages.error(request, "Not authorized.")
-        return redirect("core:landing")
+        return HttpResponseForbidden("Not allowed")
 
-    status = request.GET.get("status", "pending")
-    q = (request.GET.get("q") or "").strip()
+    status = (request.GET.get("status") or "pending").strip().lower()
+    if status not in {"pending", "approved", "rejected"}:
+        status = "pending"
 
-    proofs = PaymentProof.objects.select_related(
-        "registration__event",
-        "registration__user",
-        "reviewed_by",
-    ).order_by("-submitted_at", "-id")
-
-    if status in ["pending", "approved", "rejected"]:
-        proofs = proofs.filter(status=status)
-
-    if q:
-        proofs = proofs.filter(
-            Q(registration__user__username__icontains=q) |
-            Q(registration__user__email__icontains=q) |
-            Q(registration__event__title__icontains=q) |
-            Q(txn_id__icontains=q)
-        )
+    payments = (
+        PaymentProof.objects
+        .select_related("registration", "registration__event", "registration__user", "verified_by")
+        .filter(status=status)
+        .order_by("-submitted_at")
+    )
 
     return render(request, "payments/staff_payments_list.html", {
-        "proofs": proofs,
+        "payments": payments,
         "status": status,
-        "q": q,
     })
-
 
 @login_required
 def staff_payment_review_view(request, proof_id):
@@ -172,3 +160,43 @@ def staff_payment_review_view(request, proof_id):
         return redirect("payments:staff_list")
 
     return render(request, "payments/staff_payment_review.html", {"proof": proof})
+
+@login_required
+def staff_payment_action_view(request, proof_id):
+    if not _staff_or_admin(request.user):
+        return HttpResponseForbidden("Not allowed")
+
+    if request.method != "POST":
+        return redirect("payments:staff_list")
+
+    proof = get_object_or_404(
+        PaymentProof.objects.select_related("registration", "registration__event", "registration__user"),
+        id=proof_id
+    )
+
+    action = request.POST.get("action")
+    note = (request.POST.get("staff_note") or "").strip()
+
+    if action == "approve":
+        proof.status = "approved"
+        proof.verified_by = request.user
+        proof.verified_at = timezone.now()
+        proof.staff_note = note
+        proof.updated_at = timezone.now()
+        proof.save(update_fields=["status", "verified_by", "verified_at", "staff_note", "updated_at"])
+        messages.success(request, "Payment approved ✅")
+
+    elif action == "reject":
+        proof.status = "rejected"
+        proof.verified_by = request.user
+        proof.verified_at = timezone.now()
+        proof.staff_note = note
+        proof.updated_at = timezone.now()
+        proof.save(update_fields=["status", "verified_by", "verified_at", "staff_note", "updated_at"])
+        messages.success(request, "Payment rejected ❌")
+
+    else:
+        messages.error(request, "Invalid action.")
+
+    # go back to where staff came from
+    return redirect(request.META.get("HTTP_REFERER", "/payments/staff/?status=pending"))

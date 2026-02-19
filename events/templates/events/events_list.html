@@ -25,6 +25,8 @@
       </div>
       <div class="d-flex gap-2">
         <a class="btn btn-outline-dark pill px-3" href="{% url 'core:landing' %}">Home</a>
+
+        {# Create should usually be staff/admin only. Keep as-is if your view already protects it #}
         <a class="btn btn-success pill px-3" href="{% url 'events:create' %}">+ Create</a>
       </div>
     </div>
@@ -56,9 +58,19 @@
               {% endif %}
             </div>
 
-            <div class="mt-3">
+            <div class="mt-3 d-flex gap-2 flex-wrap">
               <a class="btn btn-outline-dark pill px-3" href="{% url 'events:detail' e.id %}">Open</a>
+
+              {# Staff/Admin only: Registrations button #}
+              {% if request.user.is_authenticated %}
+                {% if request.user.is_superuser or request.user.role == "STAFF" or request.user.role == "ADMIN" %}
+                  <a class="btn btn-dark pill px-3" href="{% url 'events:registrations' e.id %}">
+                    Registrations
+                  </a>
+                {% endif %}
+              {% endif %}
             </div>
+
           </div>
         </div>
       {% empty %}

@@ -1,3 +1,4 @@
+{% load static utils %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -6,52 +7,117 @@
   <title>Registrations | {{ event.title }}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body{background:#f8fafc; font-family:system-ui;}
-    .wrap{max-width:1100px; margin:0 auto; padding:26px 16px;}
-    .cardx{border-radius:18px; border:1px solid rgba(15,23,42,.08); background:#fff; box-shadow:0 14px 30px rgba(15,23,42,.06);}
+    :root{--bd:rgba(15,23,42,.10);}
+    body{background: radial-gradient(circle at top left,#e9fff2 0%,#f4fff8 30%,#f7fbff 70%,#fff 100%); font-family:system-ui;}
+    .wrap{max-width:1150px;margin:0 auto;padding:26px 16px;}
+    .cardx{border-radius:18px;border:1px solid var(--bd);background:rgba(255,255,255,.95);box-shadow:0 14px 30px rgba(15,23,42,.06);}
     .pill{border-radius:999px;}
+    .tag{display:inline-block;border-radius:999px;padding:.25rem .65rem;font-weight:800;font-size:.85rem;border:1px solid rgba(15,23,42,.12);}
+    .tPending{background:#fff7ed;border-color:#fed7aa;color:#9a3412;}
+    .tApproved{background:#ecfdf5;border-color:#bbf7d0;color:#166534;}
+    .tRejected{background:#fef2f2;border-color:#fecaca;color:#991b1b;}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="cardx p-4 mb-3 d-flex justify-content-between align-items-center">
-      <div>
-        <h3 class="fw-bold mb-0">Registrations</h3>
-        <div class="text-muted">{{ event.title }}</div>
-      </div>
-      <a class="btn btn-outline-dark pill px-3" href="{% url 'events:detail' event.id %}">Back</a>
-    </div>
+<div class="wrap">
 
-    <div class="cardx p-4">
-      {% if registrations %}
-        <div class="table-responsive">
-          <table class="table align-middle">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Username</th>
-                <th>Phone</th>
-                <th>Email</th>
-                <th>Registered</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for r in registrations %}
-                <tr>
-                  <td class="fw-semibold">{{ r.full_name|default:r.user.username }}</td>
-                  <td>{{ r.user.username }}</td>
-                  <td>{{ r.phone }}</td>
-                  <td>{{ r.email }}</td>
-                  <td class="text-muted">{{ r.registered_at|date:"M d, Y H:i" }}</td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      {% else %}
-        <div class="text-muted">No registrations yet.</div>
-      {% endif %}
+  <div class="cardx p-4 mb-3 d-flex justify-content-between align-items-center">
+    <div>
+      <h3 class="fw-bold mb-1">{{ event.title }}</h3>
+      <div class="text-muted">Registrations & Payments</div>
+    </div>
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-dark pill" href="{% url 'events:detail' event.id %}">Back</a>
+      <a class="btn btn-outline-dark pill" href="{% url 'events:list' %}">Events</a>
+      <a class="btn btn-outline-dark pill" href="{% url 'payments:staff_list' %}?status=pending">Payments</a>
     </div>
   </div>
+
+  {% if messages %}
+    <div class="mb-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="cardx p-3">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Student</th>
+            <th>Email</th>
+            <th>Registered</th>
+            <th>Payment</th>
+            <th>Proof</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          {% for r in registrations %}
+            {% with proof=proof_map|get_item:r.id %}
+              <tr>
+                <td class="fw-semibold">{{ r.user.username }}</td>
+                <td>{{ r.user.email|default:"—" }}</td>
+                <td>{{ r.registered_at|date:"M d, Y H:i" }}</td>
+
+                <td>
+                  {% if event.is_paid %}
+                    {% if proof %}
+                      {% if proof.status == "pending" %}
+                        <span class="tag tPending">Pending</span>
+                      {% elif proof.status == "approved" %}
+                        <span class="tag tApproved">Approved</span>
+                      {% else %}
+                        <span class="tag tRejected">Rejected</span>
+                      {% endif %}
+                    {% else %}
+                      <span class="text-muted">No proof</span>
+                    {% endif %}
+                  {% else %}
+                    <span class="text-muted">Free event</span>
+                  {% endif %}
+                </td>
+
+                <td style="min-width:180px;">
+                  {% if event.is_paid and proof and proof.proof_image %}
+                    <a href="{{ proof.proof_image.url }}" target="_blank" class="text-decoration-none">
+                      <img src="{{ proof.proof_image.url }}"
+                           style="height:56px;width:100px;object-fit:cover;border-radius:10px;border:1px solid rgba(15,23,42,.12);">
+                    </a>
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+
+                <td class="text-end">
+                  {% if event.is_paid and proof %}
+                    <form method="post" action="{% url 'payments:staff_action' proof.id %}" class="d-inline">
+                      {% csrf_token %}
+                      <button class="btn btn-success pill btn-sm" name="action" value="approve">Approve</button>
+                    </form>
+
+                    <form method="post" action="{% url 'payments:staff_action' proof.id %}" class="d-inline">
+                      {% csrf_token %}
+                      <button class="btn btn-outline-danger pill btn-sm" name="action" value="reject">Reject</button>
+                    </form>
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endwith %}
+          {% empty %}
+            <tr><td colspan="6" class="text-muted">No registrations yet.</td></tr>
+          {% endfor %}
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
 </body>
 </html>

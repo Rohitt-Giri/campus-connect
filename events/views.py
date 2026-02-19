@@ -1,11 +1,21 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 
 from accounts.models import User
+from payments.models import PaymentProof
 from .models import Event, EventRegistration
 from .forms import EventForm, EventRegistrationForm
+
+
+def _staff_or_admin(user):
+    if not user.is_authenticated:
+        return False
+    if getattr(user, "is_superuser", False) or getattr(user, "is_staff", False):
+        return True
+    return getattr(user, "role", None) in [User.Role.STAFF, User.Role.ADMIN]
 
 
 @login_required
@@ -16,8 +26,8 @@ def events_list_view(request):
 
 @login_required
 def event_create_view(request):
-    # ✅ Staff/Admin only (safe + clear)
-    if not (request.user.is_superuser or request.user.role in [User.Role.STAFF, User.Role.ADMIN]):
+    # ✅ Staff/Admin only
+    if not _staff_or_admin(request.user):
         messages.error(request, "Only staff/admin can create events.")
         return redirect("events:list")
 
@@ -27,7 +37,7 @@ def event_create_view(request):
             event = form.save(commit=False)
             event.created_by = request.user
             event.save()
-            messages.success(request, "Event created successfully.")
+            messages.success(request, "Event created successfully ✅")
             return redirect("events:detail", pk=event.pk)
         messages.error(request, "Please fix the errors below.")
     else:
@@ -38,7 +48,6 @@ def event_create_view(request):
 
 @login_required
 def event_detail_view(request, pk):
-
     event = get_object_or_404(Event, pk=pk)
 
     registration = EventRegistration.objects.filter(
@@ -57,6 +66,7 @@ def event_detail_view(request, pk):
         "registration": registration,
         "is_registered": is_registered,
         "payment_proof": payment_proof,
+        # If you no longer use this, you can remove it from template too
         "PAYMENT_QR_URL": getattr(settings, "PAYMENT_QR_URL", ""),
     })
 
@@ -93,20 +103,31 @@ def event_register_view(request, pk):
 
 @login_required
 def event_registrations_view(request, pk):
+    # ✅ Staff/Admin only
+    if not _staff_or_admin(request.user):
+        return HttpResponseForbidden("Not allowed")
+
     event = get_object_or_404(Event, pk=pk)
 
-    # ✅ Staff/Admin only
-    if not (request.user.is_superuser or request.user.role in [User.Role.STAFF, User.Role.ADMIN]):
-        messages.error(request, "Not authorized.")
-        return redirect("events:detail", pk=event.id)
-
     registrations = (
-        EventRegistration.objects.filter(event=event)
-        .select_related("user")
+        EventRegistration.objects
+        .select_related("user", "event")
+        .filter(event=event)
         .order_by("-registered_at")
     )
 
+    # Proof map: registration_id -> proof
+    proof_map = {}
+    if event.is_paid:
+        proofs = (
+            PaymentProof.objects
+            .select_related("verified_by", "registration", "registration__user", "registration__event")
+            .filter(registration__in=registrations)
+        )
+        proof_map = {p.registration_id: p for p in proofs}
+
     return render(request, "events/event_registrations.html", {
         "event": event,
-        "registrations": registrations
+        "registrations": registrations,
+        "proof_map": proof_map,
     })
