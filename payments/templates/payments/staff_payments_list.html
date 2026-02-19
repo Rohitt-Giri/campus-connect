@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Payments Review | Campus Connect</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    :root{
+      --g:#16a34a;
+      --g2:#22c55e;
+      --bd:rgba(15,23,42,.10);
+      --muted:#64748b;
+    }
+    body{
+      background:
+        radial-gradient(900px 450px at 15% 10%, rgba(34,197,94,0.12), transparent 55%),
+        linear-gradient(120deg,#fff 0%,#f7fbf8 65%,#fff 100%);
+      font-family:system-ui;
+    }
+    .wrap{max-width:1180px;margin:0 auto;padding:26px 16px 40px;}
+    .cardx{
+      border-radius:18px;
+      border:1px solid var(--bd);
+      background:rgba(255,255,255,.96);
+      box-shadow:0 14px 30px rgba(15,23,42,.06);
+    }
+    .pill{border-radius:999px;}
+    .brand{display:flex;gap:.7rem;align-items:center;text-decoration:none;color:#0f172a;font-weight:950;}
+    .badgeCC{
+      width:44px;height:44px;border-radius:14px;
+      background:linear-gradient(135deg,var(--g),var(--g2));
+      display:flex;align-items:center;justify-content:center;
+      font-weight:950;color:#06120a;
+    }
+    .row-title{font-weight:900;letter-spacing:-.02em;}
+    .muted{color:var(--muted);font-weight:650;}
+    .tag{
+      display:inline-flex; align-items:center; gap:.4rem;
+      border-radius:999px; padding:.35rem .7rem;
+      font-weight:800; font-size:.85rem;
+      border:1px solid rgba(15,23,42,.10);
+      white-space:nowrap;
+    }
+    .tag.pending{background:#fff7ed;border-color:#fed7aa;color:#9a3412;}
+    .tag.approved{background:#ecfdf5;border-color:#bbf7d0;color:#166534;}
+    .tag.rejected{background:#fef2f2;border-color:#fecaca;color:#991b1b;}
+
+    .table thead th{
+      color:#0f172a;
+      font-weight:900;
+      border-bottom:1px solid rgba(15,23,42,.10) !important;
+    }
+    .table td{
+      vertical-align:middle;
+      border-top:1px solid rgba(15,23,42,.08) !important;
+    }
+
+    .filter-link{
+      text-decoration:none;
+      font-weight:900;
+      padding:.45rem .9rem;
+      border-radius:999px;
+      border:1px solid rgba(15,23,42,.12);
+      color:#0f172a;
+      background:#fff;
+    }
+    .filter-link.active{
+      border-color:rgba(34,197,94,.35);
+      background:rgba(34,197,94,.10);
+      color:#166534;
+    }
+  </style>
+</head>
+
+<body>
+<div class="wrap">
+
+  <!-- Top bar -->
+  <div class="cardx p-3 mb-3 d-flex justify-content-between align-items-center">
+    <a class="brand" href="{% url 'core:landing' %}">
+      <div class="badgeCC">CC</div>
+      <div>
+        <div>Campus Connect</div>
+        <div class="small muted">Payments Review</div>
+      </div>
+    </a>
+
+    <div class="d-flex gap-2 align-items-center">
+      <div class="d-none d-md-block small fw-semibold">
+        Staff: <span class="muted">{{ request.user.username }}</span>
+      </div>
+      <a class="btn btn-outline-dark pill px-3" href="{% url 'staff:dashboard' %}">Back</a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="cardx p-4 mb-3">
+    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-start">
+      <div>
+        <h3 class="row-title mb-1">Payments Review</h3>
+        <div class="muted">Approve or reject student payment proofs for paid events.</div>
+      </div>
+
+      <!-- Search -->
+      <form class="d-flex gap-2" method="get">
+        <input type="hidden" name="status" value="{{ status|default:'pending' }}">
+        <input class="form-control pill" style="min-width:280px" name="q" value="{{ q|default:'' }}"
+               placeholder="Search event / student / email">
+        <button class="btn btn-success pill px-4" type="submit">Search</button>
+      </form>
+    </div>
+
+    <!-- Filters -->
+    <div class="d-flex gap-2 flex-wrap mt-3">
+      <a class="filter-link {% if status == 'pending' or not status %}active{% endif %}"
+         href="{% url 'payments:staff_list' %}?status=pending{% if q %}&q={{ q }}{% endif %}">
+        Pending
+      </a>
+      <a class="filter-link {% if status == 'approved' %}active{% endif %}"
+         href="{% url 'payments:staff_list' %}?status=approved{% if q %}&q={{ q }}{% endif %}">
+        Approved
+      </a>
+      <a class="filter-link {% if status == 'rejected' %}active{% endif %}"
+         href="{% url 'payments:staff_list' %}?status=rejected{% if q %}&q={{ q }}{% endif %}">
+        Rejected
+      </a>
+    </div>
+  </div>
+
+  {% if messages %}
+    <div class="mb-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Table -->
+  <div class="cardx p-4">
+    {% if proofs %}
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead>
+            <tr>
+              <th style="min-width:240px;">Event</th>
+              <th style="min-width:160px;">Student</th>
+              <th>Status</th>
+              <th style="min-width:160px;">Uploaded</th>
+              <th>Proof</th>
+              <th style="min-width:240px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in proofs %}
+              <tr>
+                <td class="fw-semibold">
+                  {{ p.registration.event.title }}
+                  <div class="small muted">
+                    {% if p.registration.event.is_paid %}
+                      Amount: <b>{{ p.registration.event.price }}</b>
+                    {% endif %}
+                  </div>
+                </td>
+
+                <td>
+                  <div class="fw-semibold">{{ p.registration.user.username }}</div>
+                  {% if p.registration.user.email %}
+                    <div class="small muted">{{ p.registration.user.email }}</div>
+                  {% endif %}
+                </td>
+
+                <td>
+                  <span class="tag {{ p.status }}">
+                    {{ p.get_status_display }}
+                  </span>
+                </td>
+
+                <td class="muted">
+                  {{ p.submitted_at|date:"M d, Y H:i" }}
+                </td>
+
+                <td>
+                  {% if p.proof_image %}
+                    <a class="btn btn-sm btn-outline-primary pill"
+                       href="{{ p.proof_image.url }}" target="_blank">
+                      View
+                    </a>
+                  {% else %}
+                    <span class="muted">No file</span>
+                  {% endif %}
+                </td>
+
+                <td>
+                  <div class="d-flex gap-2 flex-wrap">
+                    <a class="btn btn-sm btn-outline-dark pill"
+                       href="{% url 'payments:staff_review' p.id %}">
+                      Review
+                    </a>
+
+                    {% if p.status == "pending" %}
+                      <!-- Approve/Reject happen inside review page (recommended),
+                           but if you want one-click approve/reject, tell me and I'll add routes. -->
+                      <span class="muted small">Pending action</span>
+                    {% else %}
+                      <span class="muted small">Done</span>
+                    {% endif %}
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="muted">No payment proofs found.</div>
+    {% endif %}
+  </div>
+
+</div>
+</body>
+</html>

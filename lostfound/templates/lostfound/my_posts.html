@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Posts | Lost & Found</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    :root{--bd:rgba(15,23,42,.10);}
+    body{background: radial-gradient(circle at top left,#e9fff2 0%,#f4fff8 30%,#f7fbff 70%,#fff 100%); font-family:system-ui;}
+    .wrap{max-width:1100px;margin:0 auto;padding:28px 16px;}
+    .cardx{border-radius:18px;border:1px solid var(--bd);background:rgba(255,255,255,.92);box-shadow:0 14px 30px rgba(15,23,42,.06);}
+    .pill{border-radius:999px;}
+    .tag{border-radius:999px;padding:.32rem .65rem;font-weight:800;font-size:.85rem;border:1px solid rgba(15,23,42,.12);}
+    .tag-open{background:rgba(59,130,246,.10);color:#1d4ed8;border-color:rgba(59,130,246,.20);}
+    .tag-returned{background:rgba(100,116,139,.12);color:#334155;border-color:rgba(100,116,139,.22);}
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="cardx p-4 mb-3 d-flex justify-content-between align-items-center">
+    <div>
+      <h3 class="fw-bold mb-1">My Posts</h3>
+      <div class="text-muted">Items you posted in Lost & Found.</div>
+    </div>
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-dark pill" href="{% url 'lostfound:list' %}">All Items</a>
+      <a class="btn btn-success pill" href="{% url 'lostfound:create' %}">+ Post Item</a>
+    </div>
+  </div>
+
+  {% if messages %}
+    <div class="mb-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="row g-3">
+    {% for i in items %}
+      <div class="col-md-6 col-lg-4">
+        <div class="cardx p-3 h-100">
+          <div class="d-flex justify-content-between align-items-start gap-2">
+            <div class="fw-bold">
+              <a class="text-decoration-none" href="{% url 'lostfound:detail' i.pk %}">{{ i.title }}</a>
+            </div>
+            <span class="tag {% if i.status == 'open' %}tag-open{% else %}tag-returned{% endif %}">
+              {{ i.status|capfirst }}
+            </span>
+          </div>
+
+          <div class="text-muted small mt-1">
+            {{ i.item_type|capfirst }} •
+            {% if i.location %}{{ i.location }}{% else %}—{% endif %}
+            • {{ i.created_at|date:"M d, Y" }}
+          </div>
+
+          {% if i.image %}
+            <!-- Works if i.image is ImageField OR plain varchar path -->
+            <img
+              src="{% if i.image.url %}{{ i.image.url }}{% else %}{{ MEDIA_URL }}{{ i.image }}{% endif %}"
+              class="mt-2 w-100"
+              style="border-radius:14px; aspect-ratio:16/9; object-fit:cover;"
+              onerror="this.style.display='none';"
+            >
+          {% endif %}
+
+          <div class="d-flex justify-content-end mt-3">
+            <a class="btn btn-outline-dark pill btn-sm" href="{% url 'lostfound:detail' i.pk %}">View</a>
+          </div>
+        </div>
+      </div>
+    {% empty %}
+      <div class="col-12">
+        <div class="cardx p-4 text-muted">You haven’t posted any items yet.</div>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+</body>
+</html>

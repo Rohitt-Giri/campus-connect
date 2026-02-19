@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create Event | Campus Connect</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body{background: radial-gradient(circle at top left,#e9fff2 0%,#f4fff8 30%,#f7fbff 70%,#fff 100%); font-family:system-ui;}
+    .wrap{max-width:980px; margin:0 auto; padding:28px 16px;}
+    .cardx{border-radius:18px; border:1px solid rgba(15,23,42,.08); background:rgba(255,255,255,.92); box-shadow:0 14px 30px rgba(15,23,42,.06);}
+    .pill{border-radius:999px;}
+    .hint{color:#64748b;font-weight:650;font-size:.9rem;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="cardx p-4 mb-3">
+      <div class="d-flex justify-content-between align-items-start gap-3">
+        <div>
+          <h3 class="fw-bold mb-1">Create Event</h3>
+          <div class="text-muted">Publish events for students.</div>
+        </div>
+        <a class="btn btn-outline-dark pill px-4" href="{% url 'events:list' %}">Back</a>
+      </div>
+    </div>
+
+    {% if messages %}
+      <div class="mb-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if form.errors %}
+      <div class="alert alert-danger">
+        <div class="fw-bold mb-1">Please fix the errors below:</div>
+        <ul class="mb-0">
+          {% for field in form %}
+            {% for error in field.errors %}
+              <li><b>{{ field.label }}:</b> {{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <div class="cardx p-4">
+      <form method="post" novalidate>
+        {% csrf_token %}
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Title</label>
+            {{ form.title }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Location</label>
+            {{ form.location }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">Start Date/Time</label>
+            {{ form.start_datetime }}
+          </div>
+          <div class="col-md-6">
+            <label class="form-label fw-semibold">End Date/Time</label>
+            {{ form.end_datetime }}
+          </div>
+          <div class="col-md-12">
+            <label class="form-label fw-semibold">Description</label>
+            {{ form.description }}
+          </div>
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Status</label>
+            {{ form.status }}
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Paid Event?</label>
+            <div class="form-check form-switch mt-2">
+              {{ form.is_paid }}
+              <label class="form-check-label ms-2">Students must pay</label>
+            </div>
+            <div class="hint mt-1">Enable to require payment proof.</div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label fw-semibold">Price</label>
+            {{ form.price }}
+            <div class="hint mt-1">Auto-set to 0 if free.</div>
+          </div>
+        </div>
+
+        <div class="mt-4">
+          <button class="btn btn-success pill px-4" type="submit">Save Event</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const paid = document.getElementById("id_is_paid");
+      const price = document.getElementById("id_price");
+
+      function syncPrice() {
+        if (!paid || !price) return;
+        if (paid.checked) {
+          price.disabled = false;
+          if (parseFloat(price.value || "0") <= 0) price.value = "";
+          price.focus();
+        } else {
+          price.disabled = true;
+          price.value = "0.00";
+        }
+      }
+
+      syncPrice();
+      if (paid) paid.addEventListener("change", syncPrice);
+    });
+  </script>
+</body>
+</html>
