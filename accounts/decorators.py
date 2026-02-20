@@ -1,24 +1,32 @@
-from django.contrib.auth.decorators import user_passes_test
-from django.urls import reverse_lazy
+from functools import wraps
+from django.http import HttpResponseForbidden
+from django.shortcuts import redirect
+from django.contrib import messages
 
-def staff_required(view_func):
-    """
-    Allows only users with role=STAFF (your custom user field).
-    Adjust if your field name is different.
-    """
-    return user_passes_test(
-        lambda u: u.is_authenticated and getattr(u, "role", None) == "STAFF",
-        login_url="accounts:login"
-    )(view_func)
+from .models import User
+
 
 def admin_required(view_func):
-    """
-    Allow only:
-    - Django superuser (is_superuser)
-    OR
-    - users with role == ADMIN (custom user role)
-    """
-    return user_passes_test(
-        lambda u: u.is_authenticated and (u.is_superuser or getattr(u, "role", None) == "ADMIN"),
-        login_url=reverse_lazy("accounts:login")
-    )(view_func)
+    @wraps(view_func)
+    def _wrapped(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return redirect("accounts:login")
+
+        # Allow superuser always
+        if getattr(request.user, "is_superuser", False):
+            return view_func(request, *args, **kwargs)
+
+        # Must be approved + role admin
+        if getattr(request.user, "role", None) != User.Role.ADMIN:
+            return HttpResponseForbidden("Admin only")
+
+        if not getattr(request.user, "is_approved", False):
+            messages.error(request, "Your admin account is not approved.")
+            return redirect("accounts:login")
+
+        if not getattr(request.user, "is_active", True):
+            return HttpResponseForbidden("Account inactive")
+
+        return view_func(request, *args, **kwargs)
+
+    return _wrapped
