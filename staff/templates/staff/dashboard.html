@@ -21,7 +21,6 @@
       --green2:#22c55e;
       --green-soft:#eafff1;
 
-      --shadow: 0 18px 45px rgba(15,23,42,0.10);
       --shadow2: 0 10px 28px rgba(15,23,42,0.08);
       --radius: 18px;
     }
@@ -63,40 +62,13 @@
       box-shadow: 0 14px 30px rgba(34,197,94,0.22);
     }
 
-    .btn-pill{
-      border-radius: 999px;
-      padding: .55rem 1.1rem;
-      font-weight: 800;
-    }
-    .btn-ghost{
-      border: 1px solid rgba(15,23,42,0.18);
-      background: #fff;
-      color: var(--text);
-    }
+    .btn-pill{ border-radius: 999px; padding: .55rem 1.1rem; font-weight: 800; }
+    .btn-ghost{ border: 1px solid rgba(15,23,42,0.18); background: #fff; color: var(--text); }
     .btn-ghost:hover{ background: #f8fafc; }
 
-    .btn-primary-cc{
-      border: 0;
-      border-radius: 999px;
-      padding: .6rem 1.15rem;
-      font-weight: 900;
-      color: #06120a;
-      background: linear-gradient(135deg, var(--green), var(--green2));
-      box-shadow: 0 16px 34px rgba(34,197,94,0.22);
-    }
-    .btn-primary-cc:hover{ filter: brightness(1.02); }
-
-    /* Layout */
     .wrap{ padding: 2rem 0 3rem; }
-    .page-title{
-      font-weight: 950;
-      letter-spacing: -0.02em;
-      margin-bottom: .25rem;
-    }
-    .sub{
-      color: var(--muted);
-      font-weight: 600;
-    }
+    .page-title{ font-weight: 950; letter-spacing: -0.02em; margin-bottom: .25rem; }
+    .sub{ color: var(--muted); font-weight: 600; }
 
     /* Cards */
     .cc-card{
@@ -108,22 +80,9 @@
     .cc-card-pad{ padding: 1.25rem; }
 
     /* Stats */
-    .stat{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap: 1rem;
-    }
-    .stat-label{
-      color: var(--muted);
-      font-weight: 800;
-      font-size: .92rem;
-    }
-    .stat-value{
-      font-weight: 950;
-      font-size: 1.8rem;
-      letter-spacing: -0.02em;
-    }
+    .stat{ display:flex; justify-content:space-between; align-items:center; gap: 1rem; }
+    .stat-label{ color: var(--muted); font-weight: 800; font-size: .92rem; }
+    .stat-value{ font-weight: 950; font-size: 1.8rem; letter-spacing: -0.02em; }
     .stat-badge{
       border-radius: 999px;
       padding: .35rem .7rem;
@@ -135,7 +94,7 @@
       white-space: nowrap;
     }
 
-    /* Actions */
+    /* Action Tiles */
     .action{
       display:flex;
       align-items:flex-start;
@@ -150,10 +109,8 @@
       transition: transform .12s ease;
       height: 100%;
     }
-    .action:hover{
-      transform: translateY(-2px);
-      color: var(--text);
-    }
+    .action:hover{ transform: translateY(-2px); color: var(--text); }
+
     .icon{
       width: 46px;
       height: 46px;
@@ -167,19 +124,10 @@
       color: #0b3d1f;
       flex: 0 0 auto;
     }
-    .action h6{
-      font-weight: 900;
-      margin: 0 0 .25rem;
-    }
-    .action p{
-      margin: 0;
-      color: var(--muted);
-      font-weight: 600;
-      line-height: 1.5;
-      font-size: .95rem;
-    }
+    .action h6{ font-weight: 900; margin: 0 0 .25rem; }
+    .action p{ margin: 0; color: var(--muted); font-weight: 600; line-height: 1.5; font-size: .95rem; }
 
-    /* List */
+    /* Lists */
     .list-item{
       display:flex;
       justify-content:space-between;
@@ -189,11 +137,7 @@
     }
     .list-item:first-child{ border-top: 0; padding-top: 0; }
     .list-title{ font-weight: 900; margin: 0 0 .15rem; }
-    .list-meta{
-      color: var(--muted);
-      font-weight: 600;
-      font-size: .92rem;
-    }
+    .list-meta{ color: var(--muted); font-weight: 600; font-size: .92rem; }
     .pill{
       border-radius: 999px;
       padding: .32rem .65rem;
@@ -248,13 +192,9 @@
         </div>
 
         <div class="d-flex gap-2 flex-wrap">
-          <!-- These URLs MUST exist in your project or Django will error -->
-          <a href="{% url 'notices:list' %}" class="btn btn-outline-dark">View Notices</a>
-          <a href="{% url 'notices:create' %}" class="btn btn-success">+ Create Notice</a>
-
-          <!-- Event module later -->
-          <a class="btn btn-success pill px-3" href="{% url 'events:create' %}">+ Create Event</a>
-
+          <a href="{% url 'notices:list' %}" class="btn btn-outline-dark btn-pill">View Notices</a>
+          <a href="{% url 'notices:create' %}" class="btn btn-success btn-pill">+ Create Notice</a>
+          <a href="{% url 'events:create' %}" class="btn btn-success btn-pill">+ Create Event</a>
         </div>
       </div>
 
@@ -267,7 +207,7 @@
                 <div class="stat-label">Active Events</div>
                 <div class="stat-value">{{ active_events|default:0 }}</div>
               </div>
-              <span class="stat-badge">Demo</span>
+              <span class="stat-badge">Live</span>
             </div>
           </div>
         </div>
@@ -288,34 +228,26 @@
           <div class="cc-card cc-card-pad">
             <div class="stat">
               <div>
-               <a href="{% url 'lostfound:staff_items' %}" class="btn btn-outline-dark">Lost & Found Items</a>
-                <a href="{% url 'lostfound:staff_claims' %}" class="btn btn-outline-dark">Claim Requests</a>
-
                 <div class="stat-label">Pending Claims</div>
                 <div class="stat-value">{{ pending_claims|default:0 }}</div>
               </div>
-              <span class="stat-badge">Demo</span>
+              <span class="stat-badge">Live</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Quick Actions -->
+      <!-- Quick Actions (clean + consistent) -->
       <div class="row g-3 mb-4">
-        <a href="{% url 'events:list' %}" class="text-decoration-none">
-          <div class="module-card hover-shadow">
-            <div class="d-flex align-items-center gap-3">
-              <div class="module-icon">EV</div>
-              <div>
-                <h5 class="fw-bold mb-1">Manage Events</h5>
-                <p class="text-muted mb-0">
-                  Create, update, and review event registrations.
-                </p>
-              </div>
+        <div class="col-md-6 col-lg-3">
+          <a class="action" href="{% url 'events:list' %}">
+            <div class="icon">EV</div>
+            <div>
+              <h6>Manage Events</h6>
+              <p>Create, update, and review registrations.</p>
             </div>
-          </div>
-        </a>
-
+          </a>
+        </div>
 
         <div class="col-md-6 col-lg-3">
           <a class="action" href="{% url 'notices:create' %}">
@@ -328,58 +260,76 @@
         </div>
 
         <div class="col-md-6 col-lg-3">
-          <a class="action" href="#" onclick="alert('Lost & Found module is coming next ✅'); return false;">
+          <a class="action" href="{% url 'lostfound:staff_items' %}">
             <div class="icon">LF</div>
             <div>
               <h6>Lost &amp; Found</h6>
-              <p>Manage found items and verify claim requests.</p>
+              <p>Moderate items and handle claims.</p>
             </div>
           </a>
         </div>
 
-        <div class="cardx p-3">
-  <div class="d-flex justify-content-between align-items-center mb-2">
-    <div class="fw-bold">Payments Pending</div>
-    <a class="text-decoration-none" href="{% url 'payments:staff_list' %}?status=pending">View all</a>
-  </div>
-
-  <div class="display-6 fw-bold">{{ payments_pending_count }}</div>
-  <div class="text-muted small">Proofs waiting for verification</div>
-
-  {% if pending_proofs %}
-    <div class="mt-3">
-      {% for p in pending_proofs %}
-        <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2">
-          <div>
-            <div class="fw-semibold">{{ p.registration.event.title }}</div>
-            <div class="text-muted small">by {{ p.registration.user.username }}</div>
-          </div>
-          <a class="btn btn-outline-dark btn-sm pill" href="{% url 'payments:staff_review' p.id %}">Review</a>
-        </div>
-      {% endfor %}
-    </div>
-  {% endif %}
-</div>
-
         <div class="col-md-6 col-lg-3">
-          <a class="action" href="#" onclick="alert('Reports module is later ✅'); return false;">
-            <div class="icon">RP</div>
+          <a class="action" href="{% url 'payments:staff_list' %}?status=pending">
+            <div class="icon">PY</div>
             <div>
-              <h6>Reports (Later)</h6>
-              <p>Generate summaries of events and payments.</p>
+              <h6>Payments</h6>
+              <p>Review payment proofs and verify them.</p>
             </div>
           </a>
         </div>
       </div>
 
+      <!-- Pending Payments Card (visual box) -->
+      <div class="row g-3 mb-4">
+        <div class="col-lg-12">
+          <div class="cc-card cc-card-pad">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <div class="fw-bold" style="font-weight:950;">Payments Pending</div>
+              <a class="text-decoration-none" style="font-weight:800; color: var(--green);"
+                 href="{% url 'payments:staff_list' %}?status=pending">View all</a>
+            </div>
+
+            <div class="d-flex align-items-end gap-3 flex-wrap">
+              <div style="font-weight:950; font-size:2.1rem; line-height:1;">
+                {{ payments_pending_count|default:0 }}
+              </div>
+              <div class="text-muted small" style="font-weight:700;">
+                Proofs waiting for verification
+              </div>
+            </div>
+
+            {% if pending_proofs %}
+              <div class="mt-3">
+                {% for p in pending_proofs %}
+                  <div class="list-item">
+                    <div>
+                      <div class="list-title">{{ p.registration.event.title }}</div>
+                      <div class="list-meta">by {{ p.registration.user.username }}</div>
+                    </div>
+                    <a class="btn btn-outline-dark btn-pill btn-sm"
+                       href="{% url 'payments:staff_review' p.id %}">Review</a>
+                  </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <div class="mt-3 text-muted small" style="font-weight:700;">
+                No pending payment proofs right now ✅
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
       <!-- Two panels -->
       <div class="row g-3">
-        <!-- Recent Notices (real DB-friendly section) -->
+        <!-- Recent Notices -->
         <div class="col-lg-7">
           <div class="cc-card cc-card-pad">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <div class="fw-bold" style="font-weight:950; letter-spacing:-0.01em;">Recent Notices</div>
-              <a href="{% url 'notices:list' %}" class="small" style="font-weight:800; color: var(--green); text-decoration:none;">View all</a>
+              <div class="fw-bold" style="font-weight:950;">Recent Notices</div>
+              <a href="{% url 'notices:list' %}" class="small"
+                 style="font-weight:800; color: var(--green); text-decoration:none;">View all</a>
             </div>
 
             {% if recent_notices %}
@@ -402,38 +352,22 @@
           </div>
         </div>
 
-        <!-- Pending Claims (demo) -->
+        <!-- Quick Lost & Found shortcuts -->
         <div class="col-lg-5">
           <div class="cc-card cc-card-pad">
             <div class="d-flex justify-content-between align-items-center mb-2">
-              <div class="fw-bold" style="font-weight:950; letter-spacing:-0.01em;">Pending Lost &amp; Found Claims</div>
-              <a href="#" class="small" style="font-weight:800; color: var(--green); text-decoration:none;"
-                 onclick="alert('Lost & Found module is coming next ✅'); return false;">Review</a>
+              <div class="fw-bold" style="font-weight:950;">Lost &amp; Found</div>
+              <a href="{% url 'lostfound:staff_claims' %}" class="small"
+                 style="font-weight:800; color: var(--green); text-decoration:none;">Review Claims</a>
             </div>
 
-            <div class="list-item">
-              <div>
-                <div class="list-title">Wallet (Black)</div>
-                <div class="list-meta">Claimed by Student A • Today</div>
-              </div>
-              <span class="pill">Open</span>
-            </div>
-
-            <div class="list-item">
-              <div>
-                <div class="list-title">ID Card</div>
-                <div class="list-meta">Claimed by Student B • Yesterday</div>
-              </div>
-              <span class="pill">Open</span>
-            </div>
-
-            <div class="mt-3 d-flex gap-2 flex-wrap">
-              <a class="btn btn-pill btn-ghost" href="#" onclick="return false;">Reject</a>
-              <a class="btn btn-primary-cc" href="#" onclick="return false;">Approve</a>
+            <div class="mt-2 d-flex gap-2 flex-wrap">
+              <a class="btn btn-outline-dark btn-pill btn-sm" href="{% url 'lostfound:staff_items' %}">View Items</a>
+              <a class="btn btn-outline-dark btn-pill btn-sm" href="{% url 'lostfound:staff_claims' %}?status=pending">Pending Claims</a>
             </div>
 
             <div class="mt-3 small" style="color:var(--muted); font-weight:700;">
-              In real implementation: staff/admin verifies proof then approves/rejects claim.
+              Approve/reject claims and mark items returned.
             </div>
           </div>
         </div>
@@ -444,5 +378,10 @@
       </footer>
     </div>
   </main>
+
+  <!-- Auto refresh (counts + cards) -->
+  <script>
+    setInterval(() => window.location.reload(), 30000);
+  </script>
 </body>
 </html>

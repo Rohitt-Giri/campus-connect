@@ -16,6 +16,8 @@ def _staff_or_admin(user):
     if getattr(user, "is_superuser", False) or getattr(user, "is_staff", False):
         return True
     return getattr(user, "role", None) in [User.Role.STAFF, User.Role.ADMIN]
+    
+
 
 
 @login_required
