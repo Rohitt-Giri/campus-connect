@@ -31,6 +31,7 @@
         <table class="table align-middle mb-0">
           <thead>
             <tr>
+              <th>Image</th>
               <th>Type</th>
               <th>Title</th>
               <th>Status</th>
@@ -42,6 +43,19 @@
           <tbody>
             {% for i in items %}
               <tr>
+                <td style="width:140px;">
+                  {% if i.image %}
+                    <a href="{{ i.image.url }}" target="_blank" class="text-decoration-none">
+                      <img
+                        src="{{ i.image.url }}"
+                        alt="item image"
+                        style="height:56px;width:110px;object-fit:cover;border-radius:12px;border:1px solid rgba(15,23,42,.12);"
+                      >
+                    </a>
+                  {% else %}
+                    <span class="text-muted">—</span>
+                  {% endif %}
+                </td>
                 <td class="fw-semibold">{{ i.get_item_type_display }}</td>
                 <td><a class="text-decoration-none" href="{% url 'lostfound:detail' i.pk %}">{{ i.title }}</a></td>
                 <td>{{ i.get_status_display }}</td>

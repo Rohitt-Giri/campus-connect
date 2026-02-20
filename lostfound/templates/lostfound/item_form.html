@@ -11,6 +11,10 @@
     .wrap{max-width:980px; margin:0 auto; padding:28px 16px;}
     .cardx{border-radius:18px; border:1px solid var(--bd); background:rgba(255,255,255,.92); box-shadow:0 14px 30px rgba(15,23,42,.06);}
     .pill{border-radius:999px;}
+
+    input[type="file"]{
+    cursor:pointer;
+}
   </style>
 </head>
 <body>
@@ -49,7 +53,8 @@
           </div>
           <div class="col-12">
             <label class="form-label fw-semibold">Image (optional)</label>
-            {{ form.image }}
+            <input type="file" name="image" id="id_image" class="form-control">
+
           </div>
         </div>
         <button class="btn btn-success pill mt-3">Post</button>
@@ -58,10 +63,17 @@
   </div>
 
   <script>
-    document.querySelectorAll("select, input, textarea").forEach(el => {
-      if (el.tagName === "SELECT") el.classList.add("form-select");
-      else el.classList.add("form-control");
-    });
-  </script>
+  document.querySelectorAll("select, input, textarea").forEach(el => {
+    if (el.type === "file") {
+      el.classList.add("form-control");  // bootstrap supports this
+      return;
+    }
+    if (el.tagName === "SELECT") {
+      el.classList.add("form-select");
+    } else {
+      el.classList.add("form-control");
+    }
+  });
+</script>
 </body>
 </html>

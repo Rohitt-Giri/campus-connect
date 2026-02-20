@@ -35,6 +35,26 @@ class LostFoundItem(models.Model):
 
     def __str__(self):
         return f"{self.item_type} - {self.title}"
+    
+    image = models.ImageField(
+        upload_to="lostfound/items/",
+        blank=True,
+        null=True,
+        db_column="image",
+        max_length=255,
+    )
+
+    @property
+    def image_url(self):
+        if not self.image:
+            return ""
+        try:
+            return self.image.url
+        except Exception:
+            path = str(self.image).lstrip("/")
+            return f"{settings.MEDIA_URL}{path}"
+
+    
 
 
 class ClaimRequest(models.Model):
