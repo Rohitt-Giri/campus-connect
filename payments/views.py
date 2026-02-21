@@ -3,7 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.http import HttpResponseForbidden
 
+from audit.utils import log_action
 from accounts.models import User
 from events.models import EventRegistration
 from .models import PaymentProof
@@ -28,15 +30,12 @@ def _ensure_db_required_defaults(proof: PaymentProof, event_price=None):
     if not getattr(proof, "currency", None):
         proof.currency = "NPR"
 
-    # staff_note is NOT NULL in your DB, so keep empty string not NULL
     if getattr(proof, "staff_note", None) is None:
         proof.staff_note = ""
 
-    # txn_id is NOT NULL in your DB
     if not getattr(proof, "txn_id", None):
         proof.txn_id = "manual"
 
-    # submitted_at + updated_at are NOT NULL in your DB
     if getattr(proof, "submitted_at", None) is None:
         proof.submitted_at = timezone.now()
 
@@ -45,7 +44,6 @@ def _ensure_db_required_defaults(proof: PaymentProof, event_price=None):
 
 @login_required
 def payment_submit_view(request, registration_id):
-
     reg = get_object_or_404(
         EventRegistration.objects.select_related("event", "user"),
         id=registration_id,
@@ -61,7 +59,6 @@ def payment_submit_view(request, registration_id):
     proof = getattr(reg, "payment_proof", None)
 
     if request.method == "POST":
-
         img = request.FILES.get("proof_image")
 
         if not img:
@@ -73,11 +70,10 @@ def payment_submit_view(request, registration_id):
             })
 
         if proof:
-            if img:
-                proof.proof_image = img
-                proof.status = "pending"
-                proof.updated_at = timezone.now()
-                proof.save()
+            proof.proof_image = img
+            proof.status = "pending"
+            proof.updated_at = timezone.now()
+            proof.save()
 
         else:
             PaymentProof.objects.create(
@@ -124,6 +120,7 @@ def staff_payments_list_view(request):
         "status": status,
     })
 
+
 @login_required
 def staff_payment_review_view(request, proof_id):
     if not _staff_or_admin(request.user):
@@ -147,7 +144,6 @@ def staff_payment_review_view(request, proof_id):
             messages.error(request, "Invalid action.")
             return redirect("payments:staff_review", proof_id=proof.id)
 
-        # staff_note is NOT NULL in DB
         proof.staff_note = note
 
         proof.reviewed_by = request.user
@@ -156,10 +152,27 @@ def staff_payment_review_view(request, proof_id):
         _ensure_db_required_defaults(proof, event_price=getattr(proof.registration.event, "price", 0))
         proof.save()
 
+        # ✅ AUDIT LOG (covers this flow too)
+        log_action(
+            request=request,
+            actor=request.user,
+            action="PAYMENT_APPROVE" if proof.status == "approved" else "PAYMENT_REJECT",
+            message=f"{'Approved' if proof.status == 'approved' else 'Rejected'} payment proof #{proof.id}",
+            target=proof,
+            metadata={
+                "event": proof.registration.event.title,
+                "student": proof.registration.user.username,
+                "amount": str(getattr(proof, "amount", "")),
+                "note": note,
+                "flow": "staff_payment_review_view",
+            }
+        )
+
         messages.success(request, f"Payment {proof.get_status_display()} ✅")
         return redirect("payments:staff_list")
 
     return render(request, "payments/staff_payment_review.html", {"proof": proof})
+
 
 @login_required
 def staff_payment_action_view(request, proof_id):
@@ -184,6 +197,23 @@ def staff_payment_action_view(request, proof_id):
         proof.staff_note = note
         proof.updated_at = timezone.now()
         proof.save(update_fields=["status", "verified_by", "verified_at", "staff_note", "updated_at"])
+
+        # ✅ AUDIT LOG
+        log_action(
+            request=request,
+            actor=request.user,
+            action="PAYMENT_APPROVE",
+            message=f"Approved payment proof #{proof.id}",
+            target=proof,
+            metadata={
+                "event": proof.registration.event.title,
+                "student": proof.registration.user.username,
+                "amount": str(getattr(proof, "amount", "")),
+                "note": note,
+                "flow": "staff_payment_action_view",
+            }
+        )
+
         messages.success(request, "Payment approved ✅")
 
     elif action == "reject":
@@ -193,10 +223,26 @@ def staff_payment_action_view(request, proof_id):
         proof.staff_note = note
         proof.updated_at = timezone.now()
         proof.save(update_fields=["status", "verified_by", "verified_at", "staff_note", "updated_at"])
+
+        # ✅ AUDIT LOG
+        log_action(
+            request=request,
+            actor=request.user,
+            action="PAYMENT_REJECT",
+            message=f"Rejected payment proof #{proof.id}",
+            target=proof,
+            metadata={
+                "event": proof.registration.event.title,
+                "student": proof.registration.user.username,
+                "amount": str(getattr(proof, "amount", "")),
+                "note": note,
+                "flow": "staff_payment_action_view",
+            }
+        )
+
         messages.success(request, "Payment rejected ❌")
 
     else:
         messages.error(request, "Invalid action.")
 
-    # go back to where staff came from
     return redirect(request.META.get("HTTP_REFERER", "/payments/staff/?status=pending"))

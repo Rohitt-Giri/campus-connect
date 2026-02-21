@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'events',
     'payments',
     'lostfound',
+    'audit',
     
 ]
 
