@@ -20,4 +20,11 @@ urlpatterns = [
     # Admin user management
     path("admin/users/", admin_views.admin_users_view, name="admin_users"),
     path("admin/toggle-active/<int:user_id>/", admin_views.toggle_active_view, name="admin_toggle_active"),
+
+    # ✅ resend approval email (FIXED)
+    path(
+        "admin/users/<int:user_id>/resend-approval-email/",
+        admin_views.resend_approval_email_view,
+        name="admin_resend_approval_email"
+    ),
 ]

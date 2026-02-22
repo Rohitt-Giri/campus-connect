@@ -168,3 +168,23 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 PAYMENT_RECEIVER_NAME = "Rohit Giri"
 PAYMENT_NOTE = "Pay and upload screenshot proof."
+
+# ============================
+# EMAIL (SMTP) CONFIG
+# ============================
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+EMAIL_HOST_USER = "giri.rohit74755@gmail.com"
+EMAIL_HOST_PASSWORD = "hkxzvuozumpodqum"
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# Optional (recommended)
+SITE_URL = "http://127.0.0.1:8000"
+SITE_NAME = "Campus Connect"
+DEFAULT_FROM_EMAIL = "Campus Connect <giri.rohit74755@gmail.com>"
+SUPPORT_EMAIL = "support@campusconnect.com"  # optional (can be your gmail while testing)
