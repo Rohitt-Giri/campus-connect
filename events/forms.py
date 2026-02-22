@@ -4,28 +4,29 @@ from .models import Event, EventRegistration
 
 
 class EventForm(forms.ModelForm):
+    price = forms.DecimalField(required=False, min_value=0, decimal_places=2)
+
     class Meta:
         model = Event
         fields = [
             "title",
-            "description",
             "location",
             "start_datetime",
             "end_datetime",
+            "description",
             "status",
             "is_paid",
             "price",
         ]
         widgets = {
-            "start_datetime": forms.DateTimeInput(attrs={"type": "datetime-local", "class": "form-control"}),
-            "end_datetime": forms.DateTimeInput(attrs={"type": "datetime-local", "class": "form-control"}),
-            "title": forms.TextInput(attrs={"class": "form-control", "placeholder": "e.g., Tech Talk 2026"}),
-            "location": forms.TextInput(attrs={"class": "form-control", "placeholder": "e.g., Hall A"}),
-            "description": forms.Textarea(attrs={"class": "form-control", "rows": 5, "placeholder": "Describe the event..."}),
+            "title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Event title"}),
+            "location": forms.TextInput(attrs={"class": "form-control", "placeholder": "Location"}),
+            "start_datetime": forms.DateTimeInput(attrs={"class": "form-control", "type": "datetime-local"}),
+            "end_datetime": forms.DateTimeInput(attrs={"class": "form-control", "type": "datetime-local"}),
+            "description": forms.Textarea(attrs={"class": "form-control", "rows": 6, "placeholder": "Describe the event..."}),
             "status": forms.Select(attrs={"class": "form-select"}),
-
-            "is_paid": forms.CheckboxInput(attrs={"class": "form-check-input", "role": "switch"}),
-            "price": forms.NumberInput(attrs={"class": "form-control", "min": "0", "step": "0.01"}),
+            "is_paid": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+            "price": forms.NumberInput(attrs={"class": "form-control", "step": "0.01", "placeholder": "0.00"}),
         }
 
     def clean(self):
@@ -33,14 +34,12 @@ class EventForm(forms.ModelForm):
         is_paid = cleaned.get("is_paid")
         price = cleaned.get("price")
 
-        if price is None:
-            price = Decimal("0.00")
-            cleaned["price"] = price
-
-        if is_paid and price <= 0:
-            self.add_error("price", "Price must be greater than 0 for paid events.")
         if not is_paid:
-            cleaned["price"] = Decimal("0.00")
+            cleaned["price"] = 0
+            return cleaned
+
+        if price is None or price <= 0:
+            self.add_error("price", "Price is required for a paid event and must be greater than 0.")
 
         return cleaned
 

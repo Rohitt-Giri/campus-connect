@@ -16,6 +16,7 @@ class Event(models.Model):
     # keep these now (for later payments)
     is_paid = models.BooleanField(default=False)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    
 
     class Meta:
         ordering = ["start_datetime"]
@@ -41,5 +42,6 @@ class EventRegistration(models.Model):
     def __str__(self):
         return f"{self.user} -> {self.event}"
     
-payment_qr = models.ImageField(upload_to="events/payment_qr/", null=True, blank=True)
 
+
+payment_qr = models.ImageField(upload_to="events/payment_qr/", null=True, blank=True)

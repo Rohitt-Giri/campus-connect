@@ -64,11 +64,11 @@ class ClaimRequest(models.Model):
         ("rejected", "Rejected"),
     )
 
-    # matches your DB columns
-    full_name = models.CharField(max_length=255)
-    phone = models.CharField(max_length=50)
-    email = models.CharField(max_length=255)
-    proof_message = models.TextField()  # your DB uses proof_message, not message
+    # DB-safe (won’t block migrations)
+    full_name = models.CharField(max_length=255, blank=True, default="")
+    phone = models.CharField(max_length=50, blank=True, default="")
+    email = models.CharField(max_length=255, blank=True, default="")
+    proof_message = models.TextField(blank=True, default="")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
 
     reviewed_at = models.DateTimeField(null=True, blank=True)
@@ -81,7 +81,7 @@ class ClaimRequest(models.Model):
         related_name="lostfound_claims_reviewed",
     )
 
-    created_at = models.DateTimeField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     student = models.ForeignKey(
         settings.AUTH_USER_MODEL,

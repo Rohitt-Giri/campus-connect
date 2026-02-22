@@ -102,25 +102,24 @@
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      const paid = document.getElementById("id_is_paid");
-      const price = document.getElementById("id_price");
+  document.addEventListener("DOMContentLoaded", function () {
+    const paidToggle = document.getElementById("id_is_paid");
+    const priceInput = document.getElementById("id_price");
 
-      function syncPrice() {
-        if (!paid || !price) return;
-        if (paid.checked) {
-          price.disabled = false;
-          if (parseFloat(price.value || "0") <= 0) price.value = "";
-          price.focus();
-        } else {
-          price.disabled = true;
-          price.value = "0.00";
-        }
+    function syncPaidUI() {
+      if (!paidToggle || !priceInput) return;
+
+      if (paidToggle.checked) {
+        priceInput.removeAttribute("disabled");
+      } else {
+        priceInput.value = "0";
+        priceInput.setAttribute("disabled", "disabled");
       }
+    }
 
-      syncPrice();
-      if (paid) paid.addEventListener("change", syncPrice);
-    });
-  </script>
+    syncPaidUI();
+    paidToggle?.addEventListener("change", syncPaidUI);
+  });
+</script>
 </body>
 </html>

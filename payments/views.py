@@ -104,20 +104,42 @@ def staff_payments_list_view(request):
     if not _staff_or_admin(request.user):
         return HttpResponseForbidden("Not allowed")
 
-    status = (request.GET.get("status") or "pending").strip().lower()
+    # support both ?status= and ?tab=
+    status = (request.GET.get("status") or request.GET.get("tab") or "pending").strip()
+    status = status.lower()
+
     if status not in {"pending", "approved", "rejected"}:
         status = "pending"
+
+    q = (request.GET.get("q") or "").strip()
 
     payments = (
         PaymentProof.objects
         .select_related("registration", "registration__event", "registration__user", "verified_by")
-        .filter(status=status)
+        .filter(status__iexact=status)
         .order_by("-submitted_at")
     )
 
+    # ✅ search works with your UI box
+    if q:
+        payments = payments.filter(
+            Q(registration__event__title__icontains=q) |
+            Q(registration__user__username__icontains=q) |
+            Q(registration__user__email__icontains=q)
+        )
+
+    # optional: show counts for tabs
+    counts = {
+        "pending": PaymentProof.objects.filter(status__iexact="pending").count(),
+        "approved": PaymentProof.objects.filter(status__iexact="approved").count(),
+        "rejected": PaymentProof.objects.filter(status__iexact="rejected").count(),
+    }
+
     return render(request, "payments/staff_payments_list.html", {
-        "payments": payments,
+        "proofs": payments,   # ✅ ADD THIS
         "status": status,
+        "q": q,
+        "counts": counts,
     })
 
 
