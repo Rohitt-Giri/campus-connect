@@ -3,6 +3,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
+from events.email_utils import send_event_registration_email
+from audit.utils import log_action
+
 
 from accounts.models import User
 from payments.models import PaymentProof
@@ -77,7 +80,7 @@ def event_detail_view(request, pk):
 def event_register_view(request, pk):
     event = get_object_or_404(Event, pk=pk, status="published")
 
-    # ✅ Only students can register
+    # ✅ Only students can register (admin superuser allowed)
     if not (request.user.is_superuser or request.user.role == User.Role.STUDENT):
         messages.error(request, "Only students can register for events.")
         return redirect("events:detail", pk=event.id)
@@ -94,8 +97,34 @@ def event_register_view(request, pk):
             reg.event = event
             reg.user = request.user
             reg.save()
-            messages.success(request, "Registration successful ✅")
+
+            # ✅ Send email (FREE vs PAID)
+            email_sent = send_event_registration_email(reg)
+
+            # ✅ Audit log
+            log_action(
+                request=request,
+                actor=request.user,
+                action="EVENT_REGISTER",
+                message=f"Registered for event: {event.title}"
+                        + (" (email sent)" if email_sent else " (no email)"),
+                target=reg,
+                metadata={
+                    "event_id": event.id,
+                    "is_paid": bool(getattr(event, "is_paid", False)),
+                    "price": str(getattr(event, "price", 0)),
+                    "email_sent": email_sent,
+                    "email": getattr(request.user, "email", "") or "",
+                }
+            )
+
+            if email_sent:
+                messages.success(request, "Registration successful ✅ (Email sent)")
+            else:
+                messages.success(request, "Registration successful ✅ (No email on your account)")
+
             return redirect("events:detail", pk=event.id)
+
         messages.error(request, "Please fix the errors below.")
     else:
         form = EventRegistrationForm(initial={"email": getattr(request.user, "email", "") or ""})

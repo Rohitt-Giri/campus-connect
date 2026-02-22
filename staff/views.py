@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.db.models import Q
 
+
 from notices.models import Notice
 from accounts.models import User
 

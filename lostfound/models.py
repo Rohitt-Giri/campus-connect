@@ -13,13 +13,24 @@ class LostFoundItem(models.Model):
         ("returned", "Returned"),
     )
 
-    # matches your DB columns
+    # DB columns
     item_type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     title = models.CharField(max_length=200)
-    description = models.TextField(blank=True)   # longtext in DB
+    description = models.TextField(blank=True)
     location = models.CharField(max_length=200, blank=True)
     date_happened = models.DateField(null=True, blank=True)
-    image = models.CharField(max_length=100, blank=True)  # varchar in DB (NOT ImageField)
+
+    # IMPORTANT:
+    # DB column is varchar, but we can still map it with ImageField using db_column="image"
+    # because ImageField stores the file path as a string in DB.
+    image = models.ImageField(
+        upload_to="lostfound/items/",
+        blank=True,
+        null=True,
+        db_column="image",
+        max_length=255,
+    )
+
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default="open")
     created_at = models.DateTimeField()
     created_by = models.ForeignKey(
@@ -28,21 +39,16 @@ class LostFoundItem(models.Model):
         db_column="created_by_id",
         related_name="lostfound_items",
     )
-    type = models.CharField(max_length=10, blank=True)  # column exists in your DB
+
+    # If your DB truly has a "type" column and you must keep it, keep it:
+    # Otherwise, remove it to avoid confusion with item_type.
+    type = models.CharField(max_length=10, blank=True)
 
     class Meta:
         db_table = "lostfound_item"
 
     def __str__(self):
         return f"{self.item_type} - {self.title}"
-    
-    image = models.ImageField(
-        upload_to="lostfound/items/",
-        blank=True,
-        null=True,
-        db_column="image",
-        max_length=255,
-    )
 
     @property
     def image_url(self):

@@ -1,9 +1,14 @@
+from urllib import request
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Q, Count
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from lostfound.email_utils import send_claim_status_email, send_item_returned_email
+from audit.utils import log_action
+
 
 from accounts.models import User
 from .forms import ClaimRequestForm, LostFoundItemForm
@@ -115,10 +120,40 @@ def claim_create_view(request, pk):
             claim.status = "pending"
             claim.created_at = timezone.now()
             claim.save()
-            messages.success(request, "Claim submitted. Staff will review it ✅")
+
+            # ==========================
+            # ✅ SEND CLAIM RECEIVED EMAIL
+            # ==========================
+            email_sent = False
+            try:
+                email_sent = send_claim_received_email(claim)
+            except Exception:
+                email_sent = False
+
+            # ==========================
+            # ✅ AUDIT LOG
+            # ==========================
+            log_action(
+                request=request,
+                actor=request.user,
+                action="CLAIM_SUBMIT",
+                message=f"Submitted claim for item #{item.id}"
+                        + (" (email sent)" if email_sent else " (no email)"),
+                target=claim,
+                metadata={
+                    "item_id": item.id,
+                    "student": request.user.username,
+                    "email_sent": email_sent,
+                },
+            )
+
+            if email_sent:
+                messages.success(request, "Claim submitted. Staff will review it ✅ (Email sent)")
+            else:
+                messages.success(request, "Claim submitted. Staff will review it ✅")
+
             return redirect("lostfound:detail", pk=item.pk)
     else:
-        # prefill email from account
         form = ClaimRequestForm(initial={"email": request.user.email})
 
     return render(request, "lostfound/claim_form.html", {"form": form, "item": item})
@@ -149,6 +184,10 @@ def staff_items_view(request):
     return render(request, "lostfound/staff_items.html", {"items": items})
 
 
+from lostfound.email_utils import send_item_returned_email
+from audit.utils import log_action
+
+
 @login_required
 def staff_mark_returned_view(request, pk):
     if not _is_staff_user(request.user):
@@ -159,7 +198,33 @@ def staff_mark_returned_view(request, pk):
     if request.method == "POST":
         item.status = "returned"
         item.save(update_fields=["status"])
-        messages.success(request, "Item marked as returned ✅")
+
+        to_user = item.created_by  # ✅ exact
+
+        try:
+            email_sent = send_item_returned_email(item, to_user=to_user)
+        except Exception:
+            email_sent = False
+
+        log_action(
+            request=request,
+            actor=request.user,
+            action="ITEM_MARK_RETURNED",
+            message=f"Marked item #{item.id} as returned"
+                    + (" (email sent)" if email_sent else " (no email)"),
+            target=item,
+            metadata={
+                "item_id": item.id,
+                "email_sent": email_sent,
+                "to_user": getattr(to_user, "username", ""),
+                "to_email": getattr(to_user, "email", ""),
+            }
+        )
+
+        messages.success(
+            request,
+            "Item marked as returned ✅" + (" (Email sent)" if email_sent else "")
+        )
 
     return redirect("lostfound:staff_items")
 
@@ -183,32 +248,90 @@ def staff_claim_review_view(request, pk):
     if not _is_staff_user(request.user):
         return HttpResponseForbidden("Not allowed")
 
-    claim = get_object_or_404(ClaimRequest.objects.select_related("item", "student"), pk=pk)
+    claim = get_object_or_404(
+        ClaimRequest.objects.select_related("item", "student"),
+        pk=pk
+    )
 
     if request.method == "POST":
-        action = request.POST.get("action")
+        action = (request.POST.get("action") or "").strip().lower()
+        if action not in {"approve", "reject"}:
+            messages.error(request, "Invalid action.")
+            return redirect("lostfound:staff_claims")
+
+        claim.reviewed_by = request.user
+        claim.reviewed_at = timezone.now()
 
         if action == "approve":
             claim.status = "approved"
-            claim.reviewed_by = request.user
-            claim.reviewed_at = timezone.now()
             claim.save(update_fields=["status", "reviewed_by", "reviewed_at"])
 
-            claim.item.status = "returned"
-            claim.item.save(update_fields=["status"])
+            # mark item returned only when approved
+            try:
+                claim.item.status = "returned"
+                claim.item.save(update_fields=["status"])
+            except Exception:
+                pass
 
-            messages.success(request, "Claim approved ✅ Item marked returned.")
+            try:
+                email_sent = send_claim_status_email(claim)
+            except Exception:
+                email_sent = False
+
+            log_action(
+                request=request,
+                actor=request.user,
+                action="CLAIM_APPROVE",
+                message=f"Approved claim #{claim.id} for item #{claim.item_id}"
+                        + (" (email sent)" if email_sent else " (no email)"),
+                target=claim,
+                metadata={
+                    "claim_id": claim.id,
+                    "item_id": claim.item_id,
+                    "status": claim.status,
+                    "email_sent": email_sent,
+                    "student": getattr(getattr(claim, "student", None), "username", ""),
+                    "student_email": getattr(getattr(claim, "student", None), "email", ""),
+                }
+            )
+
+            messages.success(
+                request,
+                "Claim approved ✅ Item marked returned."
+                + (" (Email sent)" if email_sent else "")
+            )
             return redirect("lostfound:staff_claims")
 
-        if action == "reject":
-            claim.status = "rejected"
-            claim.reviewed_by = request.user
-            claim.reviewed_at = timezone.now()
-            claim.save(update_fields=["status", "reviewed_by", "reviewed_at"])
-            messages.success(request, "Claim rejected ❌")
-            return redirect("lostfound:staff_claims")
+        # reject
+        claim.status = "rejected"
+        claim.save(update_fields=["status", "reviewed_by", "reviewed_at"])
 
-        messages.error(request, "Invalid action.")
+        try:
+            email_sent = send_claim_status_email(claim)
+        except Exception:
+            email_sent = False
+
+        log_action(
+            request=request,
+            actor=request.user,
+            action="CLAIM_REJECT",
+            message=f"Rejected claim #{claim.id} for item #{claim.item_id}"
+                    + (" (email sent)" if email_sent else " (no email)"),
+            target=claim,
+            metadata={
+                "claim_id": claim.id,
+                "item_id": claim.item_id,
+                "status": claim.status,
+                "email_sent": email_sent,
+                "student": getattr(getattr(claim, "student", None), "username", ""),
+                "student_email": getattr(getattr(claim, "student", None), "email", ""),
+            }
+        )
+
+        messages.success(
+            request,
+            "Claim rejected ❌" + (" (Email sent)" if email_sent else "")
+        )
         return redirect("lostfound:staff_claims")
 
     return render(request, "lostfound/staff_claim_review.html", {"claim": claim})
