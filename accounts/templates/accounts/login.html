@@ -95,7 +95,7 @@
           <div class="mb-2">
             <label class="form-label fw-semibold d-flex justify-content-between">
               <span>Password</span>
-              <a href="#" class="small text-decoration-none" tabindex="-1">Forgot password?</a>
+              <a href="{% url 'accounts:password_reset' %}">Forgot password?</a>
             </label>
             <input class="form-control cc-input" type="password" name="password" placeholder="Enter password" required>
           </div>
