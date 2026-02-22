@@ -34,6 +34,7 @@ class EventRegistration(models.Model):
     notes = models.CharField(max_length=255, default="", blank=True)
 
     registered_at = models.DateTimeField(auto_now_add=True)
+    reminder_sent_at = models.DateTimeField(null=True, blank=True)  # ✅ prevents duplicate reminders
 
     class Meta:
         unique_together = ("event","user")

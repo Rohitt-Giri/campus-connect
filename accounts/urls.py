@@ -2,6 +2,8 @@ from django.urls import path
 
 from accounts import admin_views
 from . import views
+from django.contrib.auth import views as auth_views
+from accounts.password_views import CampusPasswordResetConfirmView
 
 app_name = "accounts"
 
@@ -27,4 +29,25 @@ urlpatterns = [
         admin_views.resend_approval_email_view,
         name="admin_resend_approval_email"
     ),
+
+    # Password reset
+    path("password-reset/", auth_views.PasswordResetView.as_view(
+        template_name="registration/password_reset_form.html",
+        email_template_name="registration/password_reset_email.txt",
+        html_email_template_name="registration/password_reset_email.html",
+        subject_template_name="registration/password_reset_subject.txt",
+        success_url="/accounts/password-reset/done/",
+    ), name="password_reset"),
+
+    path("password-reset/done/", auth_views.PasswordResetDoneView.as_view(
+        template_name="registration/password_reset_done.html",
+    ), name="password_reset_done"),
+
+    path("reset/<uidb64>/<token>/", CampusPasswordResetConfirmView.as_view(
+        # template already set in class, but ok either way
+    ), name="password_reset_confirm"),
+
+    path("reset/done/", auth_views.PasswordResetCompleteView.as_view(
+        template_name="registration/password_reset_complete.html",
+    ), name="password_reset_complete"),
 ]

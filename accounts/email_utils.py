@@ -235,3 +235,60 @@ Your role on {site_name} has been updated:
 """
     _send_html_email(to_email=email, subject=subject, title="Role updated", body_html=html_body, body_text=text_body)
     return True
+
+def send_password_changed_email(user) -> bool:
+    email = (getattr(user, "email", "") or "").strip()
+    if not email:
+        return False
+
+    site_name = getattr(settings, "SITE_NAME", "Campus Connect")
+    login_url = _site_url(reverse("accounts:login"))
+    name = _display_name(user)
+
+    time_str = timezone.localtime(timezone.now()).strftime("%b %d, %Y %I:%M %p")
+    subject = f"{site_name}: Your password was changed 🔐"
+
+    text_body = f"""Hi {name},
+
+Your {site_name} account password was changed successfully.
+
+Time: {time_str}
+
+Login here:
+{login_url}
+
+If you did not do this, please contact support immediately.
+
+— {site_name}
+"""
+
+    html_body = f"""
+<!doctype html><html><body style="margin:0;background:#f6f8fb;font-family:Arial;color:#0f172a;">
+<div style="max-width:600px;margin:0 auto;padding:24px 14px;">
+  <div style="background:#fff;border:1px solid rgba(15,23,42,.10);border-radius:16px;padding:18px;">
+    <div style="font-size:18px;font-weight:900;margin-bottom:8px;">Password changed 🔐</div>
+    <div style="font-size:14px;line-height:1.65;color:#334155;">
+      Hi <b>{name}</b>,<br><br>
+      Your <b>{site_name}</b> password was changed successfully.<br><br>
+      <b>Time:</b> {time_str}<br><br>
+
+      <a href="{login_url}" style="display:inline-block;background:#16a34a;color:#06120a;text-decoration:none;
+        padding:10px 14px;border-radius:999px;font-weight:900;">Log in</a>
+
+      <div style="margin-top:14px;font-size:12.5px;color:#64748b;">
+        If you did not do this, please contact support immediately.
+      </div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:10px;font-size:12px;color:#94a3b8;">© {site_name}</div>
+</div>
+</body></html>
+"""
+    _send_html_email(
+        to_email=email,
+        subject=subject,
+        title="Password changed",
+        body_html=html_body,
+        body_text=text_body,
+    )
+    return True

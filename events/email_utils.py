@@ -126,3 +126,72 @@ View event:
     msg.attach_alternative(html_body, "text/html")
     msg.send(fail_silently=False)
     return True
+
+def send_event_reminder_email(registration) -> bool:
+    """
+    Sends reminder email to the registered student ~24 hours before event start.
+    Returns True if sent, False if no email.
+    """
+    user = registration.user
+    email = (getattr(user, "email", "") or "").strip()
+    if not email:
+        return False
+
+    site = getattr(settings, "SITE_NAME", "Campus Connect")
+    event = registration.event
+    name = _user_name(user)
+
+    event_url = _site_url(reverse("events:detail", kwargs={"pk": event.id}))
+    start_local = timezone.localtime(event.start_datetime).strftime("%b %d, %Y %I:%M %p")
+
+    is_paid = bool(getattr(event, "is_paid", False))
+    price = getattr(event, "price", 0)
+
+    subject = f"{site}: Reminder — {event.title} starts soon ⏰"
+    headline = "Event reminder ⏰"
+    accent = "#16a34a"
+
+    payment_line_text = ""
+    payment_line_html = ""
+    if is_paid:
+        payment_line_text = f"\nPayment: This is a PAID event (Amount: {price}).\n"
+        payment_line_html = f"<div style='margin-top:10px;'><b>Payment:</b> Paid event (Amount: {price})</div>"
+
+    text_body = f"""Hi {name},
+
+This is a reminder that you're registered for:
+
+Event: {event.title}
+Starts: {start_local}
+Location: {getattr(event, "location", "") or "—"}{payment_line_text}
+
+View details:
+{event_url}
+
+— {site}
+"""
+
+    html_body = f"""
+<!doctype html><html><body style="margin:0;background:#f6f8fb;font-family:Arial;color:#0f172a;">
+<div style="max-width:600px;margin:0 auto;padding:24px 14px;">
+  <div style="background:#fff;border:1px solid rgba(15,23,42,.10);border-radius:16px;padding:18px;">
+    <div style="font-size:18px;font-weight:900;color:{accent};margin-bottom:8px;">{headline}</div>
+    <div style="font-size:14px;line-height:1.65;color:#334155;">
+      Hi <b>{name}</b>,<br><br>
+      You’re registered for the following event and it starts soon:<br><br>
+      <b>Event:</b> {event.title}<br>
+      <b>Starts:</b> {start_local}<br>
+      <b>Location:</b> {getattr(event, "location", "") or "—"}<br>
+      {payment_line_html}
+      <div style="margin-top:16px;">
+        <a href="{event_url}" style="display:inline-block;background:{accent};color:#06120a;text-decoration:none;
+          padding:10px 14px;border-radius:999px;font-weight:900;">View event</a>
+      </div>
+    </div>
+  </div>
+  <div style="text-align:center;margin-top:10px;font-size:12px;color:#94a3b8;">© {site}</div>
+</div>
+</body></html>
+"""
+    _send(email, subject, text_body, html_body)
+    return True
