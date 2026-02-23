@@ -95,7 +95,9 @@ DATABASES = {
 }
 
 
-
+MIGRATION_MODULES = {
+    "accounts": None,
+}
 
 
 # Password validation

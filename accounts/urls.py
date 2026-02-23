@@ -1,7 +1,9 @@
 from django.urls import path, reverse_lazy
 from django.contrib.auth import views as auth_views
+from accounts import password_views
 
 from accounts import admin_views
+from accounts import profile_views
 from . import views
 
 app_name = "accounts"
@@ -11,6 +13,18 @@ urlpatterns = [
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
     path("pending/", views.pending_approval_view, name="pending"),
+
+    # Profile
+    path("me/", profile_views.my_profile_view, name="my_profile"),
+    # ✅ Change password (inside profile button)
+    path(
+        "password/change/",
+        auth_views.PasswordChangeView.as_view(
+            template_name="accounts/change_password.html",
+            success_url=reverse_lazy("accounts:my_profile"),
+        ),
+        name="change_password",
+    ),
 
     # Custom admin dashboard
     path("admin-dashboard/", admin_views.admin_dashboard_view, name="admin_dashboard"),
@@ -65,4 +79,6 @@ urlpatterns = [
         ),
         name="password_reset_complete",
     ),
+
+    
 ]

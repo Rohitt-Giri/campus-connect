@@ -129,6 +129,7 @@
           <span class="text-muted">
             {{ request.user.username|default:"Student" }}
           </span>
+          <a href="{% url 'accounts:my_profile' %}">My Profile</a>
         </div>
 
         <a class="btn btn-outline-dark pill-outline" href="{% url 'accounts:logout' %}">Logout</a>

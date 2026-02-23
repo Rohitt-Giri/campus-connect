@@ -175,6 +175,7 @@
           <span style="color:var(--text); font-weight:900;">
             {{ request.user.username|default:"Staff" }}
           </span>
+          <a href="{% url 'accounts:my_profile' %}">My Profile</a>
         </div>
         <a class="btn btn-pill btn-ghost" href="{% url 'accounts:logout' %}">Logout</a>
       </div>

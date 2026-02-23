@@ -1,0 +1,191 @@
+{% load static %}
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Profile | Campus Connect</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body{
+      background:
+        radial-gradient(900px 450px at 15% 10%, rgba(34,197,94,0.12), transparent 55%),
+        linear-gradient(120deg,#fff 0%,#f7fbf8 65%,#fff 100%);
+      font-family:system-ui;
+    }
+    .wrap{max-width:980px;margin:0 auto;padding:28px 16px;}
+    .cardx{
+      border-radius:18px;
+      border:1px solid rgba(15,23,42,.10);
+      background:rgba(255,255,255,.96);
+      box-shadow:0 14px 30px rgba(15,23,42,.06);
+    }
+    .pill{border-radius:999px;}
+    .avatar{
+      width:92px;height:92px;border-radius:18px;object-fit:cover;
+      border:1px solid rgba(15,23,42,.12);
+      background:#fff;
+    }
+    .avatar-letter{
+      width:92px;height:92px;border-radius:18px;
+      border:1px solid rgba(15,23,42,.12);
+      background:linear-gradient(135deg,#16a34a,#22c55e);
+      display:flex;align-items:center;justify-content:center;
+      font-weight:900;font-size:34px;color:#06120a;
+    }
+    .muted{color:#64748b;font-weight:650;}
+    .section-title{font-weight:900;letter-spacing:-.02em;}
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="cardx p-3 mb-3 d-flex justify-content-between align-items-center">
+    <div>
+      <div class="h5 mb-0 fw-bold">My Profile</div>
+      <div class="muted small">Update your personal information</div>
+    </div>
+    <div class="d-flex gap-2">
+      <a class="btn btn-outline-dark pill px-3" href="{% url 'core:landing' %}">Back</a>
+      <a class="btn btn-outline-success pill px-3" href="{% url 'accounts:change_password' %}">Change Password</a>
+    </div>
+  </div>
+
+  {% if messages %}
+    <div class="mb-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="cardx p-4">
+    <div class="d-flex gap-3 align-items-center mb-4">
+      {% if profile.photo %}
+        <img class="avatar" src="{{ profile.photo.url }}" alt="Profile photo">
+      {% else %}
+        <div class="avatar-letter">{{ profile.avatar_letter }}</div>
+      {% endif %}
+      <div>
+        <div class="fw-bold">{{ request.user.username }}</div>
+        <div class="muted small">{{ request.user.email }}</div>
+        <div class="muted small">Role: {{ request.user.role }}</div>
+      </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="row g-3">
+      {% csrf_token %}
+
+      <div class="col-12">
+  <label class="form-label fw-semibold">Profile photo</label>
+
+  <!-- pretty uploader -->
+  <div class="d-flex align-items-center gap-3 flex-wrap">
+    <input id="photoInput" type="file" name="photo" accept="image/*" class="form-control" style="max-width:420px;">
+    <button type="button" class="btn btn-outline-dark pill px-3" onclick="document.getElementById('photoInput').click()">
+      Upload new photo
+    </button>
+    <span class="muted small">PNG/JPG recommended.</span>
+  </div>
+
+  <div class="muted small mt-2">Preview:</div>
+  <div class="mt-2">
+    {% if profile.photo %}
+      <img id="photoPreview" class="avatar" src="{{ profile.photo.url }}" alt="Profile photo preview">
+    {% else %}
+      <div id="photoPreviewLetter" class="avatar-letter">{{ profile.avatar_letter }}</div>
+      <img id="photoPreview" class="avatar d-none" alt="Profile photo preview">
+    {% endif %}
+  </div>
+
+  {% if form.photo.errors %}
+    <div class="text-danger small mt-1">{{ form.photo.errors }}</div>
+  {% endif %}
+</div>
+
+<script>
+  (function () {
+    const input = document.getElementById("photoInput");
+    const img = document.getElementById("photoPreview");
+    const letter = document.getElementById("photoPreviewLetter");
+
+    if (!input) return;
+
+    input.addEventListener("change", function () {
+      const file = this.files && this.files[0];
+      if (!file) return;
+
+      const url = URL.createObjectURL(file);
+
+      if (letter) letter.classList.add("d-none");
+      if (img) {
+        img.src = url;
+        img.classList.remove("d-none");
+      }
+    });
+  })();
+</script>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Full name</label>
+        {{ form.full_name }}
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">Phone</label>
+        {{ form.phone }}
+      </div>
+
+      <div class="col-12">
+        <label class="form-label fw-semibold">Bio</label>
+        {{ form.bio }}
+      </div>
+
+      {% if request.user.role == "STUDENT" %}
+        <hr class="my-3">
+        <div class="col-12">
+          <div class="section-title">Student Details</div>
+          <div class="muted small">These help staff identify you.</div>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Program</label>
+          {{ form.program }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Semester</label>
+          {{ form.semester }}
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Student ID</label>
+          {{ form.student_id }}
+        </div>
+      {% endif %}
+
+      {% if request.user.role == "STAFF" %}
+        <hr class="my-3">
+        <div class="col-12">
+          <div class="section-title">Staff Details</div>
+          <div class="muted small">Displayed internally for admins.</div>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Department</label>
+          {{ form.department }}
+        </div>
+        <div class="col-md-6">
+          <label class="form-label fw-semibold">Designation</label>
+          {{ form.designation }}
+        </div>
+      {% endif %}
+
+      <div class="col-12 d-flex gap-2 mt-2">
+        <button class="btn btn-success pill px-4" type="submit">Save changes</button>
+        <a class="btn btn-outline-secondary pill px-4" href="{% url 'accounts:my_profile' %}">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+</div>
+</body>
+</html>

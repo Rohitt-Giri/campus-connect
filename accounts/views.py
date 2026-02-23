@@ -3,6 +3,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
+from django.utils import timezone
+
+from .models import UserProfile
+from .forms import ProfileForm
 
 from .forms import RegisterForm
 from .models import User
@@ -67,6 +71,31 @@ def login_view(request):
         return redirect("accounts:login")
 
     return render(request, "accounts/login.html")
+
+@login_required
+def my_profile_view(request):
+    profile, _created = UserProfile.objects.get_or_create(
+        user=request.user,
+        defaults={
+            "created_at": timezone.now(),
+            "updated_at": timezone.now(),
+        }
+    )
+
+    if request.method == "POST":
+        form = ProfileForm(request.POST, request.FILES, instance=profile, user=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile updated ✅")
+            return redirect("accounts:my_profile")
+        messages.error(request, "Please fix the errors below.")
+    else:
+        form = ProfileForm(instance=profile, user=request.user)
+
+    return render(request, "accounts/my_profile.html", {
+        "form": form,
+        "profile": profile,
+    })
 
 
 @login_required
