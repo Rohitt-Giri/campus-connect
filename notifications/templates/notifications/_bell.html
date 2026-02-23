@@ -1,0 +1,41 @@
+<div class="dropdown">
+  <button class="btn btn-outline-dark position-relative" data-bs-toggle="dropdown" aria-expanded="false">
+    🔔
+    {% if notif_unread_count > 0 %}
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+        {{ notif_unread_count }}
+      </span>
+    {% endif %}
+  </button>
+
+  <div class="dropdown-menu dropdown-menu-end p-2" style="width:340px;">
+    <div class="d-flex justify-content-between align-items-center px-2">
+      <div class="fw-bold">Notifications</div>
+      <form method="post" action="{% url 'notifications:mark_all_read' %}">
+        {% csrf_token %}
+        <button class="btn btn-sm btn-link">Mark all read</button>
+      </form>
+    </div>
+
+    <div class="dropdown-divider"></div>
+
+    {% if notif_recent %}
+      {% for n in notif_recent %}
+        <a class="dropdown-item rounded py-2 {% if not n.is_read %}fw-semibold{% endif %}"
+           href="{% url 'notifications:go' n.id %}">
+          <div class="small text-muted">{{ n.category|title }}</div>
+          <div>{{ n.title|default:"Update" }}</div>
+          {% if n.message %}
+            <div class="small text-muted">{{ n.message|truncatechars:90 }}</div>
+          {% endif %}
+          <div class="small text-muted mt-1">{{ n.created_at }}</div>
+        </a>
+      {% endfor %}
+    {% else %}
+      <div class="px-2 py-3 text-muted small">No notifications yet.</div>
+    {% endif %}
+
+    <div class="dropdown-divider"></div>
+    <a class="dropdown-item text-center" href="{% url 'notifications:list' %}">View all</a>
+  </div>
+</div>

@@ -2,7 +2,11 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from .models import User, UserProfile
 
+from django.forms.widgets import ClearableFileInput
 
+class NoClearableFileInput(ClearableFileInput):
+    template_name = "accounts/widgets/file_input.html"
+    
 class RegisterForm(UserCreationForm):
     role = forms.ChoiceField(
         choices=[(User.Role.STUDENT, "Student"), (User.Role.STAFF, "Staff")],
@@ -35,6 +39,7 @@ class ProfileForm(forms.ModelForm):
             "full_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Full name"}),
             "phone": forms.TextInput(attrs={"class": "form-control", "placeholder": "Phone number"}),
             "bio": forms.Textarea(attrs={"class": "form-control", "rows": 4, "placeholder": "Short bio"}),
+            "photo": NoClearableFileInput(attrs={"class": "form-control", "accept": "image/*"}),
 
             "program": forms.TextInput(attrs={"class": "form-control", "placeholder": "e.g. BSc IT"}),
             "semester": forms.TextInput(attrs={"class": "form-control", "placeholder": "e.g. 6th"}),

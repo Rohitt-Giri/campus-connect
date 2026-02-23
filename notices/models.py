@@ -21,6 +21,9 @@ class Notice(models.Model):
     is_active = models.BooleanField(default=True)  # soft delete/archive
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+     # ✅ NEW (so we notify once)
+    published_at = models.DateTimeField(null=True, blank=True)
+    notified_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ["-created_at"]

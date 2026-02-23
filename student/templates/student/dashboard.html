@@ -120,6 +120,14 @@
         <div>
           <div class="fw-bold">Campus Connect</div>
           <div class="small text-muted">Student Portal</div>
+          <a href="{% url 'notifications:list' %}" class="btn btn-light position-relative">
+  🔔
+  {% if unread_count and unread_count > 0 %}
+    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+      {{ unread_count }}
+    </span>
+  {% endif %}
+</a>
         </div>
       </div>
 

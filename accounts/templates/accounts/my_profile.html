@@ -8,48 +8,71 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body{
-      background:
-        radial-gradient(900px 450px at 15% 10%, rgba(34,197,94,0.12), transparent 55%),
-        linear-gradient(120deg,#fff 0%,#f7fbf8 65%,#fff 100%);
-      font-family:system-ui;
+      background:#f6f8fb;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      color:#0f172a;
     }
-    .wrap{max-width:980px;margin:0 auto;padding:28px 16px;}
+    .wrap{max-width:1050px;margin:0 auto;padding:28px 16px;}
     .cardx{
+      background:#fff;
+      border:1px solid rgba(15,23,42,.08);
       border-radius:18px;
-      border:1px solid rgba(15,23,42,.10);
-      background:rgba(255,255,255,.96);
-      box-shadow:0 14px 30px rgba(15,23,42,.06);
+      box-shadow:0 10px 28px rgba(15,23,42,.06);
     }
-    .pill{border-radius:999px;}
     .avatar{
-      width:92px;height:92px;border-radius:18px;object-fit:cover;
-      border:1px solid rgba(15,23,42,.12);
+      width:64px;height:64px;border-radius:999px;object-fit:cover;
+      border:1px solid rgba(15,23,42,.10);
       background:#fff;
     }
     .avatar-letter{
-      width:92px;height:92px;border-radius:18px;
-      border:1px solid rgba(15,23,42,.12);
+      width:64px;height:64px;border-radius:999px;
+      border:1px solid rgba(15,23,42,.10);
       background:linear-gradient(135deg,#16a34a,#22c55e);
       display:flex;align-items:center;justify-content:center;
-      font-weight:900;font-size:34px;color:#06120a;
+      font-weight:900;font-size:22px;color:#06120a;
     }
-    .muted{color:#64748b;font-weight:650;}
-    .section-title{font-weight:900;letter-spacing:-.02em;}
+    .muted{color:#64748b}
+    .label{font-size:12px;color:#64748b;font-weight:700;margin-bottom:8px}
+    .form-control, .form-select{
+      border-radius:12px;
+      padding:12px 12px;
+      border:1px solid rgba(15,23,42,.10);
+    }
+    .form-control:disabled, .form-select:disabled, textarea:disabled{
+      background:#f8fafc;
+      color:#0f172a;
+      opacity:1;
+    }
+    .btn-pill{border-radius:999px;padding:10px 16px;font-weight:700}
+    .section-title{font-weight:900;margin-top:6px}
+    .divider{border-top:1px solid rgba(15,23,42,.08); margin:18px 0}
+    .mini-card{
+      border:1px solid rgba(15,23,42,.08);
+      border-radius:16px;
+      padding:14px;
+      background:#fff;
+    }
+    .email-pill{
+      display:flex;align-items:center;gap:10px;
+      border:1px solid rgba(15,23,42,.08);
+      border-radius:14px;padding:12px 12px;
+      background:#fff;
+    }
+    .icon-circle{
+      width:34px;height:34px;border-radius:999px;
+      display:flex;align-items:center;justify-content:center;
+      background:#eef2ff;border:1px solid rgba(15,23,42,.08);
+      font-weight:900;color:#1f2937;
+      flex:0 0 auto;
+    }
+    .linkish{color:#2563eb;text-decoration:none;font-weight:700}
+    .linkish:hover{text-decoration:underline}
+    .photo-btn{display:none}
   </style>
 </head>
+
 <body>
 <div class="wrap">
-
-  <div class="cardx p-3 mb-3 d-flex justify-content-between align-items-center">
-    <div>
-      <div class="h5 mb-0 fw-bold">My Profile</div>
-      <div class="muted small">Update your personal information</div>
-    </div>
-    <div class="d-flex gap-2">
-      <a class="btn btn-outline-dark pill px-3" href="{% url 'core:landing' %}">Back</a>
-      <a class="btn btn-outline-success pill px-3" href="{% url 'accounts:change_password' %}">Change Password</a>
-    </div>
-  </div>
 
   {% if messages %}
     <div class="mb-3">
@@ -60,132 +83,175 @@
   {% endif %}
 
   <div class="cardx p-4">
-    <div class="d-flex gap-3 align-items-center mb-4">
-      {% if profile.photo %}
-        <img class="avatar" src="{{ profile.photo.url }}" alt="Profile photo">
-      {% else %}
-        <div class="avatar-letter">{{ profile.avatar_letter }}</div>
-      {% endif %}
-      <div>
-        <div class="fw-bold">{{ request.user.username }}</div>
-        <div class="muted small">{{ request.user.email }}</div>
-        <div class="muted small">Role: {{ request.user.role }}</div>
+
+    <!-- Top header row -->
+    <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
+      <div class="d-flex align-items-center gap-3">
+        {% if profile.photo %}
+          <img class="avatar" id="avatarImg" src="{{ profile.photo.url }}" alt="Profile photo">
+        {% else %}
+          <div class="avatar-letter" id="avatarLetter">{{ profile.avatar_letter }}</div>
+          <img class="avatar d-none" id="avatarImg" alt="Profile photo">
+        {% endif %}
+
+        <div>
+          <div class="fw-bold" style="font-size:18px;">
+            {% if profile.full_name %}{{ profile.full_name }}{% else %}{{ request.user.username }}{% endif %}
+          </div>
+          <div class="muted small">{{ request.user.email }}</div>
+          <div class="muted small">Role: <span class="fw-semibold">{{ request.user.role }}</span></div>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <a class="btn btn-outline-dark btn-pill" href="{% url 'core:landing' %}">Back</a>
+        <a class="btn btn-outline-success btn-pill" href="{% url 'accounts:change_password' %}">Change Password</a>
+        <button type="button" id="editBtn" class="btn btn-primary btn-pill">Edit</button>
       </div>
     </div>
 
-    <form method="post" enctype="multipart/form-data" class="row g-3">
+    <div class="divider"></div>
+
+    <form method="post" enctype="multipart/form-data" id="profileForm">
       {% csrf_token %}
 
-      <div class="col-12">
-  <label class="form-label fw-semibold">Profile photo</label>
+      <!-- Photo upload (hidden until Edit) -->
+      <div class="mb-3">
+        <div class="label">Profile Photo</div>
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <input id="photoInput" type="file" name="photo" accept="image/*" class="form-control" style="max-width:420px;" disabled>
+          <span class="muted small">PNG/JPG recommended</span>
+        </div>
+        {% if form.photo.errors %}
+          <div class="text-danger small mt-1">{{ form.photo.errors }}</div>
+        {% endif %}
+      </div>
 
-  <!-- pretty uploader -->
-  <div class="d-flex align-items-center gap-3 flex-wrap">
-    <input id="photoInput" type="file" name="photo" accept="image/*" class="form-control" style="max-width:420px;">
-    <button type="button" class="btn btn-outline-dark pill px-3" onclick="document.getElementById('photoInput').click()">
-      Upload new photo
-    </button>
-    <span class="muted small">PNG/JPG recommended.</span>
+      <!-- Main grid (like your reference) -->
+      <div class="row g-3">
+        <div class="col-md-6">
+          <div class="label">Full Name</div>
+          {{ form.full_name }}
+        </div>
+
+        <div class="col-md-6">
+          <div class="label">Phone</div>
+          {{ form.phone }}
+        </div>
+
+        <div class="col-12">
+          <div class="label">Bio</div>
+          {{ form.bio }}
+        </div>
+      </div>
+
+      {% if request.user.role == "STUDENT" %}
+        <div class="divider"></div>
+        <div class="section-title">Student Details</div>
+        <div class="muted small mb-3">These help staff identify you.</div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="label">Program</div>
+            {{ form.program }}
+          </div>
+          <div class="col-md-3">
+            <div class="label">Semester</div>
+            {{ form.semester }}
+          </div>
+          <div class="col-md-3">
+            <div class="label">Student ID</div>
+            {{ form.student_id }}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if request.user.role == "STAFF" %}
+        <div class="divider"></div>
+        <div class="section-title">Staff Details</div>
+        <div class="muted small mb-3">Displayed internally for admins.</div>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="label">Department</div>
+            {{ form.department }}
+          </div>
+          <div class="col-md-6">
+            <div class="label">Designation</div>
+            {{ form.designation }}
+          </div>
+        </div>
+      {% endif %}
+
+      <div class="divider"></div>
+
+      <!-- Email block like the reference -->
+      <div class="mini-card mb-3">
+        <div class="fw-bold mb-2">My email address</div>
+        <div class="email-pill">
+          <div class="icon-circle">@</div>
+          <div class="flex-grow-1">
+            <div class="fw-semibold">{{ request.user.email }}</div>
+            <div class="muted small">Primary email</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actions (hidden until Edit) -->
+      <div class="d-flex gap-2">
+        <button id="saveBtn" class="btn btn-success btn-pill d-none" type="submit">Save</button>
+        <a id="cancelBtn" class="btn btn-outline-secondary btn-pill d-none" href="{% url 'accounts:my_profile' %}">Cancel</a>
+      </div>
+    </form>
+
   </div>
-
-  <div class="muted small mt-2">Preview:</div>
-  <div class="mt-2">
-    {% if profile.photo %}
-      <img id="photoPreview" class="avatar" src="{{ profile.photo.url }}" alt="Profile photo preview">
-    {% else %}
-      <div id="photoPreviewLetter" class="avatar-letter">{{ profile.avatar_letter }}</div>
-      <img id="photoPreview" class="avatar d-none" alt="Profile photo preview">
-    {% endif %}
-  </div>
-
-  {% if form.photo.errors %}
-    <div class="text-danger small mt-1">{{ form.photo.errors }}</div>
-  {% endif %}
 </div>
 
 <script>
   (function () {
-    const input = document.getElementById("photoInput");
-    const img = document.getElementById("photoPreview");
-    const letter = document.getElementById("photoPreviewLetter");
+    const editBtn = document.getElementById("editBtn");
+    const saveBtn = document.getElementById("saveBtn");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const photoInput = document.getElementById("photoInput");
+    const avatarImg = document.getElementById("avatarImg");
+    const avatarLetter = document.getElementById("avatarLetter");
 
-    if (!input) return;
+    // Disable all inputs initially (view mode)
+    function setDisabled(disabled) {
+      document.querySelectorAll("#profileForm input, #profileForm textarea, #profileForm select").forEach(el => {
+        if (el.name === "csrfmiddlewaretoken") return;
+        // file input handled separately
+        if (el.id === "photoInput") return;
+        el.disabled = disabled;
+      });
+      photoInput.disabled = disabled;
+    }
 
-    input.addEventListener("change", function () {
+    // Start in view mode
+    setDisabled(true);
+
+    editBtn.addEventListener("click", function () {
+      setDisabled(false);
+      saveBtn.classList.remove("d-none");
+      cancelBtn.classList.remove("d-none");
+      editBtn.classList.add("d-none");
+    });
+
+    // Photo preview
+    photoInput.addEventListener("change", function () {
       const file = this.files && this.files[0];
       if (!file) return;
 
       const url = URL.createObjectURL(file);
 
-      if (letter) letter.classList.add("d-none");
-      if (img) {
-        img.src = url;
-        img.classList.remove("d-none");
+      if (avatarLetter) avatarLetter.classList.add("d-none");
+      if (avatarImg) {
+        avatarImg.src = url;
+        avatarImg.classList.remove("d-none");
       }
     });
   })();
 </script>
 
-      <div class="col-md-6">
-        <label class="form-label fw-semibold">Full name</label>
-        {{ form.full_name }}
-      </div>
-
-      <div class="col-md-6">
-        <label class="form-label fw-semibold">Phone</label>
-        {{ form.phone }}
-      </div>
-
-      <div class="col-12">
-        <label class="form-label fw-semibold">Bio</label>
-        {{ form.bio }}
-      </div>
-
-      {% if request.user.role == "STUDENT" %}
-        <hr class="my-3">
-        <div class="col-12">
-          <div class="section-title">Student Details</div>
-          <div class="muted small">These help staff identify you.</div>
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Program</label>
-          {{ form.program }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-semibold">Semester</label>
-          {{ form.semester }}
-        </div>
-        <div class="col-md-3">
-          <label class="form-label fw-semibold">Student ID</label>
-          {{ form.student_id }}
-        </div>
-      {% endif %}
-
-      {% if request.user.role == "STAFF" %}
-        <hr class="my-3">
-        <div class="col-12">
-          <div class="section-title">Staff Details</div>
-          <div class="muted small">Displayed internally for admins.</div>
-        </div>
-
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Department</label>
-          {{ form.department }}
-        </div>
-        <div class="col-md-6">
-          <label class="form-label fw-semibold">Designation</label>
-          {{ form.designation }}
-        </div>
-      {% endif %}
-
-      <div class="col-12 d-flex gap-2 mt-2">
-        <button class="btn btn-success pill px-4" type="submit">Save changes</button>
-        <a class="btn btn-outline-secondary pill px-4" href="{% url 'accounts:my_profile' %}">Cancel</a>
-      </div>
-    </form>
-  </div>
-
-</div>
 </body>
 </html>

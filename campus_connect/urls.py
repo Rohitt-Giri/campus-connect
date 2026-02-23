@@ -14,6 +14,7 @@ urlpatterns = [
     path("events/", include("events.urls")),
     path("payments/", include(("payments.urls", "payments"), namespace="payments")),
     path("lostfound/", include("lostfound.urls")),
+    path("notifications/", include(("notifications.urls", "notifications"), namespace="notifications")),
     
 
 ]

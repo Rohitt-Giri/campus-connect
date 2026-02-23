@@ -170,6 +170,14 @@
       </a>
 
       <div class="d-flex align-items-center gap-2">
+        <a href="{% url 'notifications:list' %}" class="btn btn-light position-relative">
+  🔔
+  {% if unread_count and unread_count > 0 %}
+    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+      {{ unread_count }}
+    </span>
+  {% endif %}
+</a>
         <div class="d-none d-md-block small" style="color:var(--muted); font-weight:700;">
           Staff:
           <span style="color:var(--text); font-weight:900;">

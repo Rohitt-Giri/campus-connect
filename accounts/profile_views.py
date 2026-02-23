@@ -7,12 +7,23 @@ from .models import UserProfile
 
 @login_required
 def my_profile_view(request):
-    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    profile, _created = UserProfile.objects.get_or_create(
+        user=request.user,
+        defaults={
+            "created_at": timezone.now(),
+            "updated_at": timezone.now(),
+            "full_name": "",
+            "phone": "",
+            "bio": "",
+        }
+    )
 
     if request.method == "POST":
         form = ProfileForm(request.POST, request.FILES, instance=profile, user=request.user)
         if form.is_valid():
-            form.save()
+            obj = form.save(commit=False)
+            obj.updated_at = timezone.now()
+            obj.save()
             messages.success(request, "Profile updated ✅")
             return redirect("accounts:my_profile")
         messages.error(request, "Please fix the errors below.")
