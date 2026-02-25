@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from notices.models import Notice
+from django.views.decorators.cache import never_cache
 
 # lostfound optional safety
 try:
@@ -9,7 +10,7 @@ except Exception:
     LostFoundItem = None
     ClaimRequest = None
 
-
+@never_cache
 @login_required
 def student_dashboard_view(request):
     recent_notices = Notice.objects.filter(is_active=True).order_by("-created_at")[:3]

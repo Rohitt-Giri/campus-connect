@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 from django.utils import timezone
+from django.views.decorators.cache import never_cache
 
 from .models import UserProfile
 from .forms import ProfileForm
@@ -12,7 +13,7 @@ from .forms import RegisterForm
 from .models import User
 from .decorators import admin_required
 
-
+@never_cache
 def register_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
@@ -27,12 +28,15 @@ def register_view(request):
 
     return render(request, "accounts/register.html", {"form": form})
 
-
+@never_cache
 def pending_approval_view(request):
     return render(request, "accounts/pending_approval.html")
 
-
+@never_cache
 def login_view(request):
+    if request.user.is_authenticated:
+        return redirect("accounts:post_login_redirect")
+    
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
@@ -53,6 +57,7 @@ def login_view(request):
             return redirect("accounts:pending")
 
         login(request, user)
+        
 
         # Role-based redirect
         if user.is_superuser:
@@ -69,8 +74,9 @@ def login_view(request):
 
         messages.error(request, "User role not recognized.")
         return redirect("accounts:login")
-
+    
     return render(request, "accounts/login.html")
+    
 
 @login_required
 def my_profile_view(request):
@@ -113,7 +119,7 @@ def post_login_redirect_view(request):
 
     return redirect("accounts:login")
 
-
+@never_cache
 def logout_view(request):
     logout(request)
     return redirect("accounts:login")
@@ -123,6 +129,7 @@ def logout_view(request):
 # CUSTOM ADMIN DASHBOARD FLOW
 # ---------------------------
 
+@never_cache
 @admin_required
 def admin_dashboard_view(request):
     """

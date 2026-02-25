@@ -11,6 +11,7 @@ urlpatterns = [
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
     path("pending/", views.pending_approval_view, name="pending"),
+    path("go/", views.post_login_redirect_view, name="post_login_redirect"),
 
     # ✅ Profile (use views.my_profile_view)
     path("me/", views.my_profile_view, name="my_profile"),

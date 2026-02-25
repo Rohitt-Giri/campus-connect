@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.utils import timezone
 from django.db.models import Q
-
+from django.views.decorators.cache import never_cache
 
 from notices.models import Notice
 from accounts.models import User
@@ -27,7 +27,7 @@ except Exception:
 def _staff_or_admin(user):
     return user.is_authenticated and (user.is_superuser or getattr(user, "role", None) in [User.Role.STAFF, User.Role.ADMIN])
 
-
+@never_cache
 @login_required
 def staff_dashboard_view(request):
     if not _staff_or_admin(request.user):
