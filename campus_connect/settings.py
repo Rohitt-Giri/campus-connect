@@ -14,7 +14,7 @@ from pathlib import Path
 import uuid
 
 # Every time you restart server, this changes (dev only)
-DEV_SERVER_INSTANCE_ID = "dev-2"
+DEV_SERVER_INSTANCE_ID = str(uuid.uuid4())
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent

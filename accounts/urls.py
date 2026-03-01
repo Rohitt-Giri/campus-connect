@@ -1,5 +1,7 @@
 from django.urls import path, reverse_lazy
 from django.contrib.auth import views as auth_views
+from accounts import admin_reports_views
+
 
 from accounts import admin_views
 from . import views
@@ -73,4 +75,9 @@ urlpatterns = [
         ),
         name="password_reset_complete",
     ),
+
+    path("admin/reports/", admin_reports_views.admin_reports_view, name="admin_reports"),
+    path("admin/reports/export/csv/", admin_reports_views.admin_reports_export_csv, name="admin_reports_export_csv"),
+    path("admin/reports/export/excel/", admin_reports_views.admin_reports_export_excel, name="admin_reports_export_excel"),
+    path("admin/reports/export/pdf/", admin_reports_views.admin_reports_export_pdf, name="admin_reports_export_pdf"),
 ]

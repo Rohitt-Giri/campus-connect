@@ -5,6 +5,9 @@ from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.http import require_POST
 
+from accounts.models import User
+from notifications.utils import notify
+
 from .models import Notification
 
 
@@ -45,3 +48,4 @@ def notification_go_view(request, pk):
         return redirect(n.url)
 
     return redirect("notifications:list")
+

@@ -30,20 +30,13 @@ def _dashboard_for(user):
 
 
 class DevLogoutOnRestartMiddleware:
-    """
-    DEV-only: logs out users if server instance ID changes.
-    Prevents weird "back button shows old dashboard" behaviour during development.
-    """
-
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-        # Only run in DEBUG
         if not getattr(settings, "DEBUG", False):
             return self.get_response(request)
 
-        # ✅ request.user may not exist depending on middleware order
         user = getattr(request, "user", None)
         if user is None or not getattr(user, "is_authenticated", False):
             return self.get_response(request)
@@ -58,6 +51,7 @@ class DevLogoutOnRestartMiddleware:
         if last_id and last_id != server_id:
             logout(request)
             session.flush()
+            return redirect("core:landing")   # ✅ redirect on restart
 
         session["_dev_server_id"] = server_id
         return self.get_response(request)
@@ -82,7 +76,7 @@ class NoCacheAndAuthRedirectMiddleware:
         if user and getattr(user, "is_authenticated", False):
 
             # ✅ stop logged-in user from seeing login/register/reset pages
-            if any(path.startswith(p) for p in AUTH_PAGES):
+            if any(path.startswith(p) for p in AUTH_PAGES):           
                 return redirect(_dashboard_for(user))
 
             # ✅ role guard (avoid student/staff mixing by URL)

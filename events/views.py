@@ -11,6 +11,9 @@ from accounts.models import User
 from payments.models import PaymentProof
 from .models import Event, EventRegistration
 from .forms import EventForm, EventRegistrationForm
+from notifications.utils import notify
+from django.utils import timezone
+from django.urls import reverse
 
 
 def _staff_or_admin(user):
@@ -41,9 +44,40 @@ def event_create_view(request):
         if form.is_valid():
             event = form.save(commit=False)
             event.created_by = request.user
+
+            will_publish = (event.status == "published")
+            now = timezone.now()
+
+            # set publish timestamp
+            if will_publish and not getattr(event, "published_at", None):
+                event.published_at = now
+
             event.save()
+
+            # ✅ In-app notification only once
+            if will_publish and not getattr(event, "notified_at", None):
+
+                students = User.objects.filter(
+                    role=User.Role.STUDENT,
+                    is_active=True,
+                    is_approved=True
+                ).only("id")
+
+                for student in students:
+                    notify(
+                        student,
+                        title="New event published ✅",
+                        message=f"{event.title} is now available. Tap to view & register.",
+                        url=reverse("events:detail", kwargs={"pk": event.id}),
+                        category="event",
+                    )
+
+                event.notified_at = now
+                event.save(update_fields=["notified_at"])
+
             messages.success(request, "Event created successfully ✅")
             return redirect("events:detail", pk=event.pk)
+        
         messages.error(request, "Please fix the errors below.")
     else:
         form = EventForm()
@@ -162,3 +196,5 @@ def event_registrations_view(request, pk):
         "registrations": registrations,
         "proof_map": proof_map,
     })
+
+
