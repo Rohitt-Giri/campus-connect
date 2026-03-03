@@ -3,17 +3,18 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
-from events.email_utils import send_event_registration_email
-from audit.utils import log_action
-
-
-from accounts.models import User
-from payments.models import PaymentProof
-from .models import Event, EventRegistration
-from .forms import EventForm, EventRegistrationForm
-from notifications.utils import notify
 from django.utils import timezone
 from django.urls import reverse
+from django.views.decorators.http import require_POST
+
+from audit.utils import log_action
+from accounts.models import User
+from payments.models import PaymentProof
+from notifications.utils import notify
+
+from events.email_utils import send_event_registration_email
+from .models import Event, EventRegistration
+from .forms import EventForm, EventRegistrationForm
 
 
 def _staff_or_admin(user):
@@ -22,13 +23,12 @@ def _staff_or_admin(user):
     if getattr(user, "is_superuser", False) or getattr(user, "is_staff", False):
         return True
     return getattr(user, "role", None) in [User.Role.STAFF, User.Role.ADMIN]
-    
-
 
 
 @login_required
 def events_list_view(request):
-    events = Event.objects.filter(status="published").order_by("start_datetime")
+    # Students see only published + active
+    events = Event.objects.filter(status="published", is_active=True).order_by("start_datetime")
     return render(request, "events/events_list.html", {"events": events})
 
 
@@ -40,7 +40,7 @@ def event_create_view(request):
         return redirect("events:list")
 
     if request.method == "POST":
-        form = EventForm(request.POST)
+        form = EventForm(request.POST, request.FILES)
         if form.is_valid():
             event = form.save(commit=False)
             event.created_by = request.user
@@ -48,15 +48,18 @@ def event_create_view(request):
             will_publish = (event.status == "published")
             now = timezone.now()
 
-            # set publish timestamp
+            # set published timestamp if publishing now
             if will_publish and not getattr(event, "published_at", None):
                 event.published_at = now
 
+            # ensure active default
+            if getattr(event, "is_active", None) is None:
+                event.is_active = True
+
             event.save()
 
-            # ✅ In-app notification only once
+            # ✅ In-app notification (students) only once
             if will_publish and not getattr(event, "notified_at", None):
-
                 students = User.objects.filter(
                     role=User.Role.STUDENT,
                     is_active=True,
@@ -77,23 +80,92 @@ def event_create_view(request):
 
             messages.success(request, "Event created successfully ✅")
             return redirect("events:detail", pk=event.pk)
-        
+
         messages.error(request, "Please fix the errors below.")
     else:
         form = EventForm()
 
-    return render(request, "events/event_form.html", {"form": form})
+    return render(request, "events/event_form.html", {"form": form, "is_edit": False})
+
+
+@login_required
+def event_edit_view(request, pk):
+    # ✅ Staff/Admin only
+    if not _staff_or_admin(request.user):
+        return HttpResponseForbidden("Not allowed")
+
+    event = get_object_or_404(Event, pk=pk)
+
+    if request.method == "POST":
+        form = EventForm(request.POST, request.FILES, instance=event)
+        if form.is_valid():
+            updated = form.save(commit=False)
+
+            # if draft -> published, set published_at
+            if updated.status == "published" and not updated.published_at:
+                updated.published_at = timezone.now()
+
+            updated.save()
+
+            messages.success(request, "Event updated ✅")
+            return redirect("events:detail", pk=event.pk)
+
+        messages.error(request, "Please fix the errors below.")
+    else:
+        form = EventForm(instance=event)
+
+    return render(request, "events/event_form.html", {"form": form, "event": event, "is_edit": True})
+
+
+@login_required
+def event_archive_confirm_view(request, pk):
+    # ✅ Staff/Admin only
+    if not _staff_or_admin(request.user):
+        return HttpResponseForbidden("Not allowed")
+
+    event = get_object_or_404(Event, pk=pk)
+    return render(request, "events/event_archive_confirm.html", {"event": event})
+
+
+@login_required
+@require_POST
+def event_archive_view(request, pk):
+    # ✅ Staff/Admin only
+    if not _staff_or_admin(request.user):
+        return HttpResponseForbidden("Not allowed")
+
+    event = get_object_or_404(Event, pk=pk)
+
+    event.is_active = False
+    # optional but nice: once archived, it shouldn't remain "published"
+    if event.status == "published":
+        event.status = "draft"
+
+    # this field is optional - only if you added it in DB
+    if hasattr(event, "archived_at"):
+        event.archived_at = timezone.now()
+
+    # save safely depending on your model fields
+    update_fields = ["is_active", "status"]
+    if hasattr(event, "archived_at"):
+        update_fields.append("archived_at")
+
+    event.save(update_fields=update_fields)
+
+    messages.success(request, "Event archived ✅")
+    return redirect("events:list")
 
 
 @login_required
 def event_detail_view(request, pk):
-    event = get_object_or_404(Event, pk=pk)
+    # Staff/Admin can open any event (draft/archived too)
+    if _staff_or_admin(request.user):
+        event = get_object_or_404(Event, pk=pk)
+    else:
+        # Students: only published + active
+        event = get_object_or_404(Event, pk=pk, status="published", is_active=True)
 
-    registration = EventRegistration.objects.filter(
-        event=event,
-        user=request.user
-    ).first()
-
+    registration = EventRegistration.objects.filter(event=event, user=request.user).first()
     is_registered = registration is not None
 
     payment_proof = None
@@ -105,14 +177,15 @@ def event_detail_view(request, pk):
         "registration": registration,
         "is_registered": is_registered,
         "payment_proof": payment_proof,
-        # If you no longer use this, you can remove it from template too
         "PAYMENT_QR_URL": getattr(settings, "PAYMENT_QR_URL", ""),
+        "now": timezone.now(),
     })
 
 
 @login_required
 def event_register_view(request, pk):
-    event = get_object_or_404(Event, pk=pk, status="published")
+    # Students can only register published + active
+    event = get_object_or_404(Event, pk=pk, status="published", is_active=True)
 
     # ✅ Only students can register (admin superuser allowed)
     if not (request.user.is_superuser or request.user.role == User.Role.STUDENT):
@@ -181,7 +254,6 @@ def event_registrations_view(request, pk):
         .order_by("-registered_at")
     )
 
-    # Proof map: registration_id -> proof
     proof_map = {}
     if event.is_paid:
         proofs = (
@@ -196,5 +268,3 @@ def event_registrations_view(request, pk):
         "registrations": registrations,
         "proof_map": proof_map,
     })
-
-

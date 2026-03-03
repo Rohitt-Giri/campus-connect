@@ -1,215 +1,714 @@
 {% load static %}
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Admin Reports | Campus Connect</title>
+
+  <!-- Bootstrap + Chart.js -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
   <style>
+    :root{
+      --bg1:#eaf4f3;
+      --bg2:#f4fbff;
+
+      --text:#0f172a;
+      --muted:#64748b;
+
+      --card:#ffffff;
+      --border: rgba(15,23,42,.10);
+      --shadow: 0 18px 50px rgba(15,23,42,.10);
+      --shadow-sm: 0 10px 26px rgba(15,23,42,.08);
+
+      --radius: 18px;
+      --radius-lg: 22px;
+
+      --teal1:#0f766e;
+      --teal2:#20c997;
+      --teal3:#2dd4bf;
+
+      --danger:#ef4444;
+      --danger-soft: rgba(239,68,68,.10);
+      --success-soft: rgba(34,197,94,.12);
+      --warn-soft: rgba(245,158,11,.14);
+    }
+
     body{
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
       background:
-        radial-gradient(900px 450px at 15% 10%, rgba(34,197,94,0.10), transparent 55%),
-        linear-gradient(120deg,#fff 0%,#f7fbf8 65%,#fff 100%);
-      font-family:system-ui;
+        radial-gradient(1100px 550px at 15% 12%, rgba(45,212,191,.22), transparent 55%),
+        radial-gradient(900px 450px at 90% 0%, rgba(32,201,151,.18), transparent 55%),
+        linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 55%, #ffffff 100%);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
     }
-    .wrap{max-width:1200px;margin:0 auto;padding:28px 16px;}
+
+    /* ===== App layout ===== */
+    .app{ display:flex; min-height:100vh; }
+
+    /* ===== Sidebar ===== */
+    .side{
+      width: 300px;
+      background: linear-gradient(180deg, #0b1220 0%, #080f1c 55%, #070d18 100%);
+      color: #e5e7eb;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 18px;
+      border-right: 1px solid rgba(255,255,255,.06);
+
+      display:flex;
+      flex-direction: column;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .side-brand{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      padding: 10px 10px 14px;
+      border-radius: 18px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.06);
+    }
+    .side-badge{
+      width: 46px; height: 46px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, var(--teal1), var(--teal2), var(--teal3));
+      display:flex; align-items:center; justify-content:center;
+      color:#041a17;
+      font-weight: 950;
+      box-shadow: 0 18px 40px rgba(32,201,151,.20);
+      flex: 0 0 auto;
+    }
+    .side-title{
+      font-weight: 950;
+      letter-spacing: -.02em;
+      line-height: 1.1;
+      margin: 0;
+    }
+    .side-sub{
+      margin: 2px 0 0;
+      color: rgba(229,231,235,.75);
+      font-weight: 650;
+      font-size: .9rem;
+    }
+
+    .side-nav{
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding-right: 8px;
+      margin-top: 6px;
+    }
+    .side-nav::-webkit-scrollbar{ width: 8px; }
+    .side-nav::-webkit-scrollbar-thumb{
+      background: rgba(255,255,255,.10);
+      border-radius: 999px;
+    }
+    .side-nav::-webkit-scrollbar-thumb:hover{ background: rgba(255,255,255,.16); }
+
+    .nav-group{
+      display:flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-bottom: 10px;
+    }
+    .nav-item{
+      position: relative;
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      padding: 12px 12px;
+      border-radius: 16px;
+      text-decoration:none;
+      color: rgba(229,231,235,.90);
+      border: 1px solid rgba(255,255,255,.06);
+      background: rgba(255,255,255,.03);
+      transition: transform .12s ease, background .12s ease, border-color .12s ease;
+      font-weight: 850;
+    }
+    .nav-item:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,.05);
+      color:#fff;
+    }
+    .nav-item.active{
+      background: rgba(32,201,151,.14);
+      border-color: rgba(45,212,191,.22);
+      color:#eafffb;
+      box-shadow: 0 14px 30px rgba(32,201,151,.12);
+    }
+    .nav-item.active::before{
+      content:"";
+      position:absolute;
+      left:-10px;
+      top: 10px;
+      bottom: 10px;
+      width: 6px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, var(--teal2), var(--teal3));
+      box-shadow: 0 0 0 6px rgba(45,212,191,.10);
+    }
+    .nav-ico{
+      width: 38px; height: 38px;
+      border-radius: 14px;
+      display:flex; align-items:center; justify-content:center;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.08);
+      font-weight: 950;
+      flex: 0 0 auto;
+    }
+    .nav-item.active .nav-ico{
+      background: rgba(255,255,255,.10);
+      border-color: rgba(255,255,255,.14);
+    }
+
+    .side-footer{
+      padding-top: 12px;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+    .logout-btn{
+      width: 100%;
+      border-radius: 16px;
+      padding: 12px 14px;
+      font-weight: 950;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      color: #fff;
+      text-decoration:none;
+      display:block;
+      text-align:center;
+      transition: background .12s ease, transform .12s ease;
+    }
+    .logout-btn:hover{
+      background: rgba(255,255,255,.08);
+      transform: translateY(-1px);
+    }
+
+    /* ===== Main ===== */
+    .main{ flex:1; padding: 18px 18px 40px; }
+
+    /* ===== Topbar ===== */
+    .topbar{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .search{
+      flex: 1;
+      background: rgba(255,255,255,.80);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 10px 14px;
+      box-shadow: var(--shadow-sm);
+      display:flex;
+      gap: 10px;
+      align-items:center;
+      backdrop-filter: blur(12px);
+    }
+    .search .icon{ font-weight: 950; color: var(--muted); }
+    .search input{
+      border:0;
+      outline:0;
+      background: transparent;
+      width: 100%;
+      font-weight: 750;
+      color: var(--text);
+    }
+    .circle-btn{
+      width: 44px; height: 44px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.86);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      display:flex; align-items:center; justify-content:center;
+      position: relative;
+      text-decoration:none;
+      color: var(--text);
+      font-weight: 950;
+    }
+    .badge-count{
+      position:absolute;
+      top: -6px;
+      right: -6px;
+      border-radius: 999px;
+      padding: 2px 7px;
+      font-size: .78rem;
+      font-weight: 950;
+      background: var(--danger);
+      color:#fff;
+      border: 2px solid #fff;
+    }
+    .profile-chip{
+      display:flex;
+      align-items:center;
+      gap: 10px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.86);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .avatar{
+      width: 38px; height: 38px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--teal1), var(--teal2), var(--teal3));
+      display:flex; align-items:center; justify-content:center;
+      font-weight: 950;
+      color:#041a17;
+    }
+    .pname{ font-weight: 950; line-height: 1.1; margin:0; }
+    .prole{ margin:0; color: var(--muted); font-weight: 750; font-size: .85rem; }
+
+    /* ===== Hero header ===== */
+    .hero{
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--teal1) 0%, var(--teal2) 55%, var(--teal3) 100%);
+      color:#fff;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.18);
+      position:relative;
+      overflow:hidden;
+      margin-bottom: 14px;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      right:-120px; top:-90px;
+      width: 360px; height: 360px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+    }
+    .hero .kicker{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: .38rem .75rem;
+      font-weight: 950;
+      font-size: .85rem;
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.14);
+      backdrop-filter: blur(10px);
+      position:relative;
+      z-index:1;
+      white-space: nowrap;
+    }
+    .hero h1{
+      font-size: clamp(1.6rem, 2.2vw, 2.2rem);
+      font-weight: 950;
+      letter-spacing:-.02em;
+      margin: 10px 0 6px;
+      position:relative;
+      z-index:1;
+    }
+    .hero p{
+      margin:0;
+      color: rgba(255,255,255,.90);
+      font-weight: 650;
+      max-width: 70ch;
+      position:relative;
+      z-index:1;
+    }
+    .hero-actions{
+      margin-top: 12px;
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      position:relative;
+      z-index:1;
+    }
+    .btn-pill{
+      border-radius: 999px;
+      font-weight: 950;
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.14);
+      color:#fff;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+    }
+    .btn-pill.dark{
+      background: rgba(255,255,255,.92);
+      color:#0f172a;
+      border-color: rgba(255,255,255,.35);
+    }
+
+    /* ===== Cards ===== */
     .cardx{
-      border-radius:18px;
-      border:1px solid rgba(15,23,42,.10);
-      background:rgba(255,255,255,.96);
-      box-shadow:0 14px 30px rgba(15,23,42,.06);
+      background: rgba(255,255,255,.92);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
     }
-    .metric{font-size:28px;font-weight:900;letter-spacing:-.02em;}
-    .muted{color:#64748b;font-weight:650;}
-    .pill{border-radius:999px;}
-    .section-title{font-weight:900;letter-spacing:-.02em;}
-    .mini{font-size:12px;color:#64748b;}
-    .table td, .table th{vertical-align:middle;}
+    .panel{ padding: 16px; }
+    .panel-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .panel-title{
+      font-weight: 950;
+      letter-spacing:-.01em;
+      margin:0;
+    }
+    .link{
+      text-decoration:none;
+      font-weight: 900;
+      color: var(--teal1);
+    }
+    .link:hover{ text-decoration: underline; }
+
+    /* KPI */
+    .metric{
+      font-size: 28px;
+      font-weight: 950;
+      letter-spacing: -.02em;
+      line-height: 1.15;
+    }
+    .muted{ color: var(--muted); font-weight: 650; }
+    .mini{ font-size: 12px; color: var(--muted); font-weight: 650; }
+
+    /* Forms */
+    .form-control, .form-select{
+      border-radius: 14px;
+      border-color: rgba(15,23,42,.14);
+      font-weight: 750;
+      box-shadow: none;
+    }
+    .form-control:focus, .form-select:focus{
+      border-color: rgba(32,201,151,.45);
+      box-shadow: 0 0 0 .22rem rgba(32,201,151,.16);
+    }
+
+    /* Table polish */
+    .table thead th{
+      color: var(--muted);
+      font-weight: 950;
+      font-size: .88rem;
+      border-bottom-color: rgba(15,23,42,.10);
+      white-space: nowrap;
+    }
+    .table td{
+      vertical-align: middle;
+      border-top-color: rgba(15,23,42,.08);
+      font-weight: 650;
+    }
+    .badge{ border-radius: 999px; font-weight: 900; padding: .35rem .6rem; }
+
+    /* Responsive */
+    @media (max-width: 992px){
+      .side{ display:none; }
+      .main{ padding: 14px 14px 36px; }
+    }
   </style>
 </head>
+
 <body>
-<div class="wrap">
+<div class="app">
 
-  <div class="cardx p-3 mb-3 d-flex justify-content-between align-items-center">
-    <div>
-      <div class="h5 mb-0 fw-bold">📊 Admin Reports</div>
-      <div class="muted small">{{ label }}</div>
+  <!-- SIDEBAR (Admin Portal) -->
+  <aside class="side">
+    <div class="side-brand">
+      <div class="side-badge">CC</div>
+      <div>
+        <p class="side-title mb-0">Campus Connect</p>
+        <p class="side-sub mb-0">Admin Portal</p>
+      </div>
     </div>
 
-    <div class="d-flex flex-wrap gap-2">
-      <a class="btn btn-outline-dark pill px-3" href="{% url 'accounts:admin_dashboard' %}">Back</a>
+    <div class="side-nav">
+      <div class="nav-group">
+        <a class="nav-item" href="{% url 'accounts:admin_dashboard' %}">
+          <span class="nav-ico">🏠</span> Dashboard
+        </a>
+        <a class="nav-item" href="{% url 'accounts:admin_users' %}">
+          <span class="nav-ico">👥</span> Manage Users
+        </a>
+        <a class="nav-item" href="{% url 'notices:list' %}">
+          <span class="nav-ico">📌</span> Notices
+        </a>
+        <a class="nav-item" href="{% url 'events:list' %}">
+          <span class="nav-ico">📅</span> Events
+        </a>
+        <a class="nav-item" href="{% url 'payments:staff_list' %}?status=pending">
+          <span class="nav-ico">✅</span> Verify Payments
+        </a>
+        <a class="nav-item" href="{% url 'lostfound:staff_claims' %}">
+          <span class="nav-ico">🧾</span> Claim Requests
+        </a>
+        <a class="nav-item" href="{% url 'lostfound:staff_items' %}">
+          <span class="nav-ico">📦</span> Lost &amp; Found
+        </a>
+        <a class="nav-item" href="{% url 'audit:admin_logs' %}">
+          <span class="nav-ico">🕒</span> Activity Logs
+        </a>
 
-      <!-- Exports preserve same filters -->
-      <a class="btn btn-outline-secondary pill px-3"
-         href="{% url 'accounts:admin_reports_export_csv' %}?range={{ range_key }}&start={{ start }}&end={{ end }}">
-        Export CSV
+        <!-- ✅ REPORTS is HERE (active page) -->
+        <a class="nav-item active" href="{% url 'accounts:admin_reports' %}">
+          <span class="nav-ico">📊</span> Reports
+        </a>
+
+        <a class="nav-item" href="/admin/">
+          <span class="nav-ico">⚙️</span> Django Admin
+        </a>
+      </div>
+    </div>
+
+    <div class="side-footer">
+      <a class="logout-btn" href="{% url 'accounts:logout' %}">Logout</a>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="search">
+        <span class="icon">🔎</span>
+        <input placeholder="Search reports, users, payments..." />
+      </div>
+
+      <a class="circle-btn" href="{% url 'notifications:list' %}" title="Notifications">
+        🔔
+        {% if unread_count and unread_count > 0 %}
+          <span class="badge-count">{{ unread_count }}</span>
+        {% endif %}
       </a>
-      <a class="btn btn-outline-secondary pill px-3"
-         href="{% url 'accounts:admin_reports_export_excel' %}?range={{ range_key }}&start={{ start }}&end={{ end }}">
-        Export Excel
-      </a>
-      <a class="btn btn-outline-secondary pill px-3"
-         href="{% url 'accounts:admin_reports_export_pdf' %}?range={{ range_key }}&start={{ start }}&end={{ end }}">
-        Export PDF
-      </a>
-    </div>
-  </div>
 
-  <!-- FILTERS -->
-  <div class="cardx p-3 mb-3">
-    <form class="row g-2 align-items-end" method="get">
-      <div class="col-md-3">
-        <label class="form-label fw-semibold">Range</label>
-        <select name="range" class="form-select">
-          <option value="week" {% if range_key == "week" %}selected{% endif %}>Last 7 days</option>
-          <option value="month" {% if range_key == "month" %}selected{% endif %}>Last 30 days</option>
-          <option value="custom" {% if range_key == "custom" %}selected{% endif %}>Custom</option>
-        </select>
-        <div class="mini mt-1">Use Custom to pick exact dates.</div>
-      </div>
-
-      <div class="col-md-3">
-        <label class="form-label fw-semibold">Start (Custom)</label>
-        <input type="date" name="start" value="{{ start }}" class="form-control">
-      </div>
-
-      <div class="col-md-3">
-        <label class="form-label fw-semibold">End (Custom)</label>
-        <input type="date" name="end" value="{{ end }}" class="form-control">
-      </div>
-
-      <div class="col-md-3 d-flex gap-2">
-        <button class="btn btn-success pill px-4 w-100" type="submit">Apply</button>
-      </div>
-    </form>
-  </div>
-
-  <!-- KPI CARDS -->
-  <div class="row g-3">
-    <div class="col-lg-3 col-md-6">
-      <div class="cardx p-3">
-        <div class="muted">Users (Total)</div>
-        <div class="metric">{{ users_total }}</div>
-        <div class="mini">New in range: <b>{{ users_in_range }}</b></div>
-      </div>
-    </div>
-    <div class="col-lg-3 col-md-6">
-      <div class="cardx p-3">
-        <div class="muted">Students / Staff</div>
-        <div class="metric">{{ students_total }} / {{ staff_total }}</div>
-        <div class="mini">Pending approvals: <b>{{ pending_total }}</b></div>
-      </div>
-    </div>
-    <div class="col-lg-3 col-md-6">
-      <div class="cardx p-3">
-        <div class="muted">Registrations</div>
-        <div class="metric">{{ regs_total }}</div>
-        <div class="mini">In range: <b>{{ regs_in_range }}</b></div>
-      </div>
-    </div>
-    <div class="col-lg-3 col-md-6">
-      <div class="cardx p-3">
-        <div class="muted">Revenue (Range)</div>
-        <div class="metric">NPR {{ revenue_in_range }}</div>
-        <div class="mini">Approved: <b>{{ payments_approved }}</b> | Pending: <b>{{ payments_pending }}</b></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- CHARTS -->
-  <div class="row g-3 mt-1">
-    <div class="col-lg-8">
-      <div class="cardx p-3">
-        <div class="section-title mb-2">Trends (Daily)</div>
-        <canvas id="trendChart" height="95"></canvas>
-      </div>
-    </div>
-    <div class="col-lg-4">
-      <div class="cardx p-3">
-        <div class="section-title mb-2">Lost & Found Status</div>
-        <canvas id="lfChart" height="140"></canvas>
-        <div class="mini mt-2">Open: <b>{{ lf_open }}</b> | Returned: <b>{{ lf_returned }}</b></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- TABLES -->
-  <div class="row g-3 mt-1">
-    <div class="col-lg-6">
-      <div class="cardx p-3">
-        <div class="section-title mb-2">Recent Registrations</div>
-        <div class="table-responsive">
-          <table class="table table-sm align-middle">
-            <thead>
-              <tr>
-                <th>Event</th>
-                <th>User</th>
-                <th>Email</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for r in recent_regs %}
-                <tr>
-                  <td>{{ r.event.title }}</td>
-                  <td>{{ r.user.username }}</td>
-                  <td>{{ r.user.email }}</td>
-                </tr>
-              {% empty %}
-                <tr><td colspan="3" class="muted">No registrations yet.</td></tr>
-              {% endfor %}
-            </tbody>
-          </table>
+      <div class="profile-chip">
+        <div class="avatar">
+          {{ request.user.username|default:"A"|slice:":1"|upper }}
+        </div>
+        <div class="d-none d-md-block">
+          <p class="pname mb-0">{{ request.user.username|default:"Admin" }}</p>
+          <p class="prole mb-0">Admin</p>
         </div>
       </div>
     </div>
 
-    <div class="col-lg-6">
-      <div class="cardx p-3">
-        <div class="section-title mb-2">Recent Payments</div>
-        <div class="table-responsive">
-          <table class="table table-sm align-middle">
-            <thead>
-              <tr>
-                <th>Event</th>
-                <th>User</th>
-                <th>Status</th>
-                <th class="text-end">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for p in recent_payments %}
-                <tr>
-                  <td>{{ p.registration.event.title }}</td>
-                  <td>{{ p.registration.user.username }}</td>
-                  <td>
-                    {% if p.status == "approved" %}
-                      <span class="badge bg-success">Approved</span>
-                    {% elif p.status == "rejected" %}
-                      <span class="badge bg-danger">Rejected</span>
-                    {% else %}
-                      <span class="badge bg-warning text-dark">Pending</span>
-                    {% endif %}
-                  </td>
-                  <td class="text-end">{{ p.amount }} {{ p.currency }}</td>
-                </tr>
-              {% empty %}
-                <tr><td colspan="4" class="muted">No payments yet.</td></tr>
-              {% endfor %}
-            </tbody>
-          </table>
+    <!-- HERO -->
+    <div class="hero">
+      <div class="kicker">📊 Admin • Reports &amp; Analytics</div>
+      <h1>Reports Dashboard</h1>
+      <p>
+        Track user growth, registrations, payments, and Lost &amp; Found status for
+        <b>{{ label }}</b>.
+      </p>
+
+      <div class="hero-actions">
+        <a class="btn-pill dark" href="{% url 'accounts:admin_dashboard' %}">← Back</a>
+
+        <a class="btn-pill" href="{% url 'accounts:admin_reports_export_csv' %}?range={{ range_key }}&start={{ start }}&end={{ end }}">
+          Export CSV
+        </a>
+        <a class="btn-pill" href="{% url 'accounts:admin_reports_export_excel' %}?range={{ range_key }}&start={{ start }}&end={{ end }}">
+          Export Excel
+        </a>
+        <a class="btn-pill" href="{% url 'accounts:admin_reports_export_pdf' %}?range={{ range_key }}&start={{ start }}&end={{ end }}">
+          Export PDF
+        </a>
+      </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="cardx panel mb-3">
+      <div class="panel-head">
+        <div>
+          <div class="panel-title">Filters</div>
+          <div class="mini">Choose a range to update KPIs and charts.</div>
+        </div>
+      </div>
+
+      <form class="row g-2 align-items-end" method="get">
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Range</label>
+          <select name="range" class="form-select">
+            <option value="week" {% if range_key == "week" %}selected{% endif %}>Last 7 days</option>
+            <option value="month" {% if range_key == "month" %}selected{% endif %}>Last 30 days</option>
+            <option value="custom" {% if range_key == "custom" %}selected{% endif %}>Custom</option>
+          </select>
+          <div class="mini mt-1">Use Custom to pick exact dates.</div>
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">Start (Custom)</label>
+          <input type="date" name="start" value="{{ start }}" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+          <label class="form-label fw-semibold">End (Custom)</label>
+          <input type="date" name="end" value="{{ end }}" class="form-control">
+        </div>
+
+        <div class="col-md-3 d-grid">
+          <button class="btn btn-success" type="submit">Apply</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="row g-3">
+      <div class="col-lg-3 col-md-6">
+        <div class="cardx panel h-100">
+          <div class="muted">Users (Total)</div>
+          <div class="metric">{{ users_total }}</div>
+          <div class="mini">New in range: <b>{{ users_in_range }}</b></div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="cardx panel h-100">
+          <div class="muted">Students / Staff</div>
+          <div class="metric">{{ students_total }} / {{ staff_total }}</div>
+          <div class="mini">Pending approvals: <b>{{ pending_total }}</b></div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="cardx panel h-100">
+          <div class="muted">Registrations</div>
+          <div class="metric">{{ regs_total }}</div>
+          <div class="mini">In range: <b>{{ regs_in_range }}</b></div>
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <div class="cardx panel h-100">
+          <div class="muted">Revenue (Range)</div>
+          <div class="metric">NPR {{ revenue_in_range }}</div>
+          <div class="mini">Approved: <b>{{ payments_approved }}</b> | Pending: <b>{{ payments_pending }}</b></div>
         </div>
       </div>
     </div>
-  </div>
 
+    <!-- CHARTS -->
+    <div class="row g-3 mt-1">
+      <div class="col-lg-8">
+        <div class="cardx panel">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="panel-title">Trends (Daily)</div>
+            <span class="mini">Registrations • Payment count • Approved revenue</span>
+          </div>
+          <canvas id="trendChart" height="95"></canvas>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="cardx panel">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="panel-title">Lost &amp; Found Status</div>
+            <span class="mini">Open vs Returned</span>
+          </div>
+          <canvas id="lfChart" height="140"></canvas>
+          <div class="mini mt-2">Open: <b>{{ lf_open }}</b> | Returned: <b>{{ lf_returned }}</b></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TABLES -->
+    <div class="row g-3 mt-1">
+      <div class="col-lg-6">
+        <div class="cardx panel">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="panel-title">Recent Registrations</div>
+            <a class="link small" href="{% url 'events:list' %}">Open events</a>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Event</th>
+                  <th>User</th>
+                  <th>Email</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for r in recent_regs %}
+                  <tr>
+                    <td>{{ r.event.title }}</td>
+                    <td>{{ r.user.username }}</td>
+                    <td>{{ r.user.email }}</td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="3" class="muted">No registrations yet.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="cardx panel">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <div class="panel-title">Recent Payments</div>
+            <a class="link small" href="{% url 'payments:staff_list' %}?status=pending">Review payments</a>
+          </div>
+
+          <div class="table-responsive">
+            <table class="table table-sm align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Event</th>
+                  <th>User</th>
+                  <th>Status</th>
+                  <th class="text-end">Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for p in recent_payments %}
+                  <tr>
+                    <td>{{ p.registration.event.title }}</td>
+                    <td>{{ p.registration.user.username }}</td>
+                    <td>
+                      {% if p.status == "approved" %}
+                        <span class="badge bg-success">Approved</span>
+                      {% elif p.status == "rejected" %}
+                        <span class="badge bg-danger">Rejected</span>
+                      {% else %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                      {% endif %}
+                    </td>
+                    <td class="text-end">{{ p.amount }} {{ p.currency }}</td>
+                  </tr>
+                {% empty %}
+                  <tr><td colspan="4" class="muted">No payments yet.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mini mt-4">
+      © {{ year|default:"2026" }} Campus Connect • Admin Reports
+    </div>
+
+  </main>
 </div>
 
 <script>
   const payload = JSON.parse('{{ chart_json|escapejs }}');
 
-  // Trend chart (registrations + payment count + payment approved sum)
+  // Trend chart
   const ctx = document.getElementById('trendChart');
   new Chart(ctx, {
     type: 'line',
@@ -228,7 +727,7 @@
     }
   });
 
-  // LostFound chart
+  // Lost & Found chart
   const lf = document.getElementById('lfChart');
   new Chart(lf, {
     type: 'doughnut',

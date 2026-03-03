@@ -3,80 +3,304 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>My Claims | Lost & Found</title>
+  <title>My Claims | Lost &amp; Found</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
   <style>
-    :root{--bd:rgba(15,23,42,.10);}
-    body{background: radial-gradient(circle at top left,#e9fff2 0%,#f4fff8 30%,#f7fbff 70%,#fff 100%); font-family:system-ui;}
-    .wrap{max-width:1100px;margin:0 auto;padding:28px 16px;}
-    .cardx{border-radius:18px;border:1px solid var(--bd);background:rgba(255,255,255,.92);box-shadow:0 14px 30px rgba(15,23,42,.06);}
-    .pill{border-radius:999px;}
-    .tag{border-radius:999px;padding:.32rem .65rem;font-weight:800;font-size:.85rem;border:1px solid rgba(15,23,42,.12);display:inline-block;}
-    .stPending{background:#fff7ed;border-color:#fed7aa;color:#9a3412;}
-    .stApproved{background:#ecfdf5;border-color:#bbf7d0;color:#166534;}
-    .stRejected{background:#fef2f2;border-color:#fecaca;color:#991b1b;}
+    :root{
+      --bg:#eef3f6;
+      --muted:#64748b;
+      --border: rgba(15,23,42,.10);
+      --shadow: 0 18px 50px rgba(15,23,42,.10);
+      --shadow-sm: 0 10px 26px rgba(15,23,42,.08);
+      --radius: 18px;
+      --radius-lg: 22px;
+      --teal1:#0f766e;
+      --teal2:#20c997;
+    }
+
+    body{
+      background: radial-gradient(circle at 18% 12%, #d7f3ff 0%, var(--bg) 38%, var(--bg) 100%);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color:#0f172a;
+    }
+
+    .wrap{ max-width: 1240px; margin:0 auto; padding: 22px 14px 40px; }
+
+    .app-card{
+      background:#fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hero{
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--teal1) 0%, var(--teal2) 55%, #2dd4bf 100%);
+      color:#fff;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.20);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      right:-90px; top:-70px;
+      width: 280px; height: 280px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+    }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:.38rem .75rem;
+      font-weight:900;
+      font-size:.85rem;
+      border:1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.16);
+      backdrop-filter: blur(8px);
+      white-space: nowrap;
+    }
+
+    .pill-btn{ border-radius:999px; font-weight:900; padding: 10px 14px; }
+    .btn-light.soft{
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(255,255,255,.35);
+      color:#0f172a;
+    }
+
+    .muted{ color: var(--muted); }
+    .nice-alert{ border-radius: 16px; border: 1px solid var(--border); }
+
+    /* KPI chips */
+    .chip{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 12px 14px;
+      border-radius: 18px;
+      border:1px solid var(--border);
+      background:#fff;
+      box-shadow: var(--shadow-sm);
+      height:100%;
+    }
+    .chip .label{ font-size:.85rem; color: var(--muted); font-weight:800; }
+    .chip .value{ font-size:1.35rem; font-weight:1000; letter-spacing:-.02em; }
+    .chip .icon{
+      width:40px;height:40px;border-radius: 16px;
+      display:grid;place-items:center;
+      border:1px solid rgba(15,23,42,.10);
+      background:#f8fafc;
+    }
+
+    /* Table polish */
+    .table.app-table > :not(caption) > * > *{
+      padding: .9rem .9rem;
+      border-bottom-color: rgba(15,23,42,.08);
+      vertical-align: middle;
+    }
+    .table.app-table thead th{
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color:#475467;
+      background: #f8fafc;
+      border-bottom-color: rgba(15,23,42,.10);
+      white-space: nowrap;
+    }
+
+    /* Status pills */
+    .badge-soft{
+      border-radius:999px;
+      padding:.45em .75em;
+      font-weight:900;
+      border:1px solid rgba(15,23,42,.12);
+      background:#f8fafc;
+      color:#0f172a;
+      white-space: nowrap;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .stPending{ background:#fff7ed; border-color:#fed7aa; color:#9a3412; }
+    .stApproved{ background:#ecfdf5; border-color:#bbf7d0; color:#166534; }
+    .stRejected{ background:#fef2f2; border-color:#fecaca; color:#991b1b; }
+
+    /* Message clamp */
+    .msg{
+      color:#475569;
+      display:-webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow:hidden;
+    }
+
+    .empty{
+      border: 1px dashed rgba(15,23,42,.18);
+      border-radius: 18px;
+      padding: 26px;
+      background: #f8fafc;
+      text-align:center;
+      color:#475569;
+    }
   </style>
 </head>
+
 <body>
-<div class="wrap">
+  <div class="wrap">
 
-  <div class="cardx p-4 mb-3 d-flex justify-content-between align-items-center">
-    <div>
-      <h3 class="fw-bold mb-1">My Claims</h3>
-      <div class="text-muted">Claim requests you submitted.</div>
+    <!-- Hero -->
+    <div class="hero mb-3">
+      <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-2" style="position:relative; z-index:1;">
+        <div>
+          <div class="tag mb-2"><i class="bi bi-clipboard-check"></i> Lost &amp; Found</div>
+          <h1 class="h4 fw-bold mb-1">My Claims</h1>
+          <div class="text-white-75">Track claim requests you submitted and their approval status.</div>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+          <a class="btn btn-light soft pill-btn" href="{% url 'lostfound:list' %}">
+            <i class="bi bi-grid-1x2 me-1"></i> All Items
+          </a>
+          <a class="btn btn-light soft pill-btn" href="{% url 'lostfound:create' %}">
+            <i class="bi bi-plus-circle me-1"></i> Post Item
+          </a>
+        </div>
+      </div>
     </div>
-    <a class="btn btn-outline-dark pill" href="{% url 'lostfound:list' %}">All Items</a>
+
+    <!-- Messages -->
+    {% if messages %}
+      <div class="mb-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} nice-alert mb-2">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- KPI row (safe: uses claims|length; no backend needed) -->
+    <div class="row g-3 mb-3">
+      <div class="col-12 col-md-3">
+        <div class="chip">
+          <div>
+            <div class="label">Total claims</div>
+            <div class="value">{{ claims|length }}</div>
+          </div>
+          <div class="icon"><i class="bi bi-collection"></i></div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-3">
+        <div class="chip">
+          <div>
+            <div class="label">Pending</div>
+            <!-- If you later pass counts from backend, replace this line -->
+            <div class="value">—</div>
+          </div>
+          <div class="icon"><i class="bi bi-hourglass-split"></i></div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-3">
+        <div class="chip">
+          <div>
+            <div class="label">Approved</div>
+            <div class="value">—</div>
+          </div>
+          <div class="icon"><i class="bi bi-check2-circle"></i></div>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-3">
+        <div class="chip">
+          <div>
+            <div class="label">Rejected</div>
+            <div class="value">—</div>
+          </div>
+          <div class="icon"><i class="bi bi-x-circle"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="app-card p-3">
+      <div class="table-responsive">
+        <table class="table app-table align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Status</th>
+              <th>Submitted</th>
+              <th style="min-width:380px;">Message</th>
+              <th class="text-end">Open</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for c in claims %}
+              <tr>
+                <td class="fw-semibold">
+                  {{ c.item.title }}
+                  <div class="small muted">{{ c.item.get_item_type_display }} • {% if c.item.location %}{{ c.item.location }}{% else %}—{% endif %}</div>
+                </td>
+
+                <td>
+                  {% if c.status == "pending" %}
+                    <span class="badge-soft stPending"><i class="bi bi-hourglass-split"></i> Pending</span>
+                  {% elif c.status == "approved" %}
+                    <span class="badge-soft stApproved"><i class="bi bi-check2-circle"></i> Approved</span>
+                  {% else %}
+                    <span class="badge-soft stRejected"><i class="bi bi-x-circle"></i> Rejected</span>
+                  {% endif %}
+                </td>
+
+                <td class="text-muted">{{ c.created_at|date:"M d, Y" }}</td>
+
+                <td>
+                  <div class="msg">{{ c.proof_message|default:"—" }}</div>
+                </td>
+
+                <td class="text-end">
+                  <a class="btn btn-outline-dark pill-btn" href="{% url 'lostfound:detail' c.item.pk %}">
+                    View
+                  </a>
+                </td>
+              </tr>
+
+            {% empty %}
+              <tr>
+                <td colspan="5">
+                  <div class="empty my-2">
+                    <div class="display-6 mb-2">📝</div>
+                    <div class="fw-bold mb-1">No claim requests yet</div>
+                    <div class="small text-muted mb-3">When you claim an item, it will appear here for tracking.</div>
+                    <a class="btn btn-success pill-btn" href="{% url 'lostfound:list' %}">
+                      Browse items
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+
+        </table>
+      </div>
+    </div>
+
+    <div class="text-center small muted mt-4">
+      © {{ now|date:"Y" }} Campus Connect
+    </div>
+
   </div>
 
-  {% if messages %}
-    <div class="mb-3">
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
-      {% endfor %}
-    </div>
-  {% endif %}
-
-  <div class="cardx p-3">
-    <div class="table-responsive">
-      <table class="table align-middle mb-0">
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Status</th>
-            <th>Submitted</th>
-            <th style="width:45%;">Message</th>
-            <th class="text-end">Open</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for c in claims %}
-            <tr>
-              <td class="fw-semibold">{{ c.item.title }}</td>
-              <td>
-                {% if c.status == "pending" %}
-                  <span class="tag stPending">Pending</span>
-                {% elif c.status == "approved" %}
-                  <span class="tag stApproved">Approved</span>
-                {% else %}
-                  <span class="tag stRejected">Rejected</span>
-                {% endif %}
-              </td>
-              <td>{{ c.created_at|date:"M d, Y" }}</td>
-              <td class="text-muted">{{ c.proof_message|default:"—" }}</td>
-              <td class="text-end">
-                <a class="btn btn-outline-dark pill btn-sm" href="{% url 'lostfound:detail' c.item.pk %}">View</a>
-              </td>
-            </tr>
-          {% empty %}
-            <tr>
-              <td colspan="5" class="text-muted">No claim requests yet.</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-</div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

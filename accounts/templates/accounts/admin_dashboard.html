@@ -1,528 +1,809 @@
 {% load static %}
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Campus Connect | Admin Dashboard</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <style>
-    :root{
-      --bg:#f7fbf8;
-      --card:#ffffff;
-      --text:#0f172a;
-      --muted:#475569;
-      --border: rgba(15,23,42,0.10);
+  :root{
+    --bg1:#eaf4f3;
+    --bg2:#f4fbff;
 
-      --green:#16a34a;
-      --green2:#22c55e;
+    --text:#0f172a;
+    --muted:#64748b;
 
-      --shadow2: 0 10px 28px rgba(15,23,42,0.08);
-      --radius: 18px;
-    }
+    --card:#ffffff;
+    --border: rgba(15,23,42,.10);
+    --shadow: 0 18px 50px rgba(15,23,42,.10);
+    --shadow-sm: 0 10px 26px rgba(15,23,42,.08);
 
-    body{
-      min-height:100vh;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(900px 450px at 15% 10%, rgba(34,197,94,0.16), transparent 55%),
-        linear-gradient(120deg, #ffffff 0%, var(--bg) 65%, #ffffff 100%);
-    }
+    --radius: 18px;
+    --radius-lg: 22px;
 
-    .cc-nav{
-      background: rgba(255,255,255,0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-    .brand{
-      text-decoration:none;
-      color: var(--text);
-      font-weight: 900;
-      letter-spacing: -0.02em;
-      display:flex;
-      align-items:center;
-      gap:.75rem;
-    }
-    .brand-badge{
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, var(--green), var(--green2));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color: #06120a;
-      font-weight: 950;
-      box-shadow: 0 14px 30px rgba(34,197,94,0.22);
-    }
+    --teal1:#0f766e;
+    --teal2:#20c997;
+    --teal3:#2dd4bf;
 
-    .btn-pill{
-      border-radius: 999px;
-      padding: .55rem 1.1rem;
-      font-weight: 800;
-    }
-    .btn-ghost{
-      border: 1px solid rgba(15,23,42,0.18);
-      background: #fff;
-      color: var(--text);
-    }
-    .btn-ghost:hover{ background:#f8fafc; }
+    --danger:#ef4444;
+    --danger-soft: rgba(239,68,68,.10);
+    --success-soft: rgba(34,197,94,.12);
+    --warn-soft: rgba(245,158,11,.14);
+  }
 
-    .wrap{ padding: 2rem 0 3rem; }
+  body{
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    background:
+      radial-gradient(1100px 550px at 15% 12%, rgba(45,212,191,.22), transparent 55%),
+      radial-gradient(900px 450px at 90% 0%, rgba(32,201,151,.18), transparent 55%),
+      linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 55%, #ffffff 100%);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
 
-    .cc-card{
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow2);
-    }
-    .cc-card-pad{ padding: 1.25rem; }
+  /* Layout */
+  .app{ display:flex; min-height: 100vh; }
 
-    .title{
-      font-weight: 950;
-      letter-spacing: -0.02em;
-      margin-bottom: .25rem;
-    }
-    .sub{ color: var(--muted); font-weight: 600; }
+  /* =========================
+     SIDEBAR (UPDATED / FIXED)
+     - scrollable nav
+     - logout pinned
+     - no cut-off on small heights
+  ========================= */
+  .side{
+    width: 300px;
+    background: linear-gradient(180deg, #0b1220 0%, #080f1c 55%, #070d18 100%);
+    color: #e5e7eb;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: 18px;
+    border-right: 1px solid rgba(255,255,255,.06);
 
-    .stat-label{ color: var(--muted); font-weight: 800; font-size: .92rem; }
-    .stat-value{ font-weight: 950; font-size: 1.7rem; letter-spacing: -0.02em; }
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow: hidden; /* ensures inner scroll works nicely */
+  }
 
-    .table thead th{
-      color: var(--muted);
-      font-weight: 900;
-      font-size: .9rem;
-      border-bottom-color: rgba(15,23,42,0.10);
-    }
-    .table td{
-      vertical-align: middle;
-      border-top-color: rgba(15,23,42,0.08);
-      font-weight: 600;
-    }
+  .side-brand{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+    padding: 10px 10px 14px;
+    border-radius: 18px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.06);
+  }
+  .side-badge{
+    width: 46px; height: 46px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--teal1), var(--teal2), var(--teal3));
+    display:flex; align-items:center; justify-content:center;
+    color:#041a17;
+    font-weight: 950;
+    box-shadow: 0 18px 40px rgba(32,201,151,.20);
+    flex: 0 0 auto;
+  }
+  .side-title{
+    font-weight: 950;
+    letter-spacing: -.02em;
+    line-height: 1.1;
+    margin: 0;
+  }
+  .side-sub{
+    margin: 2px 0 0;
+    color: rgba(229,231,235,.75);
+    font-weight: 650;
+    font-size: .9rem;
+  }
 
-    .role-pill{
-      border-radius: 999px;
-      padding: .28rem .65rem;
-      font-weight: 900;
-      font-size: .85rem;
-      border: 1px solid rgba(15,23,42,0.12);
-      color: var(--muted);
-      background: #fff;
-      display:inline-block;
-    }
+  /* Scrollable nav area */
+  .side-nav{
+    flex: 1;
+    min-height: 0;          /* IMPORTANT: allows proper scrolling inside flex */
+    overflow-y: auto;
+    padding-right: 8px;     /* room for scrollbar */
+    margin-top: 6px;
+  }
 
-    .btn-approve{
-      border: 0;
-      border-radius: 999px;
-      padding: .45rem .9rem;
-      font-weight: 900;
-      color: #06120a;
-      background: linear-gradient(135deg, var(--green), var(--green2));
-    }
-    .btn-reject{
-      border-radius: 999px;
-      padding: .45rem .9rem;
-      font-weight: 900;
-      border: 1px solid rgba(15,23,42,0.18);
-      background: #fff;
-      color: var(--text);
-    }
+  .side-nav::-webkit-scrollbar{ width: 8px; }
+  .side-nav::-webkit-scrollbar-thumb{
+    background: rgba(255,255,255,.10);
+    border-radius: 999px;
+  }
+  .side-nav::-webkit-scrollbar-thumb:hover{
+    background: rgba(255,255,255,.16);
+  }
 
-    .mini-link{
-      font-weight: 900;
-      text-decoration:none;
-      color: var(--green);
-    }
-    .mini-link:hover{ text-decoration:underline; }
+  .nav-group{
+    display:flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-bottom: 10px;
+  }
 
-    footer{
-      color: var(--muted);
-      font-weight: 600;
-      font-size: .9rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid rgba(15,23,42,0.10);
-      margin-top: 2rem;
-    }
-  </style>
+  .nav-item{
+    position: relative;
+    display:flex;
+    align-items:center;
+    gap: 12px;
+    padding: 12px 12px;
+    border-radius: 16px;
+    text-decoration:none;
+    color: rgba(229,231,235,.90);
+    border: 1px solid rgba(255,255,255,.06);
+    background: rgba(255,255,255,.03);
+    transition: transform .12s ease, background .12s ease, border-color .12s ease;
+    font-weight: 850;
+  }
+  .nav-item:hover{
+    transform: translateY(-1px);
+    background: rgba(255,255,255,.05);
+    color:#fff;
+  }
+
+  /* Active with "template-like" glow */
+  .nav-item.active{
+    background: rgba(32,201,151,.14);
+    border-color: rgba(45,212,191,.22);
+    color:#eafffb;
+    box-shadow: 0 14px 30px rgba(32,201,151,.12);
+  }
+  .nav-item.active::before{
+    content:"";
+    position:absolute;
+    left:-10px;
+    top: 10px;
+    bottom: 10px;
+    width: 6px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--teal2), var(--teal3));
+    box-shadow: 0 0 0 6px rgba(45,212,191,.10);
+  }
+
+  .nav-ico{
+    width: 38px; height: 38px;
+    border-radius: 14px;
+    display:flex; align-items:center; justify-content:center;
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.08);
+    font-weight: 950;
+    flex: 0 0 auto;
+  }
+  .nav-item.active .nav-ico{
+    background: rgba(255,255,255,.10);
+    border-color: rgba(255,255,255,.14);
+  }
+
+  /* Footer pinned naturally (NOT absolute) */
+  .side-footer{
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,.08);
+  }
+  .logout-btn{
+    width: 100%;
+    border-radius: 16px;
+    padding: 12px 14px;
+    font-weight: 950;
+    border: 1px solid rgba(255,255,255,.10);
+    background: rgba(255,255,255,.05);
+    color: #fff;
+    text-decoration:none;
+    display:block;
+    text-align:center;
+    transition: background .12s ease, transform .12s ease;
+  }
+  .logout-btn:hover{
+    background: rgba(255,255,255,.08);
+    transform: translateY(-1px);
+  }
+
+  /* Main */
+  .main{ flex: 1; padding: 18px 18px 40px; }
+
+  /* Topbar */
+  .topbar{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .search{
+    flex: 1;
+    background: rgba(255,255,255,.80);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 10px 14px;
+    box-shadow: var(--shadow-sm);
+    display:flex;
+    gap: 10px;
+    align-items:center;
+    backdrop-filter: blur(12px);
+  }
+  .search input{
+    border:0;
+    outline:0;
+    background: transparent;
+    width: 100%;
+    font-weight: 750;
+    color: var(--text);
+  }
+  .circle-btn{
+    width: 44px; height: 44px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.86);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+    display:flex; align-items:center; justify-content:center;
+    position: relative;
+    text-decoration:none;
+    color: var(--text);
+    font-weight: 950;
+  }
+  .profile-chip{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.86);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-sm);
+  }
+  .avatar{
+    width: 38px; height: 38px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--teal1), var(--teal2), var(--teal3));
+    display:flex; align-items:center; justify-content:center;
+    font-weight: 950;
+    color:#041a17;
+  }
+  .pname{ font-weight: 950; line-height: 1.1; margin:0; }
+  .prole{ margin:0; color: var(--muted); font-weight: 750; font-size: .85rem; }
+
+  .badge-dot{
+    position:absolute;
+    top: 6px;
+    right: 7px;
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--danger);
+    box-shadow: 0 0 0 5px rgba(239,68,68,.18);
+    display:none;
+  }
+  .badge-count{
+    position:absolute;
+    top: -6px;
+    right: -6px;
+    border-radius: 999px;
+    padding: 2px 7px;
+    font-size: .78rem;
+    font-weight: 950;
+    background: var(--danger);
+    color:#fff;
+    border: 2px solid #fff;
+  }
+
+  /* Hero */
+  .hero{
+    border-radius: var(--radius-lg);
+    background: linear-gradient(135deg, var(--teal1) 0%, var(--teal2) 55%, var(--teal3) 100%);
+    color:#fff;
+    padding: 18px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(255,255,255,.18);
+    position:relative;
+    overflow:hidden;
+    margin-bottom: 16px;
+  }
+  .hero:after{
+    content:"";
+    position:absolute;
+    right:-120px; top:-90px;
+    width: 360px; height: 360px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.14);
+  }
+  .hero .kicker{
+    display:inline-flex;
+    align-items:center;
+    gap: 8px;
+    border-radius: 999px;
+    padding: .38rem .75rem;
+    font-weight: 950;
+    font-size: .85rem;
+    border: 1px solid rgba(255,255,255,.22);
+    background: rgba(255,255,255,.14);
+    backdrop-filter: blur(10px);
+    position:relative;
+    z-index:1;
+    white-space: nowrap;
+  }
+  .hero h1{
+    font-size: clamp(1.6rem, 2.2vw, 2.2rem);
+    font-weight: 950;
+    letter-spacing:-.02em;
+    margin: 10px 0 6px;
+    position:relative;
+    z-index:1;
+  }
+  .hero p{
+    margin:0;
+    color: rgba(255,255,255,.90);
+    font-weight: 650;
+    max-width: 70ch;
+    position:relative;
+    z-index:1;
+  }
+  .hero-actions{
+    margin-top: 12px;
+    display:flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    position:relative;
+    z-index:1;
+  }
+  .btn-pill{
+    border-radius: 999px;
+    font-weight: 950;
+    padding: 10px 14px;
+    border: 1px solid rgba(255,255,255,.22);
+    background: rgba(255,255,255,.14);
+    color:#fff;
+    text-decoration:none;
+  }
+  .btn-pill.dark{
+    background: rgba(255,255,255,.92);
+    color:#0f172a;
+    border-color: rgba(255,255,255,.35);
+  }
+
+  /* Cards */
+  .cardx{
+    background: rgba(255,255,255,.92);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+  }
+  .stat{
+    padding: 16px;
+    height: 100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 12px;
+  }
+  .stat .label{
+    color: var(--muted);
+    font-weight: 850;
+    font-size: .92rem;
+  }
+  .stat .value{
+    font-weight: 950;
+    font-size: 1.55rem;
+    letter-spacing:-.02em;
+  }
+  .stat .mini{
+    width: 44px; height: 44px;
+    border-radius: 16px;
+    display:flex; align-items:center; justify-content:center;
+    font-weight: 950;
+    border: 1px solid rgba(15,23,42,.10);
+    background:#f8fafc;
+    color:#0f172a;
+  }
+
+  .panel{ padding: 16px; }
+  .panel-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .panel-title{
+    font-weight: 950;
+    letter-spacing:-.01em;
+    margin:0;
+  }
+  .link{
+    text-decoration:none;
+    font-weight: 900;
+    color: var(--teal1);
+  }
+  .link:hover{ text-decoration: underline; }
+
+  .rowline{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap: 12px;
+    padding: 12px 0;
+    border-top: 1px solid rgba(15,23,42,.08);
+  }
+  .rowline:first-child{ border-top:0; padding-top: 0; }
+
+  .meta{ color: var(--muted); font-weight: 700; font-size: .92rem; }
+
+  .chip{
+    display:inline-flex;
+    align-items:center;
+    gap: 8px;
+    border-radius: 999px;
+    padding: .32rem .65rem;
+    font-weight: 950;
+    font-size: .82rem;
+    border: 1px solid rgba(15,23,42,.12);
+    background:#f8fafc;
+    color:#0f172a;
+    white-space: nowrap;
+  }
+  .chip.pending{ background: var(--warn-soft); border-color: rgba(245,158,11,.22); color:#92400e; }
+  .chip.ok{ background: var(--success-soft); border-color: rgba(34,197,94,.22); color:#166534; }
+  .chip.bad{ background: var(--danger-soft); border-color: rgba(239,68,68,.22); color:#991b1b; }
+
+  .btn-sm-pill{
+    border-radius: 999px;
+    padding: .42rem .85rem;
+    font-weight: 950;
+    border: 1px solid rgba(15,23,42,.16);
+    background:#fff;
+    color:#0f172a;
+    text-decoration:none;
+    display:inline-block;
+    white-space: nowrap;
+  }
+  .btn-sm-pill.primary{
+    border: 0;
+    background: linear-gradient(135deg, var(--teal1), var(--teal2), var(--teal3));
+    color:#041a17;
+  }
+
+  /* Table polish */
+  .table thead th{
+    color: var(--muted);
+    font-weight: 950;
+    font-size: .88rem;
+    border-bottom-color: rgba(15,23,42,.10);
+    white-space: nowrap;
+  }
+  .table td{
+    vertical-align: middle;
+    border-top-color: rgba(15,23,42,.08);
+    font-weight: 650;
+  }
+
+  /* Responsive */
+  @media (max-width: 992px){
+    .side{ display:none; }
+    .main{ padding: 14px 14px 36px; }
+  }
+</style>
 </head>
 
 <body>
-  <nav class="cc-nav py-3">
-    <div class="container d-flex align-items-center justify-content-between gap-3">
-      <a class="brand" href="{% url 'core:landing' %}">
-        <span class="brand-badge">CC</span>
-        <span>Campus Connect</span>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="side">
+  <div class="side-brand">
+    <div class="side-badge">CC</div>
+    <div>
+      <p class="side-title mb-0">Campus Connect</p>
+      <p class="side-sub">Admin Portal</p>
+    </div>
+  </div>
+
+  <!-- SCROLLABLE NAV -->
+  <div class="side-nav">
+    <div class="nav-group">
+
+      <a class="nav-item {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}"
+         href="{% url 'accounts:admin_dashboard' %}">
+        <span class="nav-ico">🏠</span> Dashboard
       </a>
 
-      <div class="d-flex align-items-center gap-2">
-        <div class="d-none d-md-block small" style="color:var(--muted); font-weight:700;">
-          Admin: <span style="color:var(--text); font-weight:900;">{{ request.user.username }}</span>
-        </div>
-        <a class="btn btn-pill btn-ghost" href="{% url 'accounts:logout' %}">Logout</a>
-      </div>
-    </div>
-  </nav>
+      <a class="nav-item {% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}"
+         href="{% url 'accounts:admin_users' %}">
+        <span class="nav-ico">👥</span> Manage Users
+      </a>
 
-  <main class="wrap">
-    <div class="container">
+      <a class="nav-item {% if request.resolver_match.app_name == 'notices' %}active{% endif %}"
+         href="{% url 'notices:list' %}">
+        <span class="nav-ico">📌</span> Notices
+      </a>
 
-      {% if messages %}
-        <div class="mb-3">
-          {% for message in messages %}
-            <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
-          {% endfor %}
-        </div>
-      {% endif %}
+      <a class="nav-item {% if request.resolver_match.app_name == 'events' %}active{% endif %}"
+         href="{% url 'events:list' %}">
+        <span class="nav-ico">📅</span> Events
+      </a>
 
-      <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
-        <div>
-          <h2 class="title">Admin Dashboard</h2>
-          <div class="sub">Approve Student/Staff accounts and oversee system modules.</div>
-        </div>
+      <a class="nav-item {% if request.resolver_match.app_name == 'payments' %}active{% endif %}"
+         href="{% url 'payments:staff_list' %}?status=pending">
+        <span class="nav-ico">✅</span> Verify Payments
+      </a>
 
-        <div class="d-flex gap-2 flex-wrap">
-          <a href="{% url 'notifications:list' %}" class="btn btn-light position-relative">
-  🔔
-  {% if unread_count and unread_count > 0 %}
-    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-      {{ unread_count }}
-    </span>
-  {% endif %}
-</a>
-          <a class="btn btn-pill btn-ghost" href="/admin/">Open Django Admin</a>
-          <a class="btn btn-pill btn-ghost" href="{% url 'notices:list' %}">Notices</a>
-          <a class="btn btn-pill btn-ghost" href="{% url 'events:list' %}">Events</a>
-          <a class="btn btn-pill btn-ghost" href="{% url 'payments:staff_list' %}?status=pending">Payments</a>
-          <a class="btn btn-pill btn-ghost" href="{% url 'lostfound:staff_claims' %}">Claims</a>
-          <a class="btn btn-pill btn-ghost" href="{% url 'accounts:admin_users' %}">Manage Users</a>
-          <a class="btn btn-pill btn-ghost" href="{% url 'audit:admin_logs' %}">Activity Logs</a>
-          <a class="btn btn-pill btn-ghost" href="{% url 'accounts:admin_reports' %}" class="btn btn-outline-primary">Reports</a>
-        </div>
-      </div>
+      <a class="nav-item {% if request.resolver_match.url_name == 'staff_claims' %}active{% endif %}"
+         href="{% url 'lostfound:staff_claims' %}">
+        <span class="nav-ico">🧾</span> Claim Requests
+      </a>
 
-      <!-- Main Stats -->
-      <div class="row g-3 mb-3">
-        <div class="col-md-4">
-          <div class="cc-card cc-card-pad">
-            <div class="stat-label">Total Students (Active)</div>
-            <div class="stat-value">{{ stats.students_total }}</div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="cc-card cc-card-pad">
-            <div class="stat-label">Total Staff (Active)</div>
-            <div class="stat-value">{{ stats.staff_total }}</div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="cc-card cc-card-pad">
-            <div class="stat-label">Pending Approvals</div>
-            <div class="stat-value">{{ stats.pending_total }}</div>
-          </div>
-        </div>
-      </div>
+      <a class="nav-item {% if request.resolver_match.url_name == 'staff_items' %}active{% endif %}"
+         href="{% url 'lostfound:staff_items' %}">
+        <span class="nav-ico">📦</span> Lost &amp; Found
+      </a>
 
-      <!-- Module Overview Stats -->
-      <div class="row g-3 mb-4">
-        <div class="col-md-4">
-          <div class="cc-card cc-card-pad">
-            <div class="stat-label">Events (Total)</div>
-            <div class="stat-value">{{ stats.events_total|default:0 }}</div>
-            <div class="small mt-1" style="color:var(--muted); font-weight:700;">
-              <a class="mini-link" href="{% url 'events:list' %}">Open events</a>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="cc-card cc-card-pad">
-            <div class="stat-label">Registrations (Total)</div>
-            <div class="stat-value">{{ stats.registrations_total|default:0 }}</div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="cc-card cc-card-pad">
-            <div class="stat-label">Notices (Active)</div>
-            <div class="stat-value">{{ stats.notices_total|default:0 }}</div>
-            <div class="small mt-1" style="color:var(--muted); font-weight:700;">
-              <a class="mini-link" href="{% url 'notices:create' %}">+ Create notice</a>
-            </div>
-          </div>
-        </div>
+      <a class="nav-item {% if request.resolver_match.app_name == 'audit' %}active{% endif %}"
+         href="{% url 'audit:admin_logs' %}">
+        <span class="nav-ico">🕒</span> Activity Logs
+      </a>
 
-        <div class="col-md-6">
-          <div class="cc-card cc-card-pad">
-            <div class="stat-label">Payments Pending</div>
-            <div class="stat-value">{{ stats.pending_payments|default:0 }}</div>
-            <div class="small mt-1" style="color:var(--muted); font-weight:700;">
-              <a class="mini-link" href="{% url 'payments:staff_list' %}?status=pending">Review payments</a>
-            </div>
-          </div>
-        </div>
+      <!-- ✅ REPORTS ADDED -->
+      <a class="nav-item {% if request.resolver_match.url_name == 'admin_reports' %}active{% endif %}"
+         href="{% url 'accounts:admin_reports' %}">
+        <span class="nav-ico">📊</span> Reports
+      </a>
 
-        <div class="col-md-6">
-          <div class="cc-card cc-card-pad">
-            <div class="stat-label">Lost &amp; Found Claims Pending</div>
-            <div class="stat-value">{{ stats.pending_claims|default:0 }}</div>
-            <div class="small mt-1" style="color:var(--muted); font-weight:700;">
-              <a class="mini-link" href="{% url 'lostfound:staff_claims' %}">Review claims</a>
-            </div>
-          </div>
-        </div>
-      </div>
+      <a class="nav-item" href="/admin/">
+        <span class="nav-ico">⚙️</span> Django Admin
+      </a>
 
-      <!-- ============================= -->
-      <!-- ADMIN MODULE OVERSIGHT PANELS -->
-      <!-- ============================= -->
-      <div class="row g-3 mb-4">
-
-        <!-- Events Oversight -->
-        <div class="col-lg-4">
-          <div class="cc-card cc-card-pad h-100">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <div style="font-weight:950; letter-spacing:-0.01em;">Events Oversight</div>
-              <span class="role-pill">Total: {{ stats.events_total|default:0 }}</span>
-            </div>
-
-            <div class="small mb-3" style="color:var(--muted); font-weight:700;">
-              Upcoming: <span style="color:var(--text); font-weight:950;">{{ overview.upcoming_events_count|default:0 }}</span>
-            </div>
-
-            <div class="d-grid gap-2 mb-3">
-              <a class="btn btn-pill btn-ghost" href="{% url 'events:list' %}">Open Events</a>
-            </div>
-
-            <div class="small mb-2" style="color:var(--muted); font-weight:900;">Latest Events</div>
-            <div class="list-group list-group-flush">
-              {% for e in overview.latest_events %}
-                <div class="list-group-item px-0 d-flex justify-content-between align-items-center">
-                  <div>
-                    <div style="font-weight:900;">{{ e.title }}</div>
-                    <div class="small" style="color:var(--muted); font-weight:700;">
-                      {% if e.is_paid %}Paid{% else %}Free{% endif %}
-                    </div>
-                  </div>
-                  <a class="btn btn-sm btn-outline-dark btn-pill" href="{% url 'events:detail' e.id %}">Open</a>
-                </div>
-              {% empty %}
-                <div class="text-muted small" style="font-weight:700;">No events yet.</div>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-
-        <!-- Payments Oversight -->
-        <div class="col-lg-4">
-          <div class="cc-card cc-card-pad h-100">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <div style="font-weight:950; letter-spacing:-0.01em;">Payments Oversight</div>
-              <span class="role-pill">Pending: {{ overview.payments_counts.pending|default:0 }}</span>
-            </div>
-
-            <div class="small mb-3" style="color:var(--muted); font-weight:700;">
-              Approved:
-              <span style="color:var(--text); font-weight:950;">{{ overview.payments_counts.approved|default:0 }}</span>
-              · Rejected:
-              <span style="color:var(--text); font-weight:950;">{{ overview.payments_counts.rejected|default:0 }}</span>
-            </div>
-
-            <div class="d-grid gap-2 mb-3">
-              <a class="btn btn-pill btn-ghost" href="{% url 'payments:staff_list' %}?status=pending">Review Pending</a>
-            </div>
-
-            <div class="small mb-2" style="color:var(--muted); font-weight:900;">Latest Pending</div>
-            <div class="list-group list-group-flush">
-              {% for p in overview.payments_pending %}
-                <div class="list-group-item px-0">
-                  <div style="font-weight:900;">{{ p.registration.user.username }}</div>
-                  <div class="small" style="color:var(--muted); font-weight:700;">
-                    {{ p.registration.event.title }}
-                  </div>
-                  <div class="mt-2">
-                    <a class="btn btn-sm btn-approve" href="{% url 'payments:staff_review' p.id %}">Review</a>
-                  </div>
-                </div>
-              {% empty %}
-                <div class="text-muted small" style="font-weight:700;">No pending payments.</div>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-
-        <!-- Lost & Found Oversight -->
-        <div class="col-lg-4">
-          <div class="cc-card cc-card-pad h-100">
-            <div class="d-flex justify-content-between align-items-center mb-2">
-              <div style="font-weight:950; letter-spacing:-0.01em;">Lost &amp; Found Oversight</div>
-              <span class="role-pill">Items: {{ overview.lostfound_counts.items|default:0 }}</span>
-            </div>
-
-            <div class="small mb-3" style="color:var(--muted); font-weight:700;">
-              Pending Claims:
-              <span style="color:var(--text); font-weight:950;">{{ overview.lostfound_counts.pending_claims|default:0 }}</span>
-            </div>
-
-            <div class="d-grid gap-2 mb-3">
-              <a class="btn btn-pill btn-ghost" href="{% url 'lostfound:staff_items' %}">Manage Items</a>
-              <a class="btn btn-pill btn-ghost" href="{% url 'lostfound:staff_claims' %}">Review Claims</a>
-            </div>
-
-            <div class="small mb-2" style="color:var(--muted); font-weight:900;">Latest Pending Claims</div>
-            <div class="list-group list-group-flush">
-              {% for c in overview.pending_claims %}
-                <div class="list-group-item px-0">
-                  <div style="font-weight:900;">{{ c.student.username }}</div>
-                  <div class="small" style="color:var(--muted); font-weight:700;">
-                    Claim for: {{ c.item.title }}
-                  </div>
-                  <div class="mt-2">
-                    <a class="btn btn-sm btn-approve" href="{% url 'lostfound:staff_claim_review' c.id %}">Open</a>
-                  </div>
-                </div>
-              {% empty %}
-                <div class="text-muted small" style="font-weight:700;">No pending claims.</div>
-              {% endfor %}
-            </div>
-          </div>
-        </div>
-
-      </div>
-      <!-- /ADMIN MODULE OVERSIGHT PANELS -->
-       <!-- ============================= -->
-<!-- RECENT ACTIVITY (AUDIT LOGS)  -->
-<!-- ============================= -->
-<div class="cc-card mb-4">
-  <div class="cc-card-pad d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
-    <div style="font-weight:950; letter-spacing:-0.01em;">Recent Activity</div>
-    <div class="small" style="color:var(--muted); font-weight:700;">
-      Last 10 administrative actions
-      · <a class="mini-link" href="{% url 'audit:admin_logs' %}">View all logs</a>
     </div>
   </div>
 
-  <div class="table-responsive px-3 pb-3">
-    <table class="table align-middle mb-0">
-      <thead>
-        <tr>
-          <th>Time</th>
-          <th>Actor</th>
-          <th>Action</th>
-          <th>Target</th>
-          <th>Message</th>
-          <th>IP</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for l in recent_logs %}
-          <tr>
-            <td class="text-muted">{{ l.created_at|date:"M d, Y H:i" }}</td>
-            <td style="font-weight:900;">
-              {% if l.actor %}{{ l.actor.username }}{% else %}—{% endif %}
-            </td>
-            <td>
-              <span class="role-pill">{{ l.get_action_display }}</span>
-            </td>
-            <td>
-              <div style="font-weight:900;">{{ l.target_label|default:"—" }}</div>
-              <div class="text-muted small">{{ l.target_model }} #{{ l.target_id }}</div>
-            </td>
-            <td>{{ l.message }}</td>
-            <td class="text-muted">{{ l.ip_address|default:"" }}</td>
-          </tr>
-        {% empty %}
-          <tr>
-            <td colspan="6" class="text-center py-4" style="color:var(--muted); font-weight:700;">
-              No activity yet.
-            </td>
-          </tr>
+  <!-- PINNED FOOTER -->
+  <div class="side-footer">
+    <a class="logout-btn" href="{% url 'accounts:logout' %}">Logout</a>
+  </div>
+</aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="search">
+        <span class="meta">🔎</span>
+        <input placeholder="Search users, payments, claims, notices..." />
+      </div>
+
+      <a class="circle-btn" href="{% url 'notifications:list' %}" title="Notifications">
+        🔔
+        {% if unread_count and unread_count > 0 %}
+          <span class="badge-count">{{ unread_count }}</span>
+        {% endif %}
+      </a>
+
+      <div class="profile-chip">
+        <div class="avatar">{{ request.user.username|default:"A"|slice:":1"|upper }}</div>
+        <div class="d-none d-sm-block">
+          <p class="pname">{{ request.user.username|default:"Admin" }}</p>
+          <p class="prole">Admin</p>
+        </div>
+      </div>
+    </div>
+
+    {% if messages %}
+      <div class="mb-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
         {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
-<!-- /RECENT ACTIVITY -->
+      </div>
+    {% endif %}
 
-      <!-- Pending table -->
-      <div class="cc-card">
-        <div class="cc-card-pad d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2">
-          <div style="font-weight:950; letter-spacing:-0.01em;">Pending User Approvals</div>
-          <div class="small" style="color:var(--muted); font-weight:700;">
-            Only Student/Staff accounts appear here.
+    <!-- HERO -->
+    <section class="hero">
+      <div class="d-flex flex-column flex-lg-row justify-content-between gap-3" style="position:relative; z-index:1;">
+        <div>
+          <div class="kicker">🛡️ Admin Dashboard</div>
+          <h1>Welcome back, {{ request.user.username|default:"Admin" }} 👋</h1>
+          <p>
+            Approve student/staff accounts, oversee events &amp; notices, and verify payments—fast and securely.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn-pill dark" href="{% url 'accounts:admin_users' %}">Approve Users</a>
+            <a class="btn-pill" href="{% url 'payments:staff_list' %}?status=pending">Pending Payments</a>
+            <a class="btn-pill" href="{% url 'lostfound:staff_claims' %}?status=pending">Pending Claims</a>
           </div>
         </div>
 
-        <div class="table-responsive px-3 pb-3">
-          <table class="table align-middle mb-0">
-            <thead>
-              <tr>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Joined</th>
-                <th class="text-end">Actions</th>
-              </tr>
-            </thead>
+        <div class="d-flex gap-2 flex-wrap align-content-start">
+          <span class="chip pending">Pending Approvals: {{ stats.pending_total|default:0 }}</span>
+          <span class="chip pending">Pending Payments: {{ stats.pending_payments|default:0 }}</span>
+          <span class="chip pending">Pending Claims: {{ stats.pending_claims|default:0 }}</span>
+        </div>
+      </div>
+    </section>
 
-            <tbody>
-              {% for u in pending_users %}
-                <tr>
-                  <td>{{ u.username }}</td>
-                  <td>{{ u.email|default:"—" }}</td>
-                  <td><span class="role-pill">{{ u.role }}</span></td>
-                  <td>{{ u.date_joined|date:"M d, Y" }}</td>
-
-                  <td class="text-end">
-                    <div class="d-flex justify-content-end align-items-center gap-2 flex-wrap">
-
-                      <!-- Approve -->
-                      <form method="post" action="{% url 'accounts:admin_approve_user' u.id %}" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-approve">Approve</button>
-                      </form>
-
-                      <!-- Reject (deactivate) -->
-                      <form method="post" action="{% url 'accounts:admin_reject_user' u.id %}" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-reject"
-                          onclick="return confirm('Deactivate this account?')">
-                          Reject
-                        </button>
-                      </form>
-
-                      <!-- Change Role -->
-                      <form method="post" action="{% url 'accounts:admin_change_role' u.id %}" class="d-inline">
-                        {% csrf_token %}
-                        <div class="d-flex align-items-center gap-2">
-                          <select name="role" class="form-select form-select-sm" style="width:auto;">
-                            <option value="STUDENT" {% if u.role == "STUDENT" %}selected{% endif %}>Student</option>
-                            <option value="STAFF" {% if u.role == "STAFF" %}selected{% endif %}>Staff</option>
-                            <option value="ADMIN" {% if u.role == "ADMIN" %}selected{% endif %}>Admin</option>
-                          </select>
-                          <button type="submit" class="btn btn-outline-dark btn-sm btn-pill">Update</button>
-                        </div>
-                      </form>
-
-                    </div>
-                  </td>
-                </tr>
-              {% empty %}
-                <tr>
-                  <td colspan="5" class="text-center py-4" style="color:var(--muted); font-weight:700;">
-                    No pending approvals 🎉
-                  </td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
+    <!-- STATS ROW -->
+    <div class="row g-3 mb-3">
+      <div class="col-md-3">
+        <div class="cardx stat">
+          <div>
+            <div class="label">Active Students</div>
+            <div class="value">{{ stats.students_total|default:0 }}</div>
+          </div>
+          <div class="mini">ST</div>
         </div>
       </div>
 
-      <footer class="text-center">
-        © {{ year|default:"2026" }} Campus Connect. All rights reserved.
-      </footer>
+      <div class="col-md-3">
+        <div class="cardx stat">
+          <div>
+            <div class="label">Active Staff</div>
+            <div class="value">{{ stats.staff_total|default:0 }}</div>
+          </div>
+          <div class="mini">SF</div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="cardx stat">
+          <div>
+            <div class="label">Events</div>
+            <div class="value">{{ stats.events_total|default:0 }}</div>
+          </div>
+          <div class="mini">EV</div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="cardx stat">
+          <div>
+            <div class="label">Notices</div>
+            <div class="value">{{ stats.notices_total|default:0 }}</div>
+          </div>
+          <div class="mini">NO</div>
+        </div>
+      </div>
     </div>
+
+    <!-- PANELS -->
+    <div class="row g-3 mb-3">
+
+      <!-- PENDING PAYMENTS -->
+      <div class="col-lg-6">
+        <div class="cardx panel h-100">
+          <div class="panel-head">
+            <div>
+              <p class="panel-title mb-0">Pending Payment Verifications</p>
+              <div class="meta">Proofs waiting for review</div>
+            </div>
+            <a class="link" href="{% url 'payments:staff_list' %}?status=pending">View all</a>
+          </div>
+
+          {% if overview.payments_pending %}
+            {% for p in overview.payments_pending %}
+              <div class="rowline">
+                <div>
+                  <div style="font-weight:950;">{{ p.registration.event.title }}</div>
+                  <div class="meta">
+                    Student: {{ p.registration.user.username }}
+                    · Amount: Rs {{ p.registration.event.price }}
+                    · {{ p.gateway|default:"—"|title }}
+                  </div>
+                </div>
+                <a class="btn-sm-pill primary" href="{% url 'payments:staff_review' p.id %}">Verify</a>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="meta">No pending payment proofs ✅</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- PENDING CLAIMS -->
+      <div class="col-lg-6">
+        <div class="cardx panel h-100">
+          <div class="panel-head">
+            <div>
+              <p class="panel-title mb-0">Claim Requests (Lost &amp; Found)</p>
+              <div class="meta">Claims awaiting approval</div>
+            </div>
+            <a class="link" href="{% url 'lostfound:staff_claims' %}?status=pending">View all</a>
+          </div>
+
+          {% if overview.pending_claims %}
+            {% for c in overview.pending_claims %}
+              <div class="rowline">
+                <div>
+                  <div style="font-weight:950;">Claim: {{ c.item.title }}</div>
+                  <div class="meta">Claimant: {{ c.student.username }}</div>
+                </div>
+                <a class="btn-sm-pill primary" href="{% url 'lostfound:staff_claim_review' c.id %}">Open</a>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="meta">No pending claims ✅</div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PENDING USER APPROVALS TABLE -->
+    <div class="cardx p-3">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 mb-2">
+        <div>
+          <div style="font-weight:950; letter-spacing:-.01em;">Pending User Approvals</div>
+          <div class="meta">Approve Student/Staff accounts before granting access</div>
+        </div>
+        <a class="btn-sm-pill" href="{% url 'accounts:admin_users' %}">Manage users</a>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Joined</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in pending_users %}
+              <tr>
+                <td style="font-weight:900;">{{ u.username }}</td>
+                <td class="meta">{{ u.email|default:"—" }}</td>
+                <td><span class="chip pending">{{ u.role }}</span></td>
+                <td class="meta">{{ u.date_joined|date:"M d, Y" }}</td>
+                <td class="text-end">
+                  <div class="d-flex justify-content-end gap-2 flex-wrap">
+
+                    <form method="post" action="{% url 'accounts:admin_approve_user' u.id %}">
+                      {% csrf_token %}
+                      <button class="btn-sm-pill primary" type="submit">Approve</button>
+                    </form>
+
+                    <form method="post" action="{% url 'accounts:admin_reject_user' u.id %}">
+                      {% csrf_token %}
+                      <button class="btn-sm-pill" type="submit"
+                        onclick="return confirm('Deactivate this account?')">Reject</button>
+                    </form>
+
+                    <form method="post" action="{% url 'accounts:admin_change_role' u.id %}">
+                      {% csrf_token %}
+                      <div class="d-flex align-items-center gap-2">
+                        <select name="role" class="form-select form-select-sm" style="width:auto; border-radius:999px; font-weight:800;">
+                          <option value="STUDENT" {% if u.role == "STUDENT" %}selected{% endif %}>Student</option>
+                          <option value="STAFF" {% if u.role == "STAFF" %}selected{% endif %}>Staff</option>
+                          <option value="ADMIN" {% if u.role == "ADMIN" %}selected{% endif %}>Admin</option>
+                        </select>
+                        <button class="btn-sm-pill" type="submit">Update</button>
+                      </div>
+                    </form>
+
+                  </div>
+                </td>
+              </tr>
+            {% empty %}
+              <tr>
+                <td colspan="5" class="text-center py-4 meta">
+                  No pending approvals 🎉
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="text-center mt-4 meta">
+      © {{ year|default:"2026" }} Campus Connect. All rights reserved.
+    </div>
+
   </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

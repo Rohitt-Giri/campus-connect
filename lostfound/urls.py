@@ -4,7 +4,9 @@ from . import views
 app_name = "lostfound"
 
 urlpatterns = [
-    # Student
+    # =========================
+    # STUDENT
+    # =========================
     path("", views.items_list_view, name="list"),
     path("create/", views.item_create_view, name="create"),
     path("<int:pk>/", views.item_detail_view, name="detail"),
@@ -12,9 +14,19 @@ urlpatterns = [
     path("my-posts/", views.my_posts_view, name="my_posts"),
     path("my-claims/", views.my_claims_view, name="my_claims"),
 
-    # Staff
+    # =========================
+    # STAFF
+    # =========================
     path("staff/items/", views.staff_items_view, name="staff_items"),
     path("staff/items/<int:pk>/mark-returned/", views.staff_mark_returned_view, name="staff_mark_returned"),
+
     path("staff/claims/", views.staff_claims_view, name="staff_claims"),
     path("staff/claims/<int:pk>/review/", views.staff_claim_review_view, name="staff_claim_review"),
+
+    # =========================
+    # ARCHIVE FLOW (LIKE NOTICES)
+    # =========================
+    path("staff/items/<int:item_id>/archive/confirm/", views.staff_item_archive_confirm, name="staff_item_archive_confirm"),
+    path("staff/items/<int:item_id>/archive/", views.staff_item_archive, name="staff_item_archive"),
+    path("staff/items/<int:item_id>/unarchive/", views.staff_item_unarchive, name="staff_item_unarchive"),
 ]

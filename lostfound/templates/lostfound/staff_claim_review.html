@@ -3,43 +3,276 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Review Claim | Lost & Found</title>
+  <title>Review Claim | Lost &amp; Found</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
   <style>
-    :root{--g:#16a34a;--bd:rgba(15,23,42,.10);}
-    body{background: radial-gradient(circle at top left,#e9fff2 0%,#f4fff8 30%,#f7fbff 70%,#fff 100%); font-family:system-ui;}
-    .wrap{max-width:980px; margin:0 auto; padding:28px 16px;}
-    .cardx{border-radius:18px; border:1px solid var(--bd); background:rgba(255,255,255,.92); box-shadow:0 14px 30px rgba(15,23,42,.06);}
-    .pill{border-radius:999px;}
+    :root{
+      --bg:#eef3f6;
+      --muted:#64748b;
+      --border: rgba(15,23,42,.10);
+      --shadow: 0 18px 50px rgba(15,23,42,.10);
+      --shadow-sm: 0 10px 26px rgba(15,23,42,.08);
+      --radius: 18px;
+      --radius-lg: 22px;
+      --teal1:#0f766e;
+      --teal2:#20c997;
+    }
+
+    body{
+      background: radial-gradient(circle at 18% 12%, #d7f3ff 0%, var(--bg) 38%, var(--bg) 100%);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color:#0f172a;
+    }
+
+    .wrap{ max-width: 1200px; margin:0 auto; padding: 22px 14px 40px; }
+
+    .app-card{
+      background:#fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hero{
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--teal1) 0%, var(--teal2) 55%, #2dd4bf 100%);
+      color:#fff;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.20);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      right:-90px; top:-70px;
+      width: 280px; height: 280px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+    }
+
+    .tag{
+      display:inline-flex; align-items:center; gap:8px;
+      border-radius:999px; padding:.38rem .75rem;
+      font-weight:900; font-size:.85rem;
+      border:1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.16);
+      backdrop-filter: blur(8px);
+      white-space: nowrap;
+    }
+
+    .pill-btn{ border-radius:999px; font-weight:900; padding: 10px 14px; }
+    .btn-light.soft{
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(255,255,255,.35);
+      color:#0f172a;
+    }
+
+    .muted{ color: var(--muted); }
+    .divider{ height:1px; background: var(--border); margin: 14px 0; }
+
+    .badge-soft{
+      border-radius:999px;
+      padding:.45em .75em;
+      font-weight:900;
+      border:1px solid rgba(15,23,42,.12);
+      background:#f8fafc;
+      color:#0f172a;
+      white-space: nowrap;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .stPending{ background:#fff7ed; border-color:#fed7aa; color:#9a3412; }
+    .stApproved{ background:#ecfdf5; border-color:#bbf7d0; color:#166534; }
+    .stRejected{ background:#fef2f2; border-color:#fecaca; color:#991b1b; }
+
+    .proof{
+      width:100%;
+      border-radius: 18px;
+      border:1px solid rgba(15,23,42,.10);
+      max-height: 460px;
+      object-fit: cover;
+      background:#fff;
+    }
+
+    .helpbox{
+      border-radius: 18px;
+      border: 1px solid rgba(15,23,42,.10);
+      background: #f8fafc;
+      padding: 14px;
+    }
+
+    .nice-alert{ border-radius: 16px; border: 1px solid rgba(15,23,42,.10); }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <div class="cardx p-4 mb-3 d-flex justify-content-between align-items-center">
-      <div>
-        <h3 class="fw-bold mb-1">Review Claim</h3>
-        <div class="text-muted">Item: <b>{{ claim.item.title }}</b> • Claimant: <b>{{ claim.claimant.username }}</b></div>
-      </div>
-      <a class="btn btn-outline-dark pill" href="{% url 'lostfound:staff_claims' %}">Back</a>
-    </div>
 
-    <div class="cardx p-4">
-      <h5 class="fw-bold">Claim Message</h5>
-      <p>{{ claim.proof_message|linebreaksbr }}</p>
-
-      {% if claim.proof_image %}
-        <div class="mt-3">
-          <h6 class="fw-bold">Proof Image</h6>
-          <img src="{{ claim.proof_image.url }}" class="w-100" style="border-radius:16px; max-height:420px; object-fit:cover;">
+    <!-- Hero header -->
+    <div class="hero mb-3">
+      <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-2" style="position:relative; z-index:1;">
+        <div>
+          <div class="tag mb-2"><i class="bi bi-shield-check"></i> Staff • Claim Review</div>
+          <h1 class="h4 fw-bold mb-1">Review Claim</h1>
+          <div class="text-white-75">
+            Item: <b class="text-white">{{ claim.item.title }}</b> • Claimant: <b class="text-white">
+              {% if claim.claimant %}{{ claim.claimant.username }}{% else %}{{ claim.student.username }}{% endif %}
+            </b>
+          </div>
         </div>
-      {% endif %}
 
-      <form method="post" class="d-flex gap-2 mt-4">
-        {% csrf_token %}
-        <button class="btn btn-success pill" name="action" value="approve">Approve</button>
-        <button class="btn btn-outline-danger pill" name="action" value="reject">Reject</button>
-      </form>
+        <div class="d-flex gap-2 flex-wrap">
+          <a class="btn btn-light soft pill-btn" href="{% url 'lostfound:staff_claims' %}">
+            <i class="bi bi-arrow-left me-1"></i> Back to Claims
+          </a>
+          <a class="btn btn-light soft pill-btn" href="{% url 'lostfound:detail' claim.item.pk %}">
+            <i class="bi bi-box-arrow-up-right me-1"></i> Open Item
+          </a>
+        </div>
+      </div>
     </div>
+
+    {% if messages %}
+      <div class="mb-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} nice-alert mb-2">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Context chips -->
+    <div class="app-card p-3 mb-3">
+      <div class="d-flex flex-wrap gap-2">
+        <span class="badge-soft"><i class="bi bi-person"></i>
+          {% if claim.claimant %}{{ claim.claimant.username }}{% else %}{{ claim.student.username }}{% endif %}
+        </span>
+
+        <span class="badge-soft"><i class="bi bi-calendar3"></i>
+          {% if claim.created_at %}{{ claim.created_at|date:"M d, Y • H:i" }}{% else %}Submitted date —{% endif %}
+        </span>
+
+        {% if claim.status %}
+          {% if claim.status == "pending" %}
+            <span class="badge-soft stPending"><i class="bi bi-hourglass-split"></i> Pending</span>
+          {% elif claim.status == "approved" %}
+            <span class="badge-soft stApproved"><i class="bi bi-check2-circle"></i> Approved</span>
+          {% else %}
+            <span class="badge-soft stRejected"><i class="bi bi-x-circle"></i> Rejected</span>
+          {% endif %}
+        {% else %}
+          <span class="badge-soft stPending"><i class="bi bi-hourglass-split"></i> Pending</span>
+        {% endif %}
+
+        <span class="badge-soft"><i class="bi bi-tag"></i> {{ claim.item.get_item_type_display }}</span>
+        <span class="badge-soft"><i class="bi bi-geo-alt"></i> {% if claim.item.location %}{{ claim.item.location }}{% else %}—{% endif %}</span>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <!-- Left: details -->
+      <div class="col-12 col-lg-8">
+        <div class="app-card p-4">
+          <div class="d-flex justify-content-between align-items-center gap-2">
+            <h5 class="fw-bold mb-0">Claim Message</h5>
+            <span class="small muted">Verify the details before approving.</span>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="text-muted">
+            {{ claim.proof_message|default:"No message provided."|linebreaksbr }}
+          </div>
+
+          {% if claim.proof_image %}
+            <div class="divider"></div>
+            <div class="d-flex justify-content-between align-items-center gap-2 mb-2">
+              <h6 class="fw-bold mb-0">Proof Image</h6>
+              <a class="btn btn-outline-dark pill-btn"
+                 style="padding:8px 12px;"
+                 href="{{ claim.proof_image.url }}" target="_blank">
+                <i class="bi bi-box-arrow-up-right me-1"></i> Open full size
+              </a>
+            </div>
+            <img src="{{ claim.proof_image.url }}" class="proof" alt="proof image">
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Right: actions -->
+      <div class="col-12 col-lg-4">
+        <div class="app-card p-4 mb-3">
+          <h6 class="fw-bold mb-2">Quick checklist</h6>
+          <div class="helpbox small muted">
+            <ul class="mb-0 ps-3">
+              <li class="mb-2">Claim includes unique identifiers (marks/serial/content).</li>
+              <li class="mb-2">Proof image matches item (if provided).</li>
+              <li class="mb-2">No sensitive personal details shared.</li>
+              <li class="mb-0">If unsure, reject and ask to re-submit with better proof.</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="app-card p-4">
+          <h6 class="fw-bold mb-1">Decision</h6>
+          <div class="small muted mb-3">Approving marks item as returned in your workflow.</div>
+
+          <form method="post" class="d-grid gap-2">
+            {% csrf_token %}
+            <button class="btn btn-success pill-btn" name="action" value="approve" type="submit">
+              <i class="bi bi-check2-circle me-1"></i> Approve Claim
+            </button>
+
+            <!-- Reject triggers modal confirmation -->
+            <button class="btn btn-outline-danger pill-btn" type="button" data-bs-toggle="modal" data-bs-target="#rejectModal">
+              <i class="bi bi-x-circle me-1"></i> Reject Claim
+            </button>
+          </form>
+
+          <div class="divider"></div>
+          <div class="small muted">
+            Tip: If the student uploaded the wrong proof, rejection helps keep records clean.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reject confirmation modal -->
+    <div class="modal fade" id="rejectModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius:18px; border:1px solid rgba(15,23,42,.10);">
+          <div class="modal-header">
+            <h5 class="modal-title fw-bold">Confirm rejection</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body text-muted">
+            Are you sure you want to reject this claim? The student will be notified (if your workflow sends email).
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-light pill-btn" data-bs-dismiss="modal">Cancel</button>
+
+            <form method="post" class="m-0">
+              {% csrf_token %}
+              <button class="btn btn-outline-danger pill-btn" name="action" value="reject" type="submit">
+                Reject
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center small muted mt-4">
+      © {{ now|date:"Y" }} Campus Connect
+    </div>
+
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

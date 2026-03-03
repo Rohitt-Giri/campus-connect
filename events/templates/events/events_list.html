@@ -4,79 +4,348 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Events | Campus Connect</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
   <style>
-    :root{--g:#16a34a;--bd:rgba(15,23,42,.10);--muted:#64748b;}
-    body{background: radial-gradient(circle at top left,#e9fff2 0%,#f4fff8 30%,#f7fbff 70%,#fff 100%); font-family:system-ui;}
-    .wrap{max-width:1100px; margin:0 auto; padding:26px 16px;}
-    .cardx{border-radius:18px; border:1px solid var(--bd); background:rgba(255,255,255,.95); box-shadow:0 14px 30px rgba(15,23,42,.06);}
-    .pill{border-radius:999px;}
-    .tag{display:inline-block;border-radius:999px;padding:.3rem .7rem;font-weight:800;font-size:.85rem;border:1px solid rgba(15,23,42,.12);}
-    .tagPaid{background:rgba(34,197,94,.10); border-color:rgba(34,197,94,.22); color:#166534;}
-    .tagFree{background:#f1f5f9; color:#0f172a;}
+    :root{
+      --bg:#eef3f6;
+      --muted:#64748b;
+      --border: rgba(15,23,42,.10);
+      --shadow: 0 18px 50px rgba(15,23,42,.10);
+      --shadow-sm: 0 10px 26px rgba(15,23,42,.08);
+      --radius: 18px;
+      --radius-lg: 22px;
+      --teal1:#0f766e;
+      --teal2:#20c997;
+    }
+
+    body{
+      background: radial-gradient(circle at 18% 12%, #d7f3ff 0%, var(--bg) 38%, var(--bg) 100%);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color:#0f172a;
+    }
+
+    .wrap{
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 22px 14px 40px;
+    }
+
+    .app-card{
+      background:#fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hero{
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--teal1) 0%, var(--teal2) 55%, #2dd4bf 100%);
+      color:#fff;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.20);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      right:-90px; top:-70px;
+      width: 280px; height: 280px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+    }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:.38rem .75rem;
+      font-weight:900;
+      font-size:.85rem;
+      border:1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.16);
+      backdrop-filter: blur(8px);
+      white-space: nowrap;
+    }
+
+    .pill-btn{ border-radius:999px; font-weight:900; padding: 10px 14px; }
+    .btn-light.soft{
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(255,255,255,.35);
+      color:#0f172a;
+    }
+
+    .muted{ color: var(--muted); }
+    .nice-alert{ border-radius: 16px; border: 1px solid var(--border); }
+
+    /* Filter bar */
+    .filterbar{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow-sm);
+      padding: 12px;
+    }
+    .search{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      background:#f8fafc;
+      border:1px solid rgba(15,23,42,.10);
+      border-radius: 999px;
+      padding: 10px 12px;
+    }
+    .search input{
+      border:0; outline:0;
+      background:transparent;
+      width:100%;
+      font-size:.95rem;
+    }
+    .selectx, .btnx{
+      border-radius: 999px !important;
+      font-weight: 800;
+    }
+
+    /* Event card */
+    .event-card{
+      padding: 16px;
+      height: 100%;
+      transition: transform .12s ease, box-shadow .12s ease;
+    }
+    .event-card:hover{
+      transform: translateY(-2px);
+      box-shadow: 0 18px 38px rgba(16,24,40,.10);
+    }
+
+    .event-icon{
+      width: 44px; height: 44px;
+      border-radius: 16px;
+      display:grid; place-items:center;
+      border: 1px solid rgba(15,23,42,.10);
+      background: #f8fafc;
+      color:#0f172a;
+      flex: 0 0 auto;
+    }
+
+    .badge-soft{
+      border-radius:999px;
+      padding:.45em .75em;
+      font-weight:900;
+      border:1px solid rgba(15,23,42,.12);
+      background:#f8fafc;
+      color:#0f172a;
+      white-space: nowrap;
+    }
+    .badge-paid{ background: rgba(16,185,129,.12); border-color: rgba(16,185,129,.20); color:#047857; }
+    .badge-free{ background: rgba(59,130,246,.10); border-color: rgba(59,130,246,.18); color:#1d4ed8; }
+
+    .meta{
+      font-size: .9rem;
+      color: var(--muted);
+      font-weight: 650;
+    }
+
+    .desc{
+      color:#334155;
+      font-size: .92rem;
+      margin-top: 10px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .empty{
+      border: 1px dashed rgba(15,23,42,.18);
+      border-radius: 18px;
+      padding: 26px;
+      background: #f8fafc;
+      text-align:center;
+      color:#475569;
+    }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <div class="cardx p-4 mb-3 d-flex justify-content-between align-items-center">
-      <div>
-        <h3 class="fw-bold mb-0">Events</h3>
-        <div class="text-muted">Browse published events.</div>
-      </div>
-      <div class="d-flex gap-2">
-        <a class="btn btn-outline-dark pill px-3" href="{% url 'core:landing' %}">Home</a>
 
-        {# Create should usually be staff/admin only. Keep as-is if your view already protects it #}
-        <a class="btn btn-success pill px-3" href="{% url 'events:create' %}">+ Create</a>
+    <!-- Hero header -->
+    <div class="hero mb-3">
+      <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-2" style="position:relative; z-index:1;">
+        <div>
+          <div class="tag mb-2"><i class="bi bi-calendar2-week"></i> Events</div>
+          <h1 class="h4 fw-bold mb-1">Browse Published Events</h1>
+          <div class="text-white-75">Discover campus activities and register in a few clicks.</div>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+          <a class="btn btn-light soft pill-btn" href="{% url 'core:landing' %}">
+            <i class="bi bi-house me-1"></i> Home
+          </a>
+
+          {# Create should be staff/admin only. Keep as-is if view already protects it. #}
+          <a class="btn btn-light soft pill-btn" href="{% url 'events:create' %}">
+            <i class="bi bi-plus-circle me-1"></i> Create
+          </a>
+        </div>
       </div>
     </div>
 
+    <!-- Messages -->
     {% if messages %}
       <div class="mb-3">
         {% for message in messages %}
-          <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
+          <div class="alert alert-{{ message.tags }} nice-alert mb-2">{{ message }}</div>
         {% endfor %}
       </div>
     {% endif %}
 
-    <div class="row g-3">
+    <!-- Filter Bar (UI only; hook up backend later if you want) -->
+    <div class="filterbar mb-3">
+      <div class="row g-2 align-items-center">
+        <div class="col-12 col-lg-6">
+          <div class="search">
+            <i class="bi bi-search text-secondary"></i>
+            <input id="evSearch" placeholder="Search by title or location..." />
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-3">
+          <select id="evType" class="form-select selectx">
+            <option value="all" selected>All types</option>
+            <option value="free">Free only</option>
+            <option value="paid">Paid only</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-lg-3">
+          <div class="d-grid d-lg-flex justify-content-lg-end gap-2">
+            <button id="clearFilters" class="btn btn-light btnx">
+              <i class="bi bi-arrow-counterclockwise me-1"></i> Reset
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="small muted mt-2">
+        Tip: Use search + filter to quickly find events. (This is client-side filtering for UI polish.)
+      </div>
+    </div>
+
+    <!-- Events grid -->
+    <div class="row g-3" id="evGrid">
       {% for e in events %}
-        <div class="col-md-6">
-          <div class="cardx p-4 h-100">
+        <div class="col-12 col-md-6 col-xl-4 evItem"
+             data-title="{{ e.title|lower }}"
+             data-location="{{ e.location|default:''|lower }}"
+             data-type="{% if e.is_paid %}paid{% else %}free{% endif %}">
+
+          <div class="app-card event-card">
             <div class="d-flex justify-content-between align-items-start gap-3">
-              <div>
-                <div class="fw-bold fs-5">{{ e.title }}</div>
-                <div class="small" style="color:var(--muted);font-weight:650;">
-                  {{ e.start_datetime|date:"M d, Y • H:i" }}{% if e.location %} • {{ e.location }}{% endif %}
+              <div class="d-flex gap-3">
+                <div class="event-icon"><i class="bi bi-calendar-event"></i></div>
+
+                <div>
+                  <div class="fw-bold">{{ e.title }}</div>
+                  <div class="meta">
+                    <i class="bi bi-clock me-1"></i>
+                    {{ e.start_datetime|date:"M d, Y • H:i" }}
+                    {% if e.location %}
+                      <span class="mx-1">•</span>
+                      <i class="bi bi-geo-alt me-1"></i>{{ e.location }}
+                    {% endif %}
+                  </div>
                 </div>
               </div>
 
               {% if e.is_paid %}
-                <span class="tag tagPaid">Paid • {{ e.price }}</span>
+                <span class="badge-soft badge-paid"><i class="bi bi-credit-card me-1"></i> {{ e.price }}</span>
               {% else %}
-                <span class="tag tagFree">Free</span>
+                <span class="badge-soft badge-free"><i class="bi bi-check2-circle me-1"></i> Free</span>
               {% endif %}
             </div>
 
-            <div class="mt-3 d-flex gap-2 flex-wrap">
-              <a class="btn btn-outline-dark pill px-3" href="{% url 'events:detail' e.id %}">Open</a>
+            <div class="desc">
+              {{ e.description|default:"No description provided." }}
+            </div>
 
-              {# Staff/Admin only: Registrations button #}
+            <div class="mt-3 d-flex gap-2 flex-wrap">
+              <a class="btn btn-outline-dark pill-btn" href="{% url 'events:detail' e.id %}">
+                Open
+              </a>
+
               {% if request.user.is_authenticated %}
                 {% if request.user.is_superuser or request.user.role == "STAFF" or request.user.role == "ADMIN" %}
-                  <a class="btn btn-dark pill px-3" href="{% url 'events:registrations' e.id %}">
-                    Registrations
+                  <a class="btn btn-dark pill-btn" href="{% url 'events:registrations' e.id %}">
+                    <i class="bi bi-people me-1"></i> Registrations
                   </a>
                 {% endif %}
               {% endif %}
             </div>
-
           </div>
+
         </div>
       {% empty %}
-        <div class="text-muted">No published events yet.</div>
+        <div class="col-12">
+          <div class="empty">
+            <div class="display-6 mb-2">📅</div>
+            <div class="fw-bold mb-1">No published events yet</div>
+            <div class="small text-muted mb-3">When staff publishes events, they’ll show up here.</div>
+            <a class="btn btn-success pill-btn" href="{% url 'core:landing' %}">
+              Go Home
+            </a>
+          </div>
+        </div>
       {% endfor %}
     </div>
+
+    <div class="text-center small muted mt-4">
+      © {{ now|date:"Y" }} Campus Connect
+    </div>
+
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- UI-only filtering (no backend changes) -->
+  <script>
+    (function(){
+      const q = document.getElementById("evSearch");
+      const type = document.getElementById("evType");
+      const clear = document.getElementById("clearFilters");
+      const items = Array.from(document.querySelectorAll(".evItem"));
+
+      function apply(){
+        const query = (q?.value || "").trim().toLowerCase();
+        const t = type?.value || "all";
+
+        items.forEach(el => {
+          const title = el.dataset.title || "";
+          const loc = el.dataset.location || "";
+          const tp = el.dataset.type || "all";
+
+          const matchQuery = !query || title.includes(query) || loc.includes(query);
+          const matchType = (t === "all") || (tp === t);
+
+          el.style.display = (matchQuery && matchType) ? "" : "none";
+        });
+      }
+
+      q?.addEventListener("input", apply);
+      type?.addEventListener("change", apply);
+      clear?.addEventListener("click", function(){
+        if(q) q.value = "";
+        if(type) type.value = "all";
+        apply();
+      });
+
+      apply();
+    })();
+  </script>
 </body>
 </html>

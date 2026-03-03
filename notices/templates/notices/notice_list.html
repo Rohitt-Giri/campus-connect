@@ -4,83 +4,316 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Notices | Campus Connect</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
   <style>
-    body { background: #f7fbf8; }
-    .card-soft { border-radius: 16px; border: 1px solid rgba(15,23,42,.08); box-shadow: 0 10px 24px rgba(15,23,42,.06); }
-    .badge-soft { background: rgba(34,197,94,.12); color: #166534; border: 1px solid rgba(34,197,94,.2); }
+    :root{
+      --bg:#eef3f6;
+      --muted:#64748b;
+      --border: rgba(15,23,42,.10);
+      --shadow: 0 18px 50px rgba(15,23,42,.10);
+      --shadow-sm: 0 10px 26px rgba(15,23,42,.08);
+      --radius: 18px;
+      --radius-lg: 22px;
+      --teal1:#0f766e;
+      --teal2:#20c997;
+    }
+
+    body{
+      background: radial-gradient(circle at 18% 12%, #d7f3ff 0%, var(--bg) 38%, var(--bg) 100%);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color:#0f172a;
+      min-height: 100vh;
+    }
+
+    .wrap{ max-width: 1280px; margin:0 auto; padding: 22px 14px 40px; }
+
+    .app-card{
+      background:#fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hero{
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--teal1) 0%, var(--teal2) 55%, #2dd4bf 100%);
+      color:#fff;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.20);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      right:-90px; top:-70px;
+      width: 280px; height: 280px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+    }
+
+    .tag{
+      display:inline-flex; align-items:center; gap:8px;
+      border-radius:999px; padding:.38rem .75rem;
+      font-weight:900; font-size:.85rem;
+      border:1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.16);
+      backdrop-filter: blur(8px);
+      white-space: nowrap;
+      position:relative;
+      z-index:1;
+    }
+
+    .pill-btn{ border-radius:999px; font-weight:900; padding: 10px 14px; }
+    .btn-light.soft{
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(255,255,255,.35);
+      color:#0f172a;
+    }
+    .muted{ color: var(--muted); }
+
+    .nice-alert{ border-radius: 16px; border: 1px solid rgba(15,23,42,.10); }
+
+    /* Chips */
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius: 999px;
+      padding: .45rem .8rem;
+      font-weight: 900;
+      font-size: .85rem;
+      border: 1px solid rgba(15,23,42,.12);
+      background:#fff;
+      color:#0f172a;
+      text-decoration:none;
+      white-space: nowrap;
+    }
+    .chip:hover{ background:#f8fafc; }
+
+    .cat-general{ background:#f1f5f9; border-color:#e2e8f0; color:#0f172a; }
+    .cat-event{ background:rgba(59,130,246,.10); border-color:rgba(59,130,246,.18); color:#1d4ed8; }
+    .cat-lost_found{ background:rgba(34,197,94,.12); border-color:rgba(34,197,94,.20); color:#166534; }
+    .cat-payment{ background:rgba(245,158,11,.14); border-color:rgba(245,158,11,.24); color:#92400e; }
+    .cat-urgent{ background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.22); color:#991b1b; }
+
+    /* Notice card */
+    .notice-card{
+      border-radius: 18px;
+      border: 1px solid rgba(15,23,42,.10);
+      background:#fff;
+      box-shadow: var(--shadow-sm);
+      transition: transform .12s ease, box-shadow .12s ease;
+      height: 100%;
+    }
+    .notice-card:hover{
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+    .notice-title{
+      font-weight: 950;
+      letter-spacing: -.02em;
+      margin: 0;
+      font-size: 1.05rem;
+    }
+    .clamp-3{
+      display:-webkit-box;
+      -webkit-line-clamp:3;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+    }
+
+    /* Urgent highlight */
+    .urgent{
+      border-color: rgba(239,68,68,.35);
+      box-shadow: 0 16px 40px rgba(239,68,68,.10);
+    }
+
+    .meta{
+      font-size: .88rem;
+      color: var(--muted);
+      font-weight: 650;
+    }
+
+    .empty{
+      border: 1px dashed rgba(15,23,42,.18);
+      border-radius: 18px;
+      padding: 26px;
+      background: #f8fafc;
+      text-align:center;
+      color:#475569;
+    }
   </style>
 </head>
+
 <body>
-<div class="container py-4">
+  <div class="wrap">
 
-  {% if messages %}
-    <div class="mb-3">
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
-      {% endfor %}
-    </div>
-  {% endif %}
+    <!-- Hero -->
+    <div class="hero mb-3">
+      <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-2" style="position:relative; z-index:1;">
+        <div>
+          <div class="tag mb-2"><i class="bi bi-megaphone"></i> Campus Announcements</div>
+          <h1 class="h4 fw-bold mb-1">Notices</h1>
+          <div class="text-white-75">Official updates for students and staff. Filter by category or search.</div>
+        </div>
 
-  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
-    <div>
-      <h2 class="fw-bold mb-0">Notices</h2>
-      <div class="text-muted">Official announcements for students and staff.</div>
-    </div>
-
-    <div class="d-flex gap-2">
-      {% if can_manage %}
-        <a href="{% url 'notices:create' %}" class="btn btn-success">+ Create Notice</a>
-      {% endif %}
-      <a href="javascript:history.back()" class="btn btn-outline-dark">Back</a>
-    </div>
-  </div>
-
-  <div class="card card-soft p-3 mb-3">
-    <form method="get" class="row g-2">
-      <div class="col-md-6">
-        <input name="q" value="{{ q }}" class="form-control" placeholder="Search notices (title/content)">
-      </div>
-      <div class="col-md-4">
-        <select name="category" class="form-select">
-          <option value="">All categories</option>
-          <option value="GENERAL" {% if cat == "GENERAL" %}selected{% endif %}>General</option>
-          <option value="EVENT" {% if cat == "EVENT" %}selected{% endif %}>Event</option>
-          <option value="LOST_FOUND" {% if cat == "LOST_FOUND" %}selected{% endif %}>Lost & Found</option>
-          <option value="PAYMENT" {% if cat == "PAYMENT" %}selected{% endif %}>Payment</option>
-          <option value="URGENT" {% if cat == "URGENT" %}selected{% endif %}>Urgent</option>
-        </select>
-      </div>
-      <div class="col-md-2 d-grid">
-        <button class="btn btn-dark">Filter</button>
-      </div>
-    </form>
-  </div>
-
-  {% if notices %}
-    <div class="row g-3">
-      {% for n in notices %}
-        <div class="col-md-6 col-lg-4">
-          <a href="{% url 'notices:detail' n.pk %}" class="text-decoration-none text-dark">
-            <div class="card card-soft h-100 p-3">
-              <div class="d-flex justify-content-between align-items-start">
-                <span class="badge badge-soft">{{ n.get_category_display }}</span>
-                <small class="text-muted">{{ n.created_at|date:"M d, Y" }}</small>
-              </div>
-              <h5 class="fw-bold mt-2 mb-1">{{ n.title }}</h5>
-              <p class="text-muted mb-0" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">
-                {{ n.content }}
-              </p>
-            </div>
+        <div class="d-flex gap-2 flex-wrap">
+          {% if can_manage %}
+            <a href="{% url 'notices:create' %}" class="btn btn-light soft pill-btn">
+              <i class="bi bi-plus-lg me-1"></i> Create notice
+            </a>
+          {% endif %}
+          <a href="javascript:history.back()" class="btn btn-light soft pill-btn">
+            <i class="bi bi-arrow-left me-1"></i> Back
           </a>
         </div>
-      {% endfor %}
+      </div>
     </div>
-  {% else %}
-    <div class="alert alert-info">No notices yet.</div>
-  {% endif %}
 
-</div>
+    {% if messages %}
+      <div class="mb-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} nice-alert mb-2">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Filters -->
+    <div class="app-card p-3 mb-3">
+      <form method="get" class="row g-2 align-items-center">
+        <div class="col-12 col-md-6">
+          <div class="input-group">
+            <span class="input-group-text bg-white"><i class="bi bi-search"></i></span>
+            <input name="q" value="{{ q }}" class="form-control" placeholder="Search notices (title/content)">
+          </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+          <select name="category" class="form-select">
+            <option value="">All categories</option>
+            <option value="GENERAL" {% if cat == "GENERAL" %}selected{% endif %}>General</option>
+            <option value="EVENT" {% if cat == "EVENT" %}selected{% endif %}>Event</option>
+            <option value="LOST_FOUND" {% if cat == "LOST_FOUND" %}selected{% endif %}>Lost & Found</option>
+            <option value="PAYMENT" {% if cat == "PAYMENT" %}selected{% endif %}>Payment</option>
+            <option value="URGENT" {% if cat == "URGENT" %}selected{% endif %}>Urgent</option>
+          </select>
+        </div>
+
+        <div class="col-12 col-md-2 d-grid">
+          <button class="btn btn-dark pill-btn" type="submit">
+            <i class="bi bi-funnel me-1"></i> Filter
+          </button>
+        </div>
+
+        <!-- quick chips -->
+        <div class="col-12">
+          <div class="d-flex flex-wrap gap-2 mt-1">
+            <a class="chip cat-general" href="{% url 'notices:list' %}?category=GENERAL{% if q %}&q={{ q }}{% endif %}">
+              <i class="bi bi-dot"></i> General
+            </a>
+            <a class="chip cat-event" href="{% url 'notices:list' %}?category=EVENT{% if q %}&q={{ q }}{% endif %}">
+              <i class="bi bi-calendar-event"></i> Event
+            </a>
+            <a class="chip cat-lost_found" href="{% url 'notices:list' %}?category=LOST_FOUND{% if q %}&q={{ q }}{% endif %}">
+              <i class="bi bi-box-seam"></i> Lost &amp; Found
+            </a>
+            <a class="chip cat-payment" href="{% url 'notices:list' %}?category=PAYMENT{% if q %}&q={{ q }}{% endif %}">
+              <i class="bi bi-credit-card"></i> Payment
+            </a>
+            <a class="chip cat-urgent" href="{% url 'notices:list' %}?category=URGENT{% if q %}&q={{ q }}{% endif %}">
+              <i class="bi bi-exclamation-circle"></i> Urgent
+            </a>
+
+            {% if q or cat %}
+              <a class="chip" href="{% url 'notices:list' %}">
+                <i class="bi bi-x-circle"></i> Reset
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Results -->
+    {% if notices %}
+      <div class="row g-3">
+        {% for n in notices %}
+          {% with c=n.category|default:"GENERAL" %}
+          <div class="col-md-6 col-lg-4">
+            <a href="{% url 'notices:detail' n.pk %}" class="text-decoration-none text-dark">
+              <div class="notice-card p-3 {% if c == 'URGENT' %}urgent{% endif %}">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                  <span class="chip
+                    {% if c == 'URGENT' %}cat-urgent
+                    {% elif c == 'PAYMENT' %}cat-payment
+                    {% elif c == 'EVENT' %}cat-event
+                    {% elif c == 'LOST_FOUND' %}cat-lost_found
+                    {% else %}cat-general{% endif %}">
+                    {% if c == "URGENT" %}<i class="bi bi-exclamation-triangle"></i>
+                    {% elif c == "PAYMENT" %}<i class="bi bi-credit-card"></i>
+                    {% elif c == "EVENT" %}<i class="bi bi-calendar-event"></i>
+                    {% elif c == "LOST_FOUND" %}<i class="bi bi-box-seam"></i>
+                    {% else %}<i class="bi bi-dot"></i>{% endif %}
+                    {{ n.get_category_display }}
+                  </span>
+
+                  <div class="meta">
+                    <i class="bi bi-calendar3"></i> {{ n.created_at|date:"M d, Y" }}
+                  </div>
+                </div>
+
+                <h3 class="notice-title mt-2 mb-2">
+                  {{ n.title }}
+                </h3>
+
+                <div class="meta clamp-3">
+                  {{ n.content }}
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                  <div class="meta">
+                    {% if n.created_by %}<i class="bi bi-person"></i> {{ n.created_by.username }}{% endif %}
+                  </div>
+                  <span class="meta fw-bold">
+                    Read <i class="bi bi-arrow-right"></i>
+                  </span>
+                </div>
+              </div>
+            </a>
+          </div>
+          {% endwith %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="app-card p-3">
+        <div class="empty">
+          <div class="display-6 mb-2">📣</div>
+          <div class="fw-bold mb-1">No notices found</div>
+          <div class="small muted">
+            Try removing filters or searching with a different keyword.
+          </div>
+          {% if can_manage %}
+            <div class="mt-3">
+              <a href="{% url 'notices:create' %}" class="btn btn-success pill-btn">
+                <i class="bi bi-plus-lg me-1"></i> Create first notice
+              </a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endif %}
+
+    <div class="text-center small muted mt-4">
+      © {{ now|date:"Y" }} Campus Connect
+    </div>
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

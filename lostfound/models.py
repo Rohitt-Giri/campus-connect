@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 
 class LostFoundItem(models.Model):
@@ -13,16 +14,12 @@ class LostFoundItem(models.Model):
         ("returned", "Returned"),
     )
 
-    # DB columns
     item_type = models.CharField(max_length=10, choices=TYPE_CHOICES)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     location = models.CharField(max_length=200, blank=True)
     date_happened = models.DateField(null=True, blank=True)
 
-    # IMPORTANT:
-    # DB column is varchar, but we can still map it with ImageField using db_column="image"
-    # because ImageField stores the file path as a string in DB.
     image = models.ImageField(
         upload_to="lostfound/items/",
         blank=True,
@@ -40,8 +37,11 @@ class LostFoundItem(models.Model):
         related_name="lostfound_items",
     )
 
-    # If your DB truly has a "type" column and you must keep it, keep it:
-    # Otherwise, remove it to avoid confusion with item_type.
+    # ✅ Archive fields (DB must have these columns)
+    is_archived = models.BooleanField(default=False)
+    archived_at = models.DateTimeField(null=True, blank=True)
+
+    # Legacy column (if your DB has it)
     type = models.CharField(max_length=10, blank=True)
 
     class Meta:
@@ -50,17 +50,13 @@ class LostFoundItem(models.Model):
     def __str__(self):
         return f"{self.item_type} - {self.title}"
 
-    @property
-    def image_url(self):
-        if not self.image:
-            return ""
-        try:
-            return self.image.url
-        except Exception:
-            path = str(self.image).lstrip("/")
-            return f"{settings.MEDIA_URL}{path}"
+    def archive(self):
+        self.is_archived = True
+        self.archived_at = timezone.now()
 
-    
+    def unarchive(self):
+        self.is_archived = False
+        self.archived_at = None
 
 
 class ClaimRequest(models.Model):
@@ -70,7 +66,6 @@ class ClaimRequest(models.Model):
         ("rejected", "Rejected"),
     )
 
-    # DB-safe (won’t block migrations)
     full_name = models.CharField(max_length=255, blank=True, default="")
     phone = models.CharField(max_length=50, blank=True, default="")
     email = models.CharField(max_length=255, blank=True, default="")

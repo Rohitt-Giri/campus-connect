@@ -4,47 +4,292 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Review Payment | Campus Connect</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
   <style>
-    body{background:#f8fafc;font-family:system-ui;}
-    .wrap{max-width:1000px;margin:0 auto;padding:26px 16px;}
-    .cardx{border-radius:18px;border:1px solid rgba(15,23,42,.08);background:#fff;box-shadow:0 14px 30px rgba(15,23,42,.06);}
-    .pill{border-radius:999px;}
+    :root{
+      --bg:#eef3f6;
+      --muted:#64748b;
+      --border: rgba(15,23,42,.10);
+      --shadow: 0 18px 50px rgba(15,23,42,.10);
+      --shadow-sm: 0 10px 26px rgba(15,23,42,.08);
+      --radius: 18px;
+      --radius-lg: 22px;
+      --teal1:#0f766e;
+      --teal2:#20c997;
+    }
+
+    body{
+      background: radial-gradient(circle at 18% 12%, #d7f3ff 0%, var(--bg) 38%, var(--bg) 100%);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color:#0f172a;
+      min-height: 100vh;
+    }
+
+    .wrap{ max-width: 1100px; margin:0 auto; padding: 22px 14px 40px; }
+
+    .hero{
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--teal1) 0%, var(--teal2) 55%, #2dd4bf 100%);
+      color:#fff;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.20);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      right:-90px; top:-70px;
+      width: 280px; height: 280px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+    }
+
+    .tag{
+      display:inline-flex; align-items:center; gap:8px;
+      border-radius:999px; padding:.38rem .75rem;
+      font-weight:900; font-size:.85rem;
+      border:1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.16);
+      backdrop-filter: blur(8px);
+      white-space: nowrap;
+      position:relative;
+      z-index:1;
+    }
+
+    .pill-btn{ border-radius:999px; font-weight:900; padding: 10px 14px; }
+    .btn-light.soft{
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(255,255,255,.35);
+      color:#0f172a;
+    }
+
+    .app-card{
+      background:#fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .muted{ color: var(--muted); }
+    .nice-alert{ border-radius: 16px; border: 1px solid rgba(15,23,42,.10); }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius: 999px;
+      padding: .35rem .7rem;
+      font-weight: 950;
+      font-size: .82rem;
+      border: 1px solid rgba(15,23,42,.12);
+      background:#f8fafc;
+      color:#0f172a;
+      white-space: nowrap;
+    }
+    .stPending{ background:#fff7ed; border-color:#fed7aa; color:#9a3412; }
+    .stApproved{ background:#ecfdf5; border-color:#bbf7d0; color:#166534; }
+    .stRejected{ background:#fef2f2; border-color:#fecaca; color:#991b1b; }
+
+    .preview{
+      border-radius: 18px;
+      border: 1px solid rgba(15,23,42,.12);
+      overflow:hidden;
+      background:#fff;
+    }
+    .preview img{
+      width:100%;
+      height: 420px;
+      object-fit: cover;
+      display:block;
+      background:#f8fafc;
+    }
+    .kv{
+      display:flex; justify-content:space-between; gap:16px;
+      padding: 10px 0;
+      border-top: 1px solid rgba(15,23,42,.08);
+    }
+    .kv:first-child{ border-top: 0; padding-top: 0; }
+    .kv .k{ color: var(--muted); font-weight: 750; }
+    .kv .v{ font-weight: 850; text-align:right; }
   </style>
 </head>
+
 <body>
 <div class="wrap">
-  <div class="cardx p-4 mb-3 d-flex justify-content-between align-items-center">
-    <div>
-      <h3 class="fw-bold mb-0">Payment Review</h3>
-      <div class="text-muted">{{ proof.registration.event.title }} • {{ proof.registration.user.username }}</div>
+
+  <!-- HERO -->
+  <div class="hero mb-3">
+    <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-2" style="position:relative; z-index:1;">
+      <div>
+        <div class="tag mb-2"><i class="bi bi-shield-check"></i> Staff • Payment Verification</div>
+        <h1 class="h4 fw-bold mb-1">Payment review</h1>
+        <div class="text-white-75">
+          Event: <span class="fw-semibold text-white">{{ proof.registration.event.title }}</span>
+          <span class="ms-2">• Student: <span class="fw-semibold text-white">{{ proof.registration.user.username }}</span></span>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <a class="btn btn-light soft pill-btn" href="{% url 'payments:staff_list' %}">
+          <i class="bi bi-arrow-left me-1"></i> Back to payments
+        </a>
+      </div>
     </div>
-    <a class="btn btn-outline-dark pill px-3" href="{% url 'payments:staff_list' %}">Back</a>
   </div>
 
   {% if messages %}
     <div class="mb-3">
       {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
+        <div class="alert alert-{{ message.tags }} nice-alert mb-2">{{ message }}</div>
       {% endfor %}
     </div>
   {% endif %}
 
-  <div class="cardx p-4">
-    <div class="mb-2"><b>Status:</b> {{ proof.get_status_display }}</div>
+  <div class="row g-3">
+    <!-- LEFT: PROOF PREVIEW -->
+    <div class="col-lg-6">
+      <div class="app-card p-3 h-100">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="fw-bold">Proof image</div>
+          {% if proof.proof_image %}
+            <a class="btn btn-outline-primary pill-btn" target="_blank" href="{{ proof.proof_image.url }}">
+              <i class="bi bi-box-arrow-up-right me-1"></i> Open full
+            </a>
+          {% endif %}
+        </div>
 
-    {% if proof.proof_image %}
-      <div class="mb-3">
-        <a class="btn btn-outline-primary" target="_blank" href="{{ proof.proof_image.url }}">View Proof</a>
+        {% if proof.proof_image %}
+          <div class="preview">
+            <img src="{{ proof.proof_image.url }}" alt="Payment proof">
+          </div>
+          <div class="small muted mt-2">
+            Tip: zoom-in to confirm transaction ID and amount.
+          </div>
+        {% else %}
+          <div class="p-4 text-center muted" style="border:1px dashed rgba(15,23,42,.18); border-radius:18px; background:#f8fafc;">
+            <div class="display-6 mb-2">🖼️</div>
+            <div class="fw-bold mb-1">No proof uploaded</div>
+            <div class="small">Student hasn’t submitted a screenshot yet.</div>
+          </div>
+        {% endif %}
       </div>
-    {% endif %}
+    </div>
 
-    <form method="post" class="d-flex gap-2">
-      {% csrf_token %}
-      <button class="btn btn-success pill px-4" name="action" value="approve">Approve</button>
-      <button class="btn btn-danger pill px-4" name="action" value="reject">Reject</button>
-    </form>
+    <!-- RIGHT: DETAILS + ACTION -->
+    <div class="col-lg-6">
+      <div class="app-card p-4">
+        <div class="d-flex justify-content-between align-items-start gap-2">
+          <div>
+            <div class="fw-bold">Verification details</div>
+            <div class="small muted">Review details and approve/reject.</div>
+          </div>
+
+          {% if proof.status == "pending" %}
+            <span class="chip stPending"><i class="bi bi-hourglass-split"></i> Pending</span>
+          {% elif proof.status == "approved" %}
+            <span class="chip stApproved"><i class="bi bi-check-circle"></i> Approved</span>
+          {% elif proof.status == "rejected" %}
+            <span class="chip stRejected"><i class="bi bi-x-circle"></i> Rejected</span>
+          {% endif %}
+        </div>
+
+        <hr class="my-3">
+
+        <div class="kv">
+          <div class="k"><i class="bi bi-cash-coin me-1"></i> Amount</div>
+          <div class="v">Rs {{ proof.registration.event.price }}</div>
+        </div>
+
+        <div class="kv">
+          <div class="k"><i class="bi bi-credit-card me-1"></i> Method</div>
+          <div class="v">{{ proof.gateway|default:"—"|title }}</div>
+        </div>
+
+        <div class="kv">
+          <div class="k"><i class="bi bi-calendar3 me-1"></i> Submitted</div>
+          <div class="v">{{ proof.created_at|default:"—" }}</div>
+        </div>
+
+        {% if proof.txn_id %}
+        <div class="kv">
+          <div class="k"><i class="bi bi-hash me-1"></i> Txn ID</div>
+          <div class="v">{{ proof.txn_id }}</div>
+        </div>
+        {% endif %}
+
+        {% if proof.remarks %}
+        <div class="kv">
+          <div class="k"><i class="bi bi-chat-left-text me-1"></i> Student note</div>
+          <div class="v" style="font-weight:700; color:#0f172a;">{{ proof.remarks }}</div>
+        </div>
+        {% endif %}
+
+        <hr class="my-3">
+
+        <form method="post" id="reviewForm">
+          {% csrf_token %}
+
+          <!-- Optional staff note (won't break even if you ignore it in backend) -->
+          <label class="form-label fw-bold">Staff note (optional)</label>
+          <textarea class="form-control" name="staff_note" id="staffNote" rows="3"
+                    placeholder="Add a short note (e.g., missing txn ID / amount not visible / verified).">{{ proof.staff_note|default:"" }}</textarea>
+          <div class="small muted mt-1">Visible for audit trail and future review.</div>
+
+          <div class="d-flex gap-2 flex-wrap mt-4">
+            <button class="btn btn-success pill-btn" name="action" value="approve" type="submit">
+              <i class="bi bi-check2-circle me-1"></i> Approve
+            </button>
+
+            <button class="btn btn-outline-danger pill-btn" name="action" value="reject" type="submit" id="rejectBtn">
+              <i class="bi bi-x-circle me-1"></i> Reject
+            </button>
+          </div>
+
+          <div class="small muted mt-3">
+            <i class="bi bi-info-circle me-1"></i>
+            Rejections should include a reason so the student can re-upload correctly.
+          </div>
+        </form>
+
+      </div>
+    </div>
   </div>
+
+  <div class="text-center small muted mt-4">
+    © {{ now|date:"Y" }} Campus Connect
+  </div>
+
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  // Client-side guard: if rejecting, encourage a reason
+  (function(){
+    const form = document.getElementById("reviewForm");
+    const rejectBtn = document.getElementById("rejectBtn");
+    const note = document.getElementById("staffNote");
+    if(!form || !rejectBtn || !note) return;
+
+    rejectBtn.addEventListener("click", function(e){
+      // Only guard if note is empty
+      if(!note.value.trim()){
+        e.preventDefault();
+        note.focus();
+        note.classList.add("is-invalid");
+        note.placeholder = "Please add a short reason before rejecting (e.g., txn id not visible).";
+      }
+    });
+
+    note.addEventListener("input", function(){
+      note.classList.remove("is-invalid");
+    });
+  })();
+</script>
 </body>
 </html>

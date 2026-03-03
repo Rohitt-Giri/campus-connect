@@ -1,24 +1,44 @@
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
+
 
 class Event(models.Model):
-    STATUS_CHOICES = (("draft","Draft"),("published","Published"))
+    STATUS_CHOICES = (
+        ("draft", "Draft"),
+        ("published", "Published"),
+    )
 
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     location = models.CharField(max_length=200, blank=True)
+
     start_datetime = models.DateTimeField()
     end_datetime = models.DateTimeField(null=True, blank=True)
+
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
-    created_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="events_created")
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="events_created",
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
     published_at = models.DateTimeField(null=True, blank=True)
     notified_at = models.DateTimeField(null=True, blank=True)
 
-    # keep these now (for later payments)
+    # payments
     is_paid = models.BooleanField(default=False)
     price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
-    
+
+    # ✅ QR code image for payment (FIXED: must be inside the model)
+   
+    # archive switch
+    is_active = models.BooleanField(default=True)
+    archived_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ["start_datetime"]
@@ -26,9 +46,25 @@ class Event(models.Model):
     def __str__(self):
         return self.title
 
+    # optional helpers (clean + consistent)
+    def archive(self):
+        self.is_active = False
+        self.archived_at = timezone.now()
+        self.save(update_fields=["is_active", "archived_at"])
+
+    def unarchive(self):
+        self.is_active = True
+        self.archived_at = None
+        self.save(update_fields=["is_active", "archived_at"])
+
+
 class EventRegistration(models.Model):
     event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name="registrations")
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="event_registrations")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="event_registrations",
+    )
 
     full_name = models.CharField(max_length=150, default="", blank=True)
     phone = models.CharField(max_length=30, default="", blank=True)
@@ -36,15 +72,13 @@ class EventRegistration(models.Model):
     notes = models.CharField(max_length=255, default="", blank=True)
 
     registered_at = models.DateTimeField(auto_now_add=True)
-    reminder_sent_at = models.DateTimeField(null=True, blank=True)  # ✅ prevents duplicate reminders
+    reminder_sent_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        unique_together = ("event","user")
+        unique_together = ("event", "user")
         ordering = ["-registered_at"]
 
     def __str__(self):
         return f"{self.user} -> {self.event}"
     
-
-
 payment_qr = models.ImageField(upload_to="events/payment_qr/", null=True, blank=True)

@@ -3,83 +3,277 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ item.title }} | Lost & Found</title>
+  <title>{{ item.title }} | Lost &amp; Found</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
   <style>
-    :root{--bd:rgba(15,23,42,.10);}
-    body{background: radial-gradient(circle at top left,#e9fff2 0%,#f4fff8 30%,#f7fbff 70%,#fff 100%); font-family:system-ui;}
-    .wrap{max-width:980px; margin:0 auto; padding:28px 16px;}
-    .cardx{border-radius:18px; border:1px solid var(--bd); background:rgba(255,255,255,.92); box-shadow:0 14px 30px rgba(15,23,42,.06);}
-    .pill{border-radius:999px;}
-    .tag{border-radius:999px; padding:.32rem .65rem; font-weight:800; font-size:.85rem; border:1px solid rgba(15,23,42,.12);}
+    :root{
+      --bg:#eef3f6;
+      --muted:#64748b;
+      --border: rgba(15,23,42,.10);
+      --shadow: 0 18px 50px rgba(15,23,42,.10);
+      --shadow-sm: 0 10px 26px rgba(15,23,42,.08);
+      --radius: 18px;
+      --radius-lg: 22px;
+      --teal1:#0f766e;
+      --teal2:#20c997;
+    }
+
+    body{
+      background: radial-gradient(circle at 18% 12%, #d7f3ff 0%, var(--bg) 38%, var(--bg) 100%);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color:#0f172a;
+    }
+
+    .wrap{ max-width: 1180px; margin:0 auto; padding: 22px 14px 40px; }
+
+    .app-card{
+      background:#fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hero{
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--teal1) 0%, var(--teal2) 55%, #2dd4bf 100%);
+      color:#fff;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.20);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      right:-90px; top:-70px;
+      width: 280px; height: 280px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+    }
+
+    .tag{
+      display:inline-flex; align-items:center; gap:8px;
+      border-radius:999px; padding:.38rem .75rem;
+      font-weight:900; font-size:.85rem;
+      border:1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.16);
+      backdrop-filter: blur(8px);
+      white-space: nowrap;
+    }
+
+    .pill-btn{ border-radius:999px; font-weight:900; padding: 10px 14px; }
+    .btn-light.soft{
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(255,255,255,.35);
+      color:#0f172a;
+    }
+
+    .muted{ color: var(--muted); }
+    .divider{ height:1px; background: var(--border); margin: 14px 0; }
+
+    .badge-soft{
+      border-radius:999px;
+      padding:.45em .75em;
+      font-weight:900;
+      border:1px solid rgba(15,23,42,.12);
+      background:#f8fafc;
+      color:#0f172a;
+      white-space: nowrap;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .bLost{ background: rgba(239,68,68,.10); border-color: rgba(239,68,68,.20); color:#991b1b; }
+    .bFound{ background: rgba(34,197,94,.12); border-color: rgba(34,197,94,.20); color:#166534; }
+    .bOpen{ background: rgba(59,130,246,.10); border-color: rgba(59,130,246,.18); color:#1d4ed8; }
+    .bReturned{ background: rgba(100,116,139,.12); border-color: rgba(100,116,139,.22); color:#334155; }
+
+    .thumb{
+      width:100%;
+      border-radius: 18px;
+      border:1px solid rgba(15,23,42,.10);
+      max-height: 460px;
+      object-fit: cover;
+      background:#fff;
+    }
+
+    .nice-alert{ border-radius: 16px; border: 1px solid rgba(15,23,42,.10); }
+
+    .helpbox{
+      border-radius: 18px;
+      border: 1px solid rgba(15,23,42,.10);
+      background: #f8fafc;
+      padding: 14px;
+    }
   </style>
 </head>
+
 <body>
   <div class="wrap">
 
-    <div class="cardx p-4 mb-3 d-flex justify-content-between align-items-center">
-      <div>
-        <div class="text-muted small">
-          Posted by <b>{{ item.created_by.username }}</b> • {{ item.created_at|date:"M d, Y H:i" }}
+    <!-- Hero header -->
+    <div class="hero mb-3">
+      <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-2" style="position:relative; z-index:1;">
+        <div>
+          <div class="tag mb-2"><i class="bi bi-search-heart"></i> Lost &amp; Found</div>
+          <h1 class="h4 fw-bold mb-1">{{ item.title }}</h1>
+          <div class="text-white-75">
+            Posted by <b class="text-white">{{ item.created_by.username }}</b> • {{ item.created_at|date:"M d, Y • H:i" }}
+          </div>
         </div>
-        <h3 class="fw-bold mb-1">{{ item.title }}</h3>
-        <div class="text-muted">
-          {{ item.get_item_type_display }}
-          • {% if item.location %}{{ item.location }}{% else %}—{% endif %}
-          • {{ item.get_status_display }}
-          {% if item.date_happened %} • {{ item.date_happened|date:"M d, Y" }}{% endif %}
-        </div>
+
+        <a class="btn btn-light soft pill-btn" href="{% url 'lostfound:list' %}">
+          <i class="bi bi-arrow-left me-1"></i> Back
+        </a>
       </div>
-      <a class="btn btn-outline-dark pill" href="{% url 'lostfound:list' %}">Back</a>
     </div>
 
     {% if messages %}
       <div class="mb-3">
         {% for message in messages %}
-          <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
+          <div class="alert alert-{{ message.tags }} nice-alert mb-2">{{ message }}</div>
         {% endfor %}
       </div>
     {% endif %}
 
-    <div class="cardx p-4">
-      {% if item.image %}
-        <img src="{{ item.image.url }}" class="w-100 mb-3" style="border-radius:16px; max-height:420px; object-fit:cover;">
-      {% endif %}
+    <div class="row g-3">
+      <!-- Main -->
+      <div class="col-12 col-lg-8">
+        <div class="app-card p-4">
 
-      {% if item.description %}
-        <p class="mb-3">{{ item.description|linebreaksbr }}</p>
-      {% else %}
-        <p class="text-muted mb-3">No description provided.</p>
-      {% endif %}
+          <div class="d-flex flex-wrap gap-2 mb-2">
+            {% if item.item_type == 'lost' %}
+              <span class="badge-soft bLost"><i class="bi bi-exclamation-circle"></i> {{ item.get_item_type_display }}</span>
+            {% else %}
+              <span class="badge-soft bFound"><i class="bi bi-check-circle"></i> {{ item.get_item_type_display }}</span>
+            {% endif %}
 
-      <div class="d-flex gap-2 flex-wrap">
-        {% if can_claim %}
-          {% if already_claimed %}
-            <span class="badge text-bg-secondary p-2">You already submitted a claim</span>
-          {% else %}
-            <a class="btn btn-success pill" href="{% url 'lostfound:claim' item.pk %}">Claim this item</a>
+            {% if item.status == 'open' %}
+              <span class="badge-soft bOpen"><i class="bi bi-unlock"></i> {{ item.get_status_display }}</span>
+            {% else %}
+              <span class="badge-soft bReturned"><i class="bi bi-check2"></i> {{ item.get_status_display }}</span>
+            {% endif %}
+
+            {% if item.location %}
+              <span class="badge-soft"><i class="bi bi-geo-alt"></i> {{ item.location }}</span>
+            {% endif %}
+
+            {% if item.date_happened %}
+              <span class="badge-soft"><i class="bi bi-calendar3"></i> {{ item.date_happened|date:"M d, Y" }}</span>
+            {% endif %}
+          </div>
+
+          {% if item.image %}
+            <img src="{{ item.image.url }}" class="thumb mb-3" alt="item image">
           {% endif %}
+
+          <div class="fw-bold mb-1">Description</div>
+          {% if item.description %}
+            <div class="text-muted">{{ item.description|linebreaksbr }}</div>
+          {% else %}
+            <div class="text-muted">No description provided.</div>
+          {% endif %}
+
+          <div class="divider"></div>
+
+          <!-- Claim CTA -->
+          <div class="d-flex gap-2 flex-wrap">
+            {% if can_claim %}
+              {% if already_claimed %}
+                <span class="badge text-bg-secondary p-2" style="border-radius:999px;">
+                  <i class="bi bi-info-circle me-1"></i> You already submitted a claim
+                </span>
+              {% else %}
+                <a class="btn btn-success pill-btn" href="{% url 'lostfound:claim' item.pk %}">
+                  <i class="bi bi-send-check me-1"></i> Claim this item
+                </a>
+              {% endif %}
+            {% endif %}
+          </div>
+
+        </div>
+
+        <!-- Staff claims view -->
+        {% if claims %}
+          <div class="app-card p-4 mt-3">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+              <h5 class="fw-bold mb-0">Claims (Staff view)</h5>
+              <span class="small muted">{{ claims|length }} total</span>
+            </div>
+
+            {% for c in claims %}
+              <div class="{% if not forloop.first %}border-top pt-3 mt-3{% endif %}">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                  <div class="fw-bold">
+                    {{ c.student.username }}
+                    <div class="small muted">{{ c.created_at|date:"M d, Y • H:i" }}</div>
+                  </div>
+
+                  <span class="badge-soft">
+                    <i class="bi bi-flag"></i> {{ c.get_status_display }}
+                  </span>
+                </div>
+                <div class="mt-2 text-muted">{{ c.proof_message|linebreaksbr }}</div>
+              </div>
+            {% empty %}
+              <div class="text-muted">No claims yet.</div>
+            {% endfor %}
+          </div>
         {% endif %}
+      </div>
+
+      <!-- Sidebar -->
+      <div class="col-12 col-lg-4">
+        <div class="app-card p-4 mb-3">
+          <h6 class="fw-bold mb-2">Quick Info</h6>
+          <div class="helpbox">
+            <div class="d-flex justify-content-between py-2">
+              <div class="small muted">Posted by</div>
+              <div class="small fw-semibold text-end">{{ item.created_by.username }}</div>
+            </div>
+            <div class="divider"></div>
+
+            <div class="d-flex justify-content-between py-2">
+              <div class="small muted">Status</div>
+              <div class="small fw-semibold text-end">{{ item.get_status_display }}</div>
+            </div>
+            <div class="divider"></div>
+
+            <div class="d-flex justify-content-between py-2">
+              <div class="small muted">Location</div>
+              <div class="small fw-semibold text-end">{% if item.location %}{{ item.location }}{% else %}—{% endif %}</div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+          <div class="small muted">
+            Safety tip: Only share minimal personal details in proof messages. Staff verifies before return.
+          </div>
+        </div>
+
+        <div class="app-card p-4">
+          <h6 class="fw-bold mb-2">How to write a strong claim</h6>
+          <div class="small muted">
+            <ul class="mb-0 ps-3">
+              <li class="mb-2">Mention unique marks, scratches, stickers.</li>
+              <li class="mb-2">Add serial number / inside contents (if any).</li>
+              <li class="mb-0">Say where and when you lost it.</li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
 
-    {% if claims %}
-      <div class="cardx p-4 mt-3">
-        <h5 class="fw-bold mb-2">Claims (Staff view)</h5>
-        {% for c in claims %}
-          <div class="border-top pt-3 mt-3">
-            <div class="fw-bold">
-              {{ c.student.username }} • <span class="text-muted">{{ c.get_status_display }}</span>
-            </div>
-            <div class="text-muted small">{{ c.created_at|date:"M d, Y H:i" }}</div>
-            <div class="mt-2">{{ c.proof_message|linebreaksbr }}</div>
-          </div>
-        {% empty %}
-          <div class="text-muted">No claims yet.</div>
-        {% endfor %}
-      </div>
-    {% endif %}
+    <div class="text-center small muted mt-4">
+      © {{ now|date:"Y" }} Campus Connect
+    </div>
 
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -3,55 +3,288 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% if mode == "create" %}Create Notice{% else %}Edit Notice{% endif %}</title>
+  <title>
+    {% if mode == "create" %}Create Notice{% else %}Edit Notice{% endif %} | Campus Connect
+  </title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
   <style>
-    body { background:#f7fbf8; }
-    .card-soft { border-radius: 16px; border: 1px solid rgba(15,23,42,.08); box-shadow: 0 10px 24px rgba(15,23,42,.06); }
+    :root{
+      --bg:#eef3f6;
+      --muted:#64748b;
+      --border: rgba(15,23,42,.10);
+      --shadow: 0 18px 50px rgba(15,23,42,.10);
+      --shadow-sm: 0 10px 26px rgba(15,23,42,.08);
+      --radius: 18px;
+      --radius-lg: 22px;
+      --teal1:#0f766e;
+      --teal2:#20c997;
+    }
+
+    body{
+      background: radial-gradient(circle at 18% 12%, #d7f3ff 0%, var(--bg) 38%, var(--bg) 100%);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color:#0f172a;
+      min-height: 100vh;
+    }
+
+    .wrap{ max-width: 1100px; margin:0 auto; padding: 22px 14px 40px; }
+
+    .app-card{
+      background:#fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hero{
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--teal1) 0%, var(--teal2) 55%, #2dd4bf 100%);
+      color:#fff;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.20);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      right:-90px; top:-70px;
+      width: 280px; height: 280px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+    }
+
+    .tag{
+      display:inline-flex; align-items:center; gap:8px;
+      border-radius:999px; padding:.38rem .75rem;
+      font-weight:900; font-size:.85rem;
+      border:1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.16);
+      backdrop-filter: blur(8px);
+      white-space: nowrap;
+      position:relative;
+      z-index:1;
+    }
+
+    .pill-btn{ border-radius:999px; font-weight:900; padding: 10px 14px; }
+    .btn-light.soft{
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(255,255,255,.35);
+      color:#0f172a;
+    }
+
+    .muted{ color: var(--muted); }
+    .divider{ height:1px; background: var(--border); margin: 14px 0; }
+
+    .nice-alert{ border-radius: 16px; border: 1px solid rgba(15,23,42,.10); }
+
+    .hint{
+      font-size:.9rem;
+      color: var(--muted);
+      font-weight:650;
+    }
+
+    .chip{
+      border-radius:999px;
+      padding:.45em .75em;
+      font-weight:900;
+      border:1px solid rgba(15,23,42,.12);
+      background:#f8fafc;
+      color:#0f172a;
+      white-space: nowrap;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .cat-general{ background:#f1f5f9; border-color:#e2e8f0; color:#0f172a; }
+    .cat-event{ background:rgba(59,130,246,.10); border-color:rgba(59,130,246,.18); color:#1d4ed8; }
+    .cat-lost_found{ background:rgba(34,197,94,.12); border-color:rgba(34,197,94,.20); color:#166534; }
+    .cat-payment{ background:rgba(245,158,11,.14); border-color:rgba(245,158,11,.24); color:#92400e; }
+    .cat-urgent{ background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.22); color:#991b1b; }
+
+    /* Make textarea feel like an editor */
+    textarea.form-control{
+      min-height: 260px;
+      line-height: 1.6;
+    }
   </style>
 </head>
+
 <body>
-<div class="container py-4">
+  <div class="wrap">
 
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="fw-bold mb-0">
-      {% if mode == "create" %}Create Notice{% else %}Edit Notice{% endif %}
-    </h3>
-    <a href="{% url 'notices:list' %}" class="btn btn-outline-dark">Back</a>
+    <!-- Hero -->
+    <div class="hero mb-3">
+      <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-2" style="position:relative; z-index:1;">
+        <div>
+          <div class="tag mb-2"><i class="bi bi-megaphone"></i> Notices • Editor</div>
+          <h1 class="h4 fw-bold mb-1">
+            {% if mode == "create" %}Create notice{% else %}Edit notice{% endif %}
+          </h1>
+          <div class="text-white-75">
+            {% if mode == "create" %}
+              Publish an announcement to students and staff.
+            {% else %}
+              Update this notice while keeping the history clean.
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="{% url 'notices:list' %}" class="btn btn-light soft pill-btn">
+            <i class="bi bi-arrow-left me-1"></i> Back to list
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+      <div class="mb-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} nice-alert mb-2">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Form -->
+    <div class="row g-3">
+      <div class="col-12 col-lg-8">
+        <div class="app-card p-4">
+          <form method="post" novalidate>
+            {% csrf_token %}
+
+            {% if form.errors %}
+              <div class="alert alert-danger nice-alert">
+                <div class="fw-bold mb-1"><i class="bi bi-exclamation-triangle me-1"></i> Fix the errors below</div>
+                <div class="small">Please check the highlighted fields and try again.</div>
+              </div>
+            {% endif %}
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Title</label>
+              <div class="hint mb-2">Use a short, clear title (e.g., “Midterm schedule updated”).</div>
+              {{ form.title }}
+              {% if form.title.errors %}
+                <div class="text-danger small mt-1">{{ form.title.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Category</label>
+              <div class="hint mb-2">Category affects how the notice is highlighted for users.</div>
+              {{ form.category }}
+              {% if form.category.errors %}
+                <div class="text-danger small mt-1">{{ form.category.errors }}</div>
+              {% endif %}
+
+              <div class="d-flex flex-wrap gap-2 mt-2">
+                <span class="chip cat-general"><i class="bi bi-dot"></i> GENERAL</span>
+                <span class="chip cat-event"><i class="bi bi-calendar-event"></i> EVENT</span>
+                <span class="chip cat-lost_found"><i class="bi bi-box-seam"></i> LOST_FOUND</span>
+                <span class="chip cat-payment"><i class="bi bi-credit-card"></i> PAYMENT</span>
+                <span class="chip cat-urgent"><i class="bi bi-exclamation-circle"></i> URGENT</span>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-bold">Content</label>
+              <div class="hint mb-2">
+                Keep it structured: purpose → key details → deadline → contact.
+              </div>
+              {{ form.content }}
+              {% if form.content.errors %}
+                <div class="text-danger small mt-1">{{ form.content.errors }}</div>
+              {% endif %}
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn btn-success pill-btn" type="submit">
+                {% if mode == "create" %}
+                  <i class="bi bi-send me-1"></i> Publish notice
+                {% else %}
+                  <i class="bi bi-save me-1"></i> Save changes
+                {% endif %}
+              </button>
+
+              <a href="{% url 'notices:list' %}" class="btn btn-outline-dark pill-btn">
+                Cancel
+              </a>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+      <!-- Side helper panel -->
+      <div class="col-12 col-lg-4">
+        <div class="app-card p-4">
+          <h6 class="fw-bold mb-2">Writing checklist</h6>
+          <ul class="small muted ps-3 mb-0">
+            <li><b>Start with the key info</b> (what + who it affects).</li>
+            <li><b>Add date/time</b> and location if relevant.</li>
+            <li><b>Keep it scannable</b> (short lines, clear sections).</li>
+            <li><b>Use URGENT</b> only for critical updates.</li>
+          </ul>
+
+          <div class="divider"></div>
+
+          <div class="small muted">
+            Tip: If your system sends in-app notifications on publish,
+            keep the title meaningful — that’s what students see first.
+          </div>
+        </div>
+
+        {% if mode != "create" %}
+          <div class="app-card p-4 mt-3">
+            <h6 class="fw-bold mb-2">Safety</h6>
+            <div class="small muted">
+              Edits update the notice for everyone. If a notice is no longer relevant,
+              consider archiving it instead.
+            </div>
+
+            <div class="d-grid mt-3">
+              <a href="{% url 'notices:archive' notice.pk %}" class="btn btn-outline-danger pill-btn">
+                <i class="bi bi-archive me-1"></i> Archive notice
+              </a>
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="text-center small muted mt-4">
+      © {{ now|date:"Y" }} Campus Connect
+    </div>
+
   </div>
 
-  <div class="card card-soft p-4">
-    <form method="post" novalidate>
-      {% csrf_token %}
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-      {% if form.errors %}
-        <div class="alert alert-danger">Please fix the errors below.</div>
-      {% endif %}
+  <!-- Auto-apply Bootstrap classes to Django fields -->
+  <script>
+    (function () {
+      const setClass = (el) => {
+        if (!el) return;
+        const tag = el.tagName.toLowerCase();
+        const type = (el.getAttribute("type") || "").toLowerCase();
+        if (tag === "select") el.classList.add("form-select");
+        else if (tag === "textarea") el.classList.add("form-control");
+        else if (tag === "input") el.classList.add("form-control");
+      };
 
-      <div class="mb-3">
-        <label class="form-label fw-semibold">Title</label>
-        {{ form.title }}
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label fw-semibold">Category</label>
-        {{ form.category }}
-      </div>
-
-      <div class="mb-3">
-        <label class="form-label fw-semibold">Content</label>
-        {{ form.content }}
-      </div>
-
-      <div class="d-flex gap-2">
-        <button class="btn btn-success">
-          {% if mode == "create" %}Publish{% else %}Save Changes{% endif %}
-        </button>
-        <a href="{% url 'notices:list' %}" class="btn btn-outline-secondary">Cancel</a>
-      </div>
-    </form>
-  </div>
-
-</div>
+      document.querySelectorAll("input, select, textarea").forEach(setClass);
+      document.querySelectorAll("input[type='checkbox'], input[type='radio']").forEach(el => {
+        el.classList.remove("form-control");
+        el.classList.add("form-check-input");
+      });
+    })();
+  </script>
 </body>
 </html>

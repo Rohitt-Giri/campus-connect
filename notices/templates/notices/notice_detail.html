@@ -3,50 +3,243 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ notice.title }} | Notices</title>
+  <title>{{ notice.title }} | Campus Connect</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
   <style>
-    body { background:#f7fbf8; }
-    .card-soft { border-radius: 16px; border: 1px solid rgba(15,23,42,.08); box-shadow: 0 10px 24px rgba(15,23,42,.06); }
-    .badge-soft { background: rgba(34,197,94,.12); color: #166534; border: 1px solid rgba(34,197,94,.2); }
+    :root{
+      --bg:#eef3f6;
+      --muted:#64748b;
+      --border: rgba(15,23,42,.10);
+      --shadow: 0 18px 50px rgba(15,23,42,.10);
+      --shadow-sm: 0 10px 26px rgba(15,23,42,.08);
+      --radius: 18px;
+      --radius-lg: 22px;
+      --teal1:#0f766e;
+      --teal2:#20c997;
+    }
+
+    body{
+      background: radial-gradient(circle at 18% 12%, #d7f3ff 0%, var(--bg) 38%, var(--bg) 100%);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color:#0f172a;
+      min-height: 100vh;
+    }
+
+    .wrap{ max-width: 1200px; margin:0 auto; padding: 22px 14px 40px; }
+
+    .app-card{
+      background:#fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hero{
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--teal1) 0%, var(--teal2) 55%, #2dd4bf 100%);
+      color:#fff;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.20);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      right:-90px; top:-70px;
+      width: 280px; height: 280px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+    }
+
+    .tag{
+      display:inline-flex; align-items:center; gap:8px;
+      border-radius:999px; padding:.38rem .75rem;
+      font-weight:900; font-size:.85rem;
+      border:1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.16);
+      backdrop-filter: blur(8px);
+      white-space: nowrap;
+      position:relative;
+      z-index:1;
+    }
+
+    .pill-btn{ border-radius:999px; font-weight:900; padding: 10px 14px; }
+    .btn-light.soft{
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(255,255,255,.35);
+      color:#0f172a;
+    }
+
+    .muted{ color: var(--muted); }
+    .divider{ height:1px; background: var(--border); margin: 14px 0; }
+
+    .badge-soft{
+      border-radius:999px;
+      padding:.45em .75em;
+      font-weight:900;
+      border:1px solid rgba(15,23,42,.12);
+      background:#f8fafc;
+      color:#0f172a;
+      white-space: nowrap;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    /* category colors */
+    .cat-general{ background:#f1f5f9; border-color:#e2e8f0; color:#0f172a; }
+    .cat-event{ background:rgba(59,130,246,.10); border-color:rgba(59,130,246,.18); color:#1d4ed8; }
+    .cat-lost_found{ background:rgba(34,197,94,.12); border-color:rgba(34,197,94,.20); color:#166534; }
+    .cat-payment{ background:rgba(245,158,11,.14); border-color:rgba(245,158,11,.24); color:#92400e; }
+    .cat-urgent{ background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.22); color:#991b1b; }
+
+    /* Document styling */
+    .doc{
+      line-height: 1.8;
+      font-size: 1.02rem;
+      white-space: pre-wrap;
+    }
+
+    .nice-alert{ border-radius: 16px; border: 1px solid rgba(15,23,42,.10); }
   </style>
 </head>
+
 <body>
-<div class="container py-4">
+  <div class="wrap">
 
-  {% if messages %}
-    <div class="mb-3">
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
-      {% endfor %}
+    <!-- Header -->
+    <div class="hero mb-3">
+      <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-2" style="position:relative; z-index:1;">
+        <div>
+          <div class="tag mb-2"><i class="bi bi-megaphone"></i> Notices • Detail</div>
+          <h1 class="h4 fw-bold mb-1">Notice</h1>
+
+          <div class="d-flex flex-wrap gap-2">
+            {% with c=notice.category|default:"GENERAL" %}
+              <span class="badge-soft
+                {% if c == 'URGENT' %}cat-urgent
+                {% elif c == 'PAYMENT' %}cat-payment
+                {% elif c == 'EVENT' %}cat-event
+                {% elif c == 'LOST_FOUND' %}cat-lost_found
+                {% else %}cat-general{% endif %}">
+                <i class="bi bi-tag"></i> {{ notice.get_category_display }}
+              </span>
+            {% endwith %}
+
+            <span class="badge-soft">
+              <i class="bi bi-calendar3"></i>
+              {{ notice.created_at|date:"M d, Y • h:i A" }}
+            </span>
+
+            {% if notice.created_by %}
+              <span class="badge-soft">
+                <i class="bi bi-person"></i> {{ notice.created_by.username }}
+              </span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+          <a href="{% url 'notices:list' %}" class="btn btn-light soft pill-btn">
+            <i class="bi bi-arrow-left me-1"></i> Back to Notices
+          </a>
+
+          {% if can_manage %}
+            <a href="{% url 'notices:edit' notice.pk %}" class="btn btn-warning pill-btn">
+              <i class="bi bi-pencil-square me-1"></i> Edit
+            </a>
+            <a href="{% url 'notices:archive' notice.pk %}" class="btn btn-outline-light pill-btn">
+              <i class="bi bi-archive me-1"></i> Archive
+            </a>
+          {% endif %}
+        </div>
+      </div>
     </div>
-  {% endif %}
 
-  <div class="d-flex justify-content-between align-items-center mb-3">
-    <a href="{% url 'notices:list' %}" class="btn btn-outline-dark">← Back to Notices</a>
-
-    {% if can_manage %}
-      <div class="d-flex gap-2">
-        <a href="{% url 'notices:edit' notice.pk %}" class="btn btn-warning">Edit</a>
-        <a href="{% url 'notices:archive' notice.pk %}" class="btn btn-outline-danger">Archive</a>
+    {% if messages %}
+      <div class="mb-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} nice-alert mb-2">{{ message }}</div>
+        {% endfor %}
       </div>
     {% endif %}
-  </div>
 
-  <div class="card card-soft p-4">
-    <div class="d-flex gap-2 align-items-center mb-2">
-      <span class="badge badge-soft">{{ notice.get_category_display }}</span>
-      <small class="text-muted">
-        Posted {{ notice.created_at|date:"M d, Y • h:i A" }}
-        {% if notice.created_by %} • by {{ notice.created_by.username }}{% endif %}
-      </small>
+    <div class="row g-3">
+      <!-- Main content -->
+      <div class="col-12 col-lg-8">
+        <div class="app-card p-4">
+          <h2 class="fw-bold mb-2">{{ notice.title }}</h2>
+          <div class="divider"></div>
+
+          {% if notice.content %}
+            <div class="doc">{{ notice.content }}</div>
+          {% else %}
+            <div class="text-muted">No content provided.</div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Sidebar metadata (optional but looks pro) -->
+      <div class="col-12 col-lg-4">
+        <div class="app-card p-4">
+          <h6 class="fw-bold mb-2">Details</h6>
+
+          <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+            <div class="small muted fw-semibold">Category</div>
+            <div class="fw-semibold">{{ notice.get_category_display }}</div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+            <div class="small muted fw-semibold">Created</div>
+            <div class="fw-semibold">{{ notice.created_at|date:"M d, Y" }}</div>
+          </div>
+
+          {% if notice.published_at %}
+          <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+            <div class="small muted fw-semibold">Published</div>
+            <div class="fw-semibold">{{ notice.published_at|date:"M d, Y" }}</div>
+          </div>
+          {% endif %}
+
+          <div class="d-flex justify-content-between align-items-center py-2">
+            <div class="small muted fw-semibold">Visible</div>
+            <div class="fw-semibold">
+              {% if notice.is_active %}Yes{% else %}No{% endif %}
+            </div>
+          </div>
+
+          <div class="mt-3 small muted">
+            Tip: Use <b>URGENT</b> for time-sensitive announcements (exams, deadline updates, emergencies).
+          </div>
+        </div>
+
+        {% if can_manage %}
+          <div class="app-card p-4 mt-3">
+            <h6 class="fw-bold mb-2">Manage</h6>
+            <div class="d-grid gap-2">
+              <a href="{% url 'notices:edit' notice.pk %}" class="btn btn-warning pill-btn">
+                <i class="bi bi-pencil-square me-1"></i> Edit Notice
+              </a>
+              <a href="{% url 'notices:archive' notice.pk %}" class="btn btn-outline-danger pill-btn">
+                <i class="bi bi-archive me-1"></i> Archive Notice
+              </a>
+            </div>
+          </div>
+        {% endif %}
+      </div>
     </div>
 
-    <h2 class="fw-bold">{{ notice.title }}</h2>
-    <hr>
-    <p style="white-space: pre-wrap;" class="mb-0">{{ notice.content }}</p>
+    <div class="text-center small muted mt-4">
+      © {{ now|date:"Y" }} Campus Connect
+    </div>
+
   </div>
 
-</div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -4,37 +4,149 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Create Event | Campus Connect</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
   <style>
-    body{background: radial-gradient(circle at top left,#e9fff2 0%,#f4fff8 30%,#f7fbff 70%,#fff 100%); font-family:system-ui;}
-    .wrap{max-width:980px; margin:0 auto; padding:28px 16px;}
-    .cardx{border-radius:18px; border:1px solid rgba(15,23,42,.08); background:rgba(255,255,255,.92); box-shadow:0 14px 30px rgba(15,23,42,.06);}
-    .pill{border-radius:999px;}
-    .hint{color:#64748b;font-weight:650;font-size:.9rem;}
+    :root{
+      --bg:#eef3f6;
+      --muted:#64748b;
+      --border: rgba(15,23,42,.10);
+      --shadow: 0 18px 50px rgba(15,23,42,.10);
+      --shadow-sm: 0 10px 26px rgba(15,23,42,.08);
+      --radius: 18px;
+      --radius-lg: 22px;
+      --teal1:#0f766e;
+      --teal2:#20c997;
+    }
+
+    body{
+      background: radial-gradient(circle at 18% 12%, #d7f3ff 0%, var(--bg) 38%, var(--bg) 100%);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color:#0f172a;
+    }
+
+    .wrap{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 22px 14px 40px;
+    }
+
+    .app-card{
+      background:#fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hero{
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--teal1) 0%, var(--teal2) 55%, #2dd4bf 100%);
+      color:#fff;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.20);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      right:-90px; top:-70px;
+      width: 280px; height: 280px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+    }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:.38rem .75rem;
+      font-weight:900;
+      font-size:.85rem;
+      border:1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.16);
+      backdrop-filter: blur(8px);
+      white-space: nowrap;
+    }
+
+    .pill-btn{ border-radius:999px; font-weight:900; padding: 10px 14px; }
+    .btn-light.soft{
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(255,255,255,.35);
+      color:#0f172a;
+    }
+
+    .muted{ color: var(--muted); }
+    .nice-alert{ border-radius: 16px; border: 1px solid var(--border); }
+
+    .section-title{
+      font-weight: 900;
+      font-size: .95rem;
+      margin: 0;
+    }
+
+    .section-hint{
+      font-size: .9rem;
+      color: var(--muted);
+      margin-top: 2px;
+    }
+
+    .divider{ height:1px; background: var(--border); margin: 14px 0; }
+
+    /* Make inputs look consistent */
+    .form-control, .form-select, textarea{
+      border-radius: 14px !important;
+      border-color: rgba(15,23,42,.14) !important;
+      padding: .7rem .85rem;
+    }
+    .form-control:focus, .form-select:focus, textarea:focus{
+      box-shadow: 0 0 0 .25rem rgba(16,185,129,.12) !important;
+      border-color: rgba(16,185,129,.45) !important;
+    }
+    .form-check-input{
+      width: 2.4em;
+      height: 1.25em;
+      cursor:pointer;
+    }
+
+    .req::after{ content:" *"; color:#ef4444; font-weight:900; }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <div class="cardx p-4 mb-3">
-      <div class="d-flex justify-content-between align-items-start gap-3">
+
+    <!-- Header hero -->
+    <div class="hero mb-3">
+      <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-2" style="position:relative; z-index:1;">
         <div>
-          <h3 class="fw-bold mb-1">Create Event</h3>
-          <div class="text-muted">Publish events for students.</div>
+          <div class="tag mb-2"><i class="bi bi-calendar-plus"></i> Staff / Admin • Event Management</div>
+          <h1 class="h4 fw-bold mb-1">Create Event</h1>
+          <div class="text-white-75">Publish events for students. You can keep it as draft or publish it immediately.</div>
         </div>
-        <a class="btn btn-outline-dark pill px-4" href="{% url 'events:list' %}">Back</a>
+
+        <a class="btn btn-light soft pill-btn" href="{% url 'events:list' %}">
+          <i class="bi bi-arrow-left me-1"></i> Back to Events
+        </a>
       </div>
     </div>
 
+    <!-- Messages -->
     {% if messages %}
       <div class="mb-3">
         {% for message in messages %}
-          <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
+          <div class="alert alert-{{ message.tags }} nice-alert mb-2">{{ message }}</div>
         {% endfor %}
       </div>
     {% endif %}
 
+    <!-- Form errors -->
     {% if form.errors %}
-      <div class="alert alert-danger">
+      <div class="alert alert-danger nice-alert">
         <div class="fw-bold mb-1">Please fix the errors below:</div>
         <ul class="mb-0">
           {% for field in form %}
@@ -49,77 +161,183 @@
       </div>
     {% endif %}
 
-    <div class="cardx p-4">
-      <form method="post" novalidate>
-        {% csrf_token %}
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label fw-semibold">Title</label>
-            {{ form.title }}
-          </div>
-          <div class="col-md-6">
-            <label class="form-label fw-semibold">Location</label>
-            {{ form.location }}
-          </div>
-          <div class="col-md-6">
-            <label class="form-label fw-semibold">Start Date/Time</label>
-            {{ form.start_datetime }}
-          </div>
-          <div class="col-md-6">
-            <label class="form-label fw-semibold">End Date/Time</label>
-            {{ form.end_datetime }}
-          </div>
-          <div class="col-md-12">
-            <label class="form-label fw-semibold">Description</label>
-            {{ form.description }}
-          </div>
-          <div class="col-md-4">
-            <label class="form-label fw-semibold">Status</label>
-            {{ form.status }}
-          </div>
+    <div class="row g-3">
+      <!-- Main form -->
+      <div class="col-12 col-lg-8">
+        <div class="app-card p-4">
+          <form method="post" novalidate>
+            {% csrf_token %}
 
-          <div class="col-md-4">
-            <label class="form-label fw-semibold">Paid Event?</label>
-            <div class="form-check form-switch mt-2">
-              {{ form.is_paid }}
-              <label class="form-check-label ms-2">Students must pay</label>
+            <!-- Basics -->
+            <div class="d-flex align-items-start justify-content-between gap-3">
+              <div>
+                <p class="section-title mb-1">Basics</p>
+                <div class="section-hint">Core information visible to students.</div>
+              </div>
+              <span class="badge text-bg-light" style="border:1px solid rgba(15,23,42,.10); border-radius:999px; padding:.45em .75em; font-weight:900;">
+                <i class="bi bi-shield-check me-1"></i> Role protected
+              </span>
             </div>
-            <div class="hint mt-1">Enable to require payment proof.</div>
+
+            <div class="divider"></div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold req">Title</label>
+                {{ form.title }}
+              </div>
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Location</label>
+                {{ form.location }}
+                <div class="small muted mt-1">Example: Hall A, Block 2, Auditorium.</div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold">Description</label>
+                {{ form.description }}
+                <div class="small muted mt-1">Include agenda, eligibility, and important instructions.</div>
+              </div>
+            </div>
+
+            <!-- Schedule -->
+            <div class="mt-4">
+              <p class="section-title mb-1">Schedule</p>
+              <div class="section-hint">Set start and end time for the event.</div>
+              <div class="divider"></div>
+
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold req">Start Date/Time</label>
+                  {{ form.start_datetime }}
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold">End Date/Time</label>
+                  {{ form.end_datetime }}
+                </div>
+
+                <div class="col-md-6">
+                  <label class="form-label fw-semibold req">Status</label>
+                  {{ form.status }}
+                  <div class="small muted mt-1">Draft is hidden. Published is visible to students.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pricing -->
+            <div class="mt-4">
+              <p class="section-title mb-1">Pricing</p>
+              <div class="section-hint">Mark event as free or require payment proof.</div>
+              <div class="divider"></div>
+
+              <div class="row g-3 align-items-end">
+                <div class="col-md-5">
+                  <label class="form-label fw-semibold">Paid Event?</label>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="form-check form-switch m-0">
+                      {{ form.is_paid }}
+                      <label class="form-check-label ms-2" for="id_is_paid">Students must pay</label>
+                    </div>
+                  </div>
+                  <div class="small muted mt-1">Enable to require payment proof upload.</div>
+                </div>
+
+                <div class="col-md-4">
+                  <label class="form-label fw-semibold">Price</label>
+                  {{ form.price }}
+                  <div class="small muted mt-1">Auto-set to 0 when free.</div>
+                </div>
+
+                <div class="col-md-3">
+                  <div class="d-grid">
+                    <button class="btn btn-success pill-btn" type="submit">
+                      <i class="bi bi-check2-circle me-1"></i> Save Event
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Footer actions -->
+            <div class="mt-4 d-flex justify-content-end gap-2">
+              <a class="btn btn-light pill-btn" href="{% url 'events:list' %}">
+                Cancel
+              </a>
+              <button class="btn btn-success pill-btn" type="submit">
+                Save
+              </button>
+            </div>
+
+          </form>
+        </div>
+      </div>
+
+      <!-- Right info panel -->
+      <div class="col-12 col-lg-4">
+        <div class="app-card p-4">
+          <h6 class="fw-bold mb-2">Publishing Tips</h6>
+          <div class="small muted">
+            <ul class="mb-0 ps-3">
+              <li class="mb-2">Use <b>Draft</b> while editing details.</li>
+              <li class="mb-2">Set <b>Published</b> only when finalized.</li>
+              <li class="mb-2">For paid events, clearly mention payment steps in the description.</li>
+              <li class="mb-0">Keep the title short and specific (e.g., “AI Workshop: Intro to ML”).</li>
+            </ul>
           </div>
 
-          <div class="col-md-4">
-            <label class="form-label fw-semibold">Price</label>
-            {{ form.price }}
-            <div class="hint mt-1">Auto-set to 0 if free.</div>
+          <div class="divider"></div>
+
+          <div class="small muted">
+            <div class="fw-semibold text-dark mb-1">What students will see</div>
+            <div>• Event title, time, location, description</div>
+            <div>• Free/Paid badge</div>
+            <div>• Register button</div>
+            <div>• Payment proof upload (if paid)</div>
           </div>
         </div>
-
-        <div class="mt-4">
-          <button class="btn btn-success pill px-4" type="submit">Save Event</button>
-        </div>
-      </form>
+      </div>
     </div>
+
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
   <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const paidToggle = document.getElementById("id_is_paid");
-    const priceInput = document.getElementById("id_price");
+    // Make Django widgets look like Bootstrap if widget attrs are not set in forms.py
+    document.addEventListener("DOMContentLoaded", function () {
+      const makeNice = (el) => {
+        if (!el) return;
+        const tag = el.tagName.toLowerCase();
+        if (tag === "select") el.classList.add("form-select");
+        else if (tag === "textarea") el.classList.add("form-control");
+        else if (tag === "input") {
+          const t = (el.getAttribute("type") || "").toLowerCase();
+          if (t === "checkbox") el.classList.add("form-check-input");
+          else el.classList.add("form-control");
+        }
+      };
 
-    function syncPaidUI() {
-      if (!paidToggle || !priceInput) return;
+      document.querySelectorAll("input, select, textarea").forEach(makeNice);
+    });
 
-      if (paidToggle.checked) {
-        priceInput.removeAttribute("disabled");
-      } else {
-        priceInput.value = "0";
-        priceInput.setAttribute("disabled", "disabled");
+    // Paid toggle -> price enable/disable (your logic kept)
+    document.addEventListener("DOMContentLoaded", function () {
+      const paidToggle = document.getElementById("id_is_paid");
+      const priceInput = document.getElementById("id_price");
+
+      function syncPaidUI() {
+        if (!paidToggle || !priceInput) return;
+
+        if (paidToggle.checked) {
+          priceInput.removeAttribute("disabled");
+        } else {
+          priceInput.value = "0";
+          priceInput.setAttribute("disabled", "disabled");
+        }
       }
-    }
 
-    syncPaidUI();
-    paidToggle?.addEventListener("change", syncPaidUI);
-  });
-</script>
+      syncPaidUI();
+      paidToggle?.addEventListener("change", syncPaidUI);
+    });
+  </script>
 </body>
 </html>

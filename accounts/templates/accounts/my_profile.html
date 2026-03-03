@@ -1,257 +1,506 @@
 {% load static %}
 <!doctype html>
-<html>
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>My Profile | Campus Connect</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
   <style>
+    :root{
+      --bg1:#eaf4f3;
+      --bg2:#f4fbff;
+
+      --text:#0f172a;
+      --muted:#64748b;
+
+      --card:#ffffff;
+      --border: rgba(15,23,42,.10);
+      --shadow: 0 18px 50px rgba(15,23,42,.10);
+      --shadow-sm: 0 10px 26px rgba(15,23,42,.08);
+
+      --radius: 18px;
+      --radius-lg: 22px;
+
+      --teal1:#0f766e;
+      --teal2:#20c997;
+      --teal3:#2dd4bf;
+
+      --danger:#ef4444;
+      --danger-soft: rgba(239,68,68,.10);
+      --success-soft: rgba(34,197,94,.12);
+      --warn-soft: rgba(245,158,11,.14);
+    }
+
     body{
-      background:#f6f8fb;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background:
+        radial-gradient(1100px 550px at 15% 12%, rgba(45,212,191,.22), transparent 55%),
+        radial-gradient(900px 450px at 90% 0%, rgba(32,201,151,.18), transparent 55%),
+        linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 55%, #ffffff 100%);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .wrap{ max-width: 1180px; margin: 0 auto; padding: 22px 14px 44px; }
+
+    /* HERO */
+    .hero{
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--teal1) 0%, var(--teal2) 55%, var(--teal3) 100%);
+      color:#fff;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.18);
+      position:relative;
+      overflow:hidden;
+      margin-bottom: 14px;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      right:-120px; top:-90px;
+      width: 360px; height: 360px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+    }
+    .kicker{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: .38rem .75rem;
+      font-weight: 950;
+      font-size: .85rem;
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.14);
+      backdrop-filter: blur(10px);
+      position:relative;
+      z-index:1;
+      white-space: nowrap;
+    }
+    .hero h1{
+      font-size: clamp(1.45rem, 2.1vw, 2.1rem);
+      font-weight: 950;
+      letter-spacing:-.02em;
+      margin: 10px 0 6px;
+      position:relative;
+      z-index:1;
+    }
+    .hero p{
+      margin:0;
+      color: rgba(255,255,255,.92);
+      font-weight: 650;
+      max-width: 80ch;
+      position:relative;
+      z-index:1;
+    }
+    .hero-actions{
+      margin-top: 12px;
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      position:relative;
+      z-index:1;
+    }
+
+    .btn-pill{
+      border-radius: 999px;
+      font-weight: 950;
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.14);
+      color:#fff;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+    }
+    .btn-pill:hover{ filter: brightness(1.03); color:#fff; }
+    .btn-pill.dark{
+      background: rgba(255,255,255,.92);
       color:#0f172a;
+      border-color: rgba(255,255,255,.35);
     }
-    .wrap{max-width:1050px;margin:0 auto;padding:28px 16px;}
+    .btn-pill.dark:hover{ color:#0f172a; }
+
+    /* CARDS */
     .cardx{
-      background:#fff;
-      border:1px solid rgba(15,23,42,.08);
-      border-radius:18px;
-      box-shadow:0 10px 28px rgba(15,23,42,.06);
+      background: rgba(255,255,255,.92);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
     }
-    .avatar{
-      width:64px;height:64px;border-radius:999px;object-fit:cover;
-      border:1px solid rgba(15,23,42,.10);
-      background:#fff;
+    .panel{ padding: 16px; }
+
+    .muted{ color: var(--muted); }
+    .label{
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 850;
+      letter-spacing: .02em;
+      margin-bottom: 8px;
+      text-transform: uppercase;
     }
-    .avatar-letter{
-      width:64px;height:64px;border-radius:999px;
-      border:1px solid rgba(15,23,42,.10);
-      background:linear-gradient(135deg,#16a34a,#22c55e);
-      display:flex;align-items:center;justify-content:center;
-      font-weight:900;font-size:22px;color:#06120a;
+
+    .form-control, .form-select, textarea{
+      border-radius: 14px;
+      padding: 12px 12px;
+      border: 1px solid rgba(15,23,42,.10);
+      font-weight: 650;
+      background: rgba(255,255,255,.95);
     }
-    .muted{color:#64748b}
-    .label{font-size:12px;color:#64748b;font-weight:700;margin-bottom:8px}
-    .form-control, .form-select{
-      border-radius:12px;
-      padding:12px 12px;
-      border:1px solid rgba(15,23,42,.10);
-    }
+    textarea{ min-height: 120px; }
     .form-control:disabled, .form-select:disabled, textarea:disabled{
       background:#f8fafc;
       color:#0f172a;
       opacity:1;
     }
-    .btn-pill{border-radius:999px;padding:10px 16px;font-weight:700}
-    .section-title{font-weight:900;margin-top:6px}
-    .divider{border-top:1px solid rgba(15,23,42,.08); margin:18px 0}
+
+    .divider{ border-top: 1px solid rgba(15,23,42,.08); margin: 16px 0; }
+
+    /* PROFILE HEADER */
+    .profile-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .who{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 280px;
+    }
+    .avatar{
+      width: 62px;
+      height: 62px;
+      border-radius: 999px;
+      object-fit: cover;
+      border: 1px solid rgba(15,23,42,.10);
+      background:#fff;
+      flex: 0 0 auto;
+      box-shadow: 0 12px 30px rgba(15,23,42,.08);
+    }
+    .avatar-letter{
+      width: 62px;
+      height: 62px;
+      border-radius: 999px;
+      border: 1px solid rgba(15,23,42,.10);
+      background: linear-gradient(135deg, var(--teal1), var(--teal2), var(--teal3));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight: 950;
+      font-size: 22px;
+      color:#041a17;
+      flex: 0 0 auto;
+      box-shadow: 0 18px 40px rgba(32,201,151,.20);
+    }
+    .name{
+      font-weight: 950;
+      letter-spacing: -.01em;
+      margin: 0;
+      line-height: 1.15;
+      font-size: 1.08rem;
+    }
+    .meta{
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-weight: 750;
+      font-size: .92rem;
+    }
+    .role-chip{
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      border-radius: 999px;
+      padding: .28rem .65rem;
+      font-weight: 950;
+      font-size: .82rem;
+      border: 1px solid rgba(15,23,42,.12);
+      background:#f8fafc;
+      color:#0f172a;
+      margin-top: 6px;
+      white-space: nowrap;
+    }
+
+    /* EMAIL BOX */
     .mini-card{
       border:1px solid rgba(15,23,42,.08);
       border-radius:16px;
       padding:14px;
       background:#fff;
+      box-shadow: 0 10px 24px rgba(2,6,23,.06);
     }
     .email-pill{
-      display:flex;align-items:center;gap:10px;
+      display:flex;
+      align-items:center;
+      gap:10px;
       border:1px solid rgba(15,23,42,.08);
-      border-radius:14px;padding:12px 12px;
+      border-radius:14px;
+      padding:12px 12px;
       background:#fff;
     }
     .icon-circle{
       width:34px;height:34px;border-radius:999px;
       display:flex;align-items:center;justify-content:center;
       background:#eef2ff;border:1px solid rgba(15,23,42,.08);
-      font-weight:900;color:#1f2937;
+      font-weight:950;color:#1f2937;
       flex:0 0 auto;
     }
-    .linkish{color:#2563eb;text-decoration:none;font-weight:700}
-    .linkish:hover{text-decoration:underline}
-    .photo-btn{display:none}
+
+    /* ACTION BAR */
+    .btn-soft{
+      border-radius: 999px;
+      font-weight: 950;
+      padding: 10px 14px;
+      border: 1px solid rgba(15,23,42,.16);
+      background:#fff;
+      color:#0f172a;
+      display:inline-flex;
+      align-items:center;
+      gap: 8px;
+      text-decoration:none;
+    }
+    .btn-soft:hover{ background:#f8fafc; color:#0f172a; }
+    .btn-soft.primary{
+      border:0;
+      background: linear-gradient(135deg, var(--teal1), var(--teal2), var(--teal3));
+      color:#041a17;
+    }
+    .btn-soft.primary:hover{ filter: brightness(1.02); color:#041a17; }
+    .btn-soft.danger{
+      border: 1px solid rgba(239,68,68,.25);
+      background: rgba(239,68,68,.08);
+      color:#991b1b;
+    }
+    .btn-soft.danger:hover{ background: rgba(239,68,68,.12); color:#991b1b; }
+
+    /* Responsive */
+    @media (max-width: 992px){
+      .hero{ padding: 16px; }
+    }
   </style>
 </head>
 
 <body>
-<div class="wrap">
+  <div class="wrap">
 
-  {% if messages %}
-    <div class="mb-3">
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
-      {% endfor %}
-    </div>
-  {% endif %}
-
-  <div class="cardx p-4">
-
-    <!-- Top header row -->
-    <div class="d-flex justify-content-between align-items-start gap-3 flex-wrap">
-      <div class="d-flex align-items-center gap-3">
-        {% if profile.photo %}
-          <img class="avatar" id="avatarImg" src="{{ profile.photo.url }}" alt="Profile photo">
-        {% else %}
-          <div class="avatar-letter" id="avatarLetter">{{ profile.avatar_letter }}</div>
-          <img class="avatar d-none" id="avatarImg" alt="Profile photo">
-        {% endif %}
-
+    <!-- HERO HEADER -->
+    <div class="hero">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2" style="position:relative;z-index:1;">
         <div>
-          <div class="fw-bold" style="font-size:18px;">
-            {% if profile.full_name %}{{ profile.full_name }}{% else %}{{ request.user.username }}{% endif %}
-          </div>
-          <div class="muted small">{{ request.user.email }}</div>
-          <div class="muted small">Role: <span class="fw-semibold">{{ request.user.role }}</span></div>
+          <div class="kicker">👤 Account • Profile</div>
+          <h1 class="mb-0">My Profile</h1>
+          <p class="mt-1">
+            Update your personal details and keep your account information accurate.
+          </p>
         </div>
-      </div>
 
-      <div class="d-flex gap-2">
-        <a class="btn btn-outline-dark btn-pill" href="{% url 'core:landing' %}">Back</a>
-        <a class="btn btn-outline-success btn-pill" href="{% url 'accounts:change_password' %}">Change Password</a>
-        <button type="button" id="editBtn" class="btn btn-primary btn-pill">Edit</button>
+        <div class="hero-actions">
+          <a class="btn-pill dark" href="{% url 'core:landing' %}">← Back</a>
+          <a class="btn-pill dark" href="{% url 'accounts:change_password' %}">🔒 Change password</a>
+          <button type="button" id="editBtn" class="btn-pill">✏️ Edit</button>
+        </div>
       </div>
     </div>
 
-    <div class="divider"></div>
-
-    <form method="post" enctype="multipart/form-data" id="profileForm">
-      {% csrf_token %}
-
-      <!-- Photo upload (hidden until Edit) -->
+    {% if messages %}
       <div class="mb-3">
-        <div class="label">Profile Photo</div>
-        <div class="d-flex align-items-center gap-2 flex-wrap">
-          <input id="photoInput" type="file" name="photo" accept="image/*" class="form-control" style="max-width:420px;" disabled>
-          <span class="muted small">PNG/JPG recommended</span>
-        </div>
-        {% if form.photo.errors %}
-          <div class="text-danger small mt-1">{{ form.photo.errors }}</div>
-        {% endif %}
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
+        {% endfor %}
       </div>
+    {% endif %}
 
-      <!-- Main grid (like your reference) -->
-      <div class="row g-3">
-        <div class="col-md-6">
-          <div class="label">Full Name</div>
-          {{ form.full_name }}
+    <!-- MAIN CARD -->
+    <div class="cardx panel">
+
+      <!-- PROFILE HEAD -->
+      <div class="profile-head">
+        <div class="who">
+          {% if profile.photo %}
+            <img class="avatar" id="avatarImg" src="{{ profile.photo.url }}" alt="Profile photo">
+          {% else %}
+            <div class="avatar-letter" id="avatarLetter">{{ profile.avatar_letter }}</div>
+            <img class="avatar d-none" id="avatarImg" alt="Profile photo">
+          {% endif %}
+
+          <div>
+            <p class="name">
+              {% if profile.full_name %}{{ profile.full_name }}{% else %}{{ request.user.username }}{% endif %}
+            </p>
+            <p class="meta mb-0">{{ request.user.email }}</p>
+            <span class="role-chip">Role: {{ request.user.role }}</span>
+          </div>
         </div>
 
-        <div class="col-md-6">
-          <div class="label">Phone</div>
-          {{ form.phone }}
-        </div>
-
-        <div class="col-12">
-          <div class="label">Bio</div>
-          {{ form.bio }}
+        <div class="d-flex gap-2 flex-wrap align-items-center">
+          <span class="role-chip">Username: {{ request.user.username }}</span>
         </div>
       </div>
-
-      {% if request.user.role == "STUDENT" %}
-        <div class="divider"></div>
-        <div class="section-title">Student Details</div>
-        <div class="muted small mb-3">These help staff identify you.</div>
-
-        <div class="row g-3">
-          <div class="col-md-6">
-            <div class="label">Program</div>
-            {{ form.program }}
-          </div>
-          <div class="col-md-3">
-            <div class="label">Semester</div>
-            {{ form.semester }}
-          </div>
-          <div class="col-md-3">
-            <div class="label">Student ID</div>
-            {{ form.student_id }}
-          </div>
-        </div>
-      {% endif %}
-
-      {% if request.user.role == "STAFF" %}
-        <div class="divider"></div>
-        <div class="section-title">Staff Details</div>
-        <div class="muted small mb-3">Displayed internally for admins.</div>
-
-        <div class="row g-3">
-          <div class="col-md-6">
-            <div class="label">Department</div>
-            {{ form.department }}
-          </div>
-          <div class="col-md-6">
-            <div class="label">Designation</div>
-            {{ form.designation }}
-          </div>
-        </div>
-      {% endif %}
 
       <div class="divider"></div>
 
-      <!-- Email block like the reference -->
-      <div class="mini-card mb-3">
-        <div class="fw-bold mb-2">My email address</div>
-        <div class="email-pill">
-          <div class="icon-circle">@</div>
-          <div class="flex-grow-1">
-            <div class="fw-semibold">{{ request.user.email }}</div>
-            <div class="muted small">Primary email</div>
+      <form method="post" enctype="multipart/form-data" id="profileForm">
+        {% csrf_token %}
+
+        <!-- Photo upload -->
+        <div class="mb-3">
+          <div class="label">Profile photo</div>
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <input id="photoInput" type="file" name="photo" accept="image/*"
+                   class="form-control" style="max-width:420px;" disabled>
+            <span class="muted small" style="font-weight:750;">PNG/JPG recommended</span>
+          </div>
+          {% if form.photo.errors %}
+            <div class="text-danger small mt-1">{{ form.photo.errors }}</div>
+          {% endif %}
+        </div>
+
+        <!-- MAIN GRID -->
+        <div class="row g-3">
+          <div class="col-md-6">
+            <div class="label">Full name</div>
+            {{ form.full_name }}
+          </div>
+
+          <div class="col-md-6">
+            <div class="label">Phone</div>
+            {{ form.phone }}
+          </div>
+
+          <div class="col-12">
+            <div class="label">Bio</div>
+            {{ form.bio }}
           </div>
         </div>
-      </div>
 
-      <!-- Actions (hidden until Edit) -->
-      <div class="d-flex gap-2">
-        <button id="saveBtn" class="btn btn-success btn-pill d-none" type="submit">Save</button>
-        <a id="cancelBtn" class="btn btn-outline-secondary btn-pill d-none" href="{% url 'accounts:my_profile' %}">Cancel</a>
-      </div>
-    </form>
+        {% if request.user.role == "STUDENT" %}
+          <div class="divider"></div>
+          <div class="d-flex justify-content-between align-items-end flex-wrap gap-2">
+            <div>
+              <div style="font-weight:950; letter-spacing:-.01em;">Student details</div>
+              <div class="muted small" style="font-weight:700;">These help staff identify you.</div>
+            </div>
+            <span class="role-chip">Student</span>
+          </div>
 
+          <div class="row g-3 mt-1">
+            <div class="col-md-6">
+              <div class="label">Program</div>
+              {{ form.program }}
+            </div>
+            <div class="col-md-3">
+              <div class="label">Semester</div>
+              {{ form.semester }}
+            </div>
+            <div class="col-md-3">
+              <div class="label">Student ID</div>
+              {{ form.student_id }}
+            </div>
+          </div>
+        {% endif %}
+
+        {% if request.user.role == "STAFF" %}
+          <div class="divider"></div>
+          <div class="d-flex justify-content-between align-items-end flex-wrap gap-2">
+            <div>
+              <div style="font-weight:950; letter-spacing:-.01em;">Staff details</div>
+              <div class="muted small" style="font-weight:700;">Visible internally for admins.</div>
+            </div>
+            <span class="role-chip">Staff</span>
+          </div>
+
+          <div class="row g-3 mt-1">
+            <div class="col-md-6">
+              <div class="label">Department</div>
+              {{ form.department }}
+            </div>
+            <div class="col-md-6">
+              <div class="label">Designation</div>
+              {{ form.designation }}
+            </div>
+          </div>
+        {% endif %}
+
+        <div class="divider"></div>
+
+        <!-- Email block -->
+        <div class="mini-card mb-3">
+          <div class="fw-bold mb-2" style="font-weight:950;">My email address</div>
+          <div class="email-pill">
+            <div class="icon-circle">@</div>
+            <div class="flex-grow-1">
+              <div class="fw-semibold">{{ request.user.email }}</div>
+              <div class="muted small" style="font-weight:700;">Primary email</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Save/Cancel (hidden until Edit) -->
+        <div class="d-flex gap-2 flex-wrap">
+          <button id="saveBtn" class="btn-soft primary d-none" type="submit">✅ Save changes</button>
+          <a id="cancelBtn" class="btn-soft d-none" href="{% url 'accounts:my_profile' %}">✖ Cancel</a>
+        </div>
+      </form>
+
+    </div>
   </div>
-</div>
 
-<script>
-  (function () {
-    const editBtn = document.getElementById("editBtn");
-    const saveBtn = document.getElementById("saveBtn");
-    const cancelBtn = document.getElementById("cancelBtn");
-    const photoInput = document.getElementById("photoInput");
-    const avatarImg = document.getElementById("avatarImg");
-    const avatarLetter = document.getElementById("avatarLetter");
+  <script>
+    (function () {
+      const editBtn = document.getElementById("editBtn");
+      const saveBtn = document.getElementById("saveBtn");
+      const cancelBtn = document.getElementById("cancelBtn");
+      const photoInput = document.getElementById("photoInput");
+      const avatarImg = document.getElementById("avatarImg");
+      const avatarLetter = document.getElementById("avatarLetter");
 
-    // Disable all inputs initially (view mode)
-    function setDisabled(disabled) {
-      document.querySelectorAll("#profileForm input, #profileForm textarea, #profileForm select").forEach(el => {
-        if (el.name === "csrfmiddlewaretoken") return;
-        // file input handled separately
-        if (el.id === "photoInput") return;
-        el.disabled = disabled;
-      });
-      photoInput.disabled = disabled;
-    }
-
-    // Start in view mode
-    setDisabled(true);
-
-    editBtn.addEventListener("click", function () {
-      setDisabled(false);
-      saveBtn.classList.remove("d-none");
-      cancelBtn.classList.remove("d-none");
-      editBtn.classList.add("d-none");
-    });
-
-    // Photo preview
-    photoInput.addEventListener("change", function () {
-      const file = this.files && this.files[0];
-      if (!file) return;
-
-      const url = URL.createObjectURL(file);
-
-      if (avatarLetter) avatarLetter.classList.add("d-none");
-      if (avatarImg) {
-        avatarImg.src = url;
-        avatarImg.classList.remove("d-none");
+      function setDisabled(disabled) {
+        document.querySelectorAll("#profileForm input, #profileForm textarea, #profileForm select").forEach(el => {
+          if (el.name === "csrfmiddlewaretoken") return;
+          if (el.id === "photoInput") return;
+          el.disabled = disabled;
+        });
+        if (photoInput) photoInput.disabled = disabled;
       }
-    });
-  })();
-</script>
 
+      // view mode
+      setDisabled(true);
+
+      if (editBtn) {
+        editBtn.addEventListener("click", function () {
+          setDisabled(false);
+          if (saveBtn) saveBtn.classList.remove("d-none");
+          if (cancelBtn) cancelBtn.classList.remove("d-none");
+          editBtn.classList.add("d-none");
+        });
+      }
+
+      // Photo preview
+      if (photoInput) {
+        photoInput.addEventListener("change", function () {
+          const file = this.files && this.files[0];
+          if (!file) return;
+
+          const url = URL.createObjectURL(file);
+
+          if (avatarLetter) avatarLetter.classList.add("d-none");
+          if (avatarImg) {
+            avatarImg.src = url;
+            avatarImg.classList.remove("d-none");
+          }
+        });
+      }
+    })();
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

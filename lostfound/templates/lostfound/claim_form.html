@@ -3,56 +3,318 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Claim | Lost & Found</title>
+  <title>Claim | Lost &amp; Found</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
   <style>
-    :root{--bd:rgba(15,23,42,.10);}
-    body{background: radial-gradient(circle at top left,#e9fff2 0%,#f4fff8 30%,#f7fbff 70%,#fff 100%); font-family:system-ui;}
-    .wrap{max-width:980px; margin:0 auto; padding:28px 16px;}
-    .cardx{border-radius:18px; border:1px solid var(--bd); background:rgba(255,255,255,.92); box-shadow:0 14px 30px rgba(15,23,42,.06);}
-    .pill{border-radius:999px;}
+    :root{
+      --bg:#eef3f6;
+      --muted:#64748b;
+      --border: rgba(15,23,42,.10);
+      --shadow: 0 18px 50px rgba(15,23,42,.10);
+      --shadow-sm: 0 10px 26px rgba(15,23,42,.08);
+      --radius: 18px;
+      --radius-lg: 22px;
+      --teal1:#0f766e;
+      --teal2:#20c997;
+    }
+
+    body{
+      background: radial-gradient(circle at 18% 12%, #d7f3ff 0%, var(--bg) 38%, var(--bg) 100%);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color:#0f172a;
+    }
+
+    .wrap{
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 22px 14px 40px;
+    }
+
+    .app-card{
+      background:#fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hero{
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--teal1) 0%, var(--teal2) 55%, #2dd4bf 100%);
+      color:#fff;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.20);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      right:-90px; top:-70px;
+      width: 280px; height: 280px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+    }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:.38rem .75rem;
+      font-weight:900;
+      font-size:.85rem;
+      border:1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.16);
+      backdrop-filter: blur(8px);
+      white-space: nowrap;
+    }
+
+    .pill-btn{ border-radius:999px; font-weight:900; padding: 10px 14px; }
+    .btn-light.soft{
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(255,255,255,.35);
+      color:#0f172a;
+    }
+
+    .muted{ color: var(--muted); }
+    .divider{ height:1px; background: var(--border); margin: 14px 0; }
+
+    .form-control, textarea, .form-select{
+      border-radius: 14px !important;
+      border-color: rgba(15,23,42,.14) !important;
+      padding: .7rem .85rem;
+    }
+    .form-control:focus, textarea:focus, .form-select:focus{
+      box-shadow: 0 0 0 .25rem rgba(16,185,129,.12) !important;
+      border-color: rgba(16,185,129,.45) !important;
+    }
+
+    .req::after{ content:" *"; color:#ef4444; font-weight:900; }
+
+    .helpbox{
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      padding: 14px;
+    }
+
+    .nice-alert{ border-radius: 16px; border: 1px solid var(--border); }
   </style>
 </head>
+
 <body>
   <div class="wrap">
-    <div class="cardx p-4 mb-3 d-flex justify-content-between align-items-center">
-      <div>
-        <h3 class="fw-bold mb-1">Claim: {{ item.title }}</h3>
-        <div class="text-muted">Provide your details and proof message.</div>
-      </div>
-      <a class="btn btn-outline-dark pill" href="{% url 'lostfound:detail' item.pk %}">Back</a>
-    </div>
 
-    <div class="cardx p-4">
-      <form method="post">
-        {% csrf_token %}
-
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label fw-semibold">Full Name</label>
-            {{ form.full_name }}
-          </div>
-          <div class="col-md-6">
-            <label class="form-label fw-semibold">Phone (optional)</label>
-            {{ form.phone }}
-          </div>
-          <div class="col-12">
-            <label class="form-label fw-semibold">Email (optional)</label>
-            {{ form.email }}
-          </div>
-          <div class="col-12">
-            <label class="form-label fw-semibold">Proof Message</label>
-            {{ form.proof_message }}
+    <!-- Hero header -->
+    <div class="hero mb-3">
+      <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-2" style="position:relative; z-index:1;">
+        <div>
+          <div class="tag mb-2"><i class="bi bi-search-heart"></i> Lost &amp; Found</div>
+          <h1 class="h4 fw-bold mb-1">Claim Item</h1>
+          <div class="text-white-75">
+            You are claiming: <span class="fw-semibold text-white">{{ item.title }}</span>
           </div>
         </div>
 
-        <button class="btn btn-success pill mt-3">Submit Claim</button>
-      </form>
+        <a class="btn btn-light soft pill-btn" href="{% url 'lostfound:detail' item.pk %}">
+          <i class="bi bi-arrow-left me-1"></i> Back to Item
+        </a>
+      </div>
     </div>
+
+    <!-- Messages (if you use them later) -->
+    {% if messages %}
+      <div class="mb-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} nice-alert mb-2">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Form errors summary (optional but professional) -->
+    {% if form.errors %}
+      <div class="alert alert-danger nice-alert mb-3">
+        <div class="fw-bold mb-1">Please fix the highlighted fields:</div>
+        <ul class="mb-0">
+          {% for field in form %}
+            {% for error in field.errors %}
+              <li><b>{{ field.label }}:</b> {{ error }}</li>
+            {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <div class="row g-3">
+      <!-- Main form -->
+      <div class="col-12 col-lg-8">
+        <div class="app-card p-4">
+          <div class="d-flex align-items-start justify-content-between gap-3">
+            <div>
+              <div class="fw-bold">Your Details</div>
+              <div class="small muted">Provide enough information so staff can verify your claim.</div>
+            </div>
+            <span class="badge text-bg-light" style="border:1px solid rgba(15,23,42,.10); border-radius:999px; padding:.45em .75em; font-weight:900;">
+              <i class="bi bi-shield-check me-1"></i> Verified by staff
+            </span>
+          </div>
+
+          <div class="divider"></div>
+
+          <form method="post" novalidate>
+            {% csrf_token %}
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label class="form-label fw-semibold req">Full Name</label>
+                {{ form.full_name }}
+                {% if form.full_name.errors %}
+                  <div class="text-danger small mt-1">{{ form.full_name.errors }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label fw-semibold">Phone (optional)</label>
+                {{ form.phone }}
+                {% if form.phone.errors %}
+                  <div class="text-danger small mt-1">{{ form.phone.errors }}</div>
+                {% endif %}
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold">Email (optional)</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                  <div class="text-danger small mt-1">{{ form.email.errors }}</div>
+                {% endif %}
+                <div class="small muted mt-1">If provided, you’ll receive email updates about approval/rejection.</div>
+              </div>
+
+              <div class="col-12">
+                <label class="form-label fw-semibold req">Proof Message</label>
+                {{ form.proof_message }}
+                {% if form.proof_message.errors %}
+                  <div class="text-danger small mt-1">{{ form.proof_message.errors }}</div>
+                {% endif %}
+                <div class="small muted mt-1">
+                  Mention identifying details (color, marks, serial number, contents, where it was lost/found, etc.).
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 d-flex flex-column flex-md-row gap-2 justify-content-end">
+              <a class="btn btn-light pill-btn" href="{% url 'lostfound:detail' item.pk %}">
+                Cancel
+              </a>
+              <button class="btn btn-success pill-btn" type="submit">
+                <i class="bi bi-send-check me-1"></i> Submit Claim
+              </button>
+            </div>
+
+            <div class="small muted mt-3">
+              By submitting, you confirm the information is accurate. False claims may be rejected.
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right panel -->
+      <div class="col-12 col-lg-4">
+        <div class="app-card p-4 mb-3">
+          <h6 class="fw-bold mb-2">Item Snapshot</h6>
+
+          <div class="helpbox">
+            <div class="d-flex justify-content-between py-2">
+              <div class="small muted">Item</div>
+              <div class="small fw-semibold text-end">{{ item.title }}</div>
+            </div>
+            <div class="divider"></div>
+
+            <div class="d-flex justify-content-between py-2">
+              <div class="small muted">Type</div>
+              <div class="small fw-semibold text-end">
+                {% if item.item_type %}{{ item.item_type }}{% else %}—{% endif %}
+              </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="d-flex justify-content-between py-2">
+              <div class="small muted">Posted</div>
+              <div class="small fw-semibold text-end">
+                {% if item.created_at %}{{ item.created_at|date:"M d, Y" }}{% else %}—{% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <div class="small muted">
+            Tip: Add details only the owner would know (serial number, inside contents, unique scratches, etc.).
+          </div>
+        </div>
+
+        <div class="app-card p-4">
+          <h6 class="fw-bold mb-2">What happens next?</h6>
+          <div class="small muted">
+            <div class="d-flex gap-2 mb-2">
+              <i class="bi bi-1-circle text-success"></i>
+              <div>
+                <div class="fw-semibold text-dark">Staff review</div>
+                <div>Your claim will be checked by staff.</div>
+              </div>
+            </div>
+
+            <div class="d-flex gap-2 mb-2">
+              <i class="bi bi-2-circle text-success"></i>
+              <div>
+                <div class="fw-semibold text-dark">Decision</div>
+                <div>You’ll be notified if approved or rejected.</div>
+              </div>
+            </div>
+
+            <div class="d-flex gap-2">
+              <i class="bi bi-3-circle text-success"></i>
+              <div>
+                <div class="fw-semibold text-dark">Item returned</div>
+                <div>If approved, the item will be marked as returned.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="text-center small muted mt-4">
+      © {{ now|date:"Y" }} Campus Connect
+    </div>
+
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
   <script>
-    document.querySelectorAll("input, textarea").forEach(el => el.classList.add("form-control"));
+    // Add Bootstrap classes to Django widgets safely
+    document.addEventListener("DOMContentLoaded", function () {
+      document.querySelectorAll("input, textarea, select").forEach(el => {
+        const tag = el.tagName.toLowerCase();
+        if (tag === "select") el.classList.add("form-select");
+        else if (tag === "textarea") el.classList.add("form-control");
+        else if (tag === "input") {
+          const t = (el.getAttribute("type") || "").toLowerCase();
+          if (t === "checkbox") el.classList.add("form-check-input");
+          else el.classList.add("form-control");
+        }
+      });
+    });
   </script>
 </body>
 </html>

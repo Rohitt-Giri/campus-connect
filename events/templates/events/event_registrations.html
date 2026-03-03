@@ -5,119 +5,283 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Registrations | {{ event.title }}</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
   <style>
-    :root{--bd:rgba(15,23,42,.10);}
-    body{background: radial-gradient(circle at top left,#e9fff2 0%,#f4fff8 30%,#f7fbff 70%,#fff 100%); font-family:system-ui;}
-    .wrap{max-width:1150px;margin:0 auto;padding:26px 16px;}
-    .cardx{border-radius:18px;border:1px solid var(--bd);background:rgba(255,255,255,.95);box-shadow:0 14px 30px rgba(15,23,42,.06);}
-    .pill{border-radius:999px;}
-    .tag{display:inline-block;border-radius:999px;padding:.25rem .65rem;font-weight:800;font-size:.85rem;border:1px solid rgba(15,23,42,.12);}
-    .tPending{background:#fff7ed;border-color:#fed7aa;color:#9a3412;}
-    .tApproved{background:#ecfdf5;border-color:#bbf7d0;color:#166534;}
-    .tRejected{background:#fef2f2;border-color:#fecaca;color:#991b1b;}
+    :root{
+      --bg:#eef3f6;
+      --muted:#64748b;
+      --border: rgba(15,23,42,.10);
+      --shadow: 0 18px 50px rgba(15,23,42,.10);
+      --shadow-sm: 0 10px 26px rgba(15,23,42,.08);
+      --radius: 18px;
+      --radius-lg: 22px;
+      --teal1:#0f766e;
+      --teal2:#20c997;
+    }
+
+    body{
+      background: radial-gradient(circle at 18% 12%, #d7f3ff 0%, var(--bg) 38%, var(--bg) 100%);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color:#0f172a;
+    }
+
+    .wrap{
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 22px 14px 40px;
+    }
+
+    .app-card{
+      background:#fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hero{
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--teal1) 0%, var(--teal2) 55%, #2dd4bf 100%);
+      color:#fff;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.20);
+      position:relative;
+      overflow:hidden;
+    }
+    .hero:after{
+      content:"";
+      position:absolute;
+      right:-90px; top:-70px;
+      width: 280px; height: 280px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+    }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:.38rem .75rem;
+      font-weight:900;
+      font-size:.85rem;
+      border:1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.16);
+      backdrop-filter: blur(8px);
+      white-space: nowrap;
+    }
+
+    .pill-btn{ border-radius:999px; font-weight:900; padding: 10px 14px; }
+    .btn-light.soft{
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(255,255,255,.35);
+      color:#0f172a;
+    }
+
+    .muted{ color: var(--muted); }
+    .nice-alert{ border-radius: 16px; border: 1px solid var(--border); }
+
+    /* Table polish */
+    .table.app-table > :not(caption) > * > *{
+      padding: .9rem .9rem;
+      border-bottom-color: rgba(15,23,42,.08);
+      vertical-align: middle;
+    }
+    .table.app-table thead th{
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color:#475467;
+      background: #f8fafc;
+      border-bottom-color: rgba(15,23,42,.10);
+    }
+
+    .badge-soft{
+      border-radius:999px;
+      padding:.45em .75em;
+      font-weight:900;
+      border:1px solid var(--border);
+      background:#f8fafc;
+      color:#0f172a;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .bPending{ background:#fff7ed; border-color:#fed7aa; color:#9a3412; }
+    .bApproved{ background:#ecfdf5; border-color:#bbf7d0; color:#166534; }
+    .bRejected{ background:#fef2f2; border-color:#fecaca; color:#991b1b; }
+    .bNone{ background:#f1f5f9; border-color:rgba(15,23,42,.10); color:#334155; }
+
+    .thumb{
+      height:56px;
+      width:104px;
+      object-fit:cover;
+      border-radius: 12px;
+      border:1px solid rgba(15,23,42,.12);
+      background:#fff;
+    }
+
+    .btn-sm.pill-sm{ border-radius:999px; font-weight:900; padding:.42rem .7rem; }
+
+    .actions{
+      display:inline-flex;
+      gap:8px;
+      justify-content:flex-end;
+      flex-wrap: wrap;
+    }
+
+    .empty{
+      border: 1px dashed rgba(15,23,42,.18);
+      border-radius: 18px;
+      padding: 22px;
+      background: #f8fafc;
+      text-align:center;
+      color:#475569;
+    }
   </style>
 </head>
+
 <body>
-<div class="wrap">
+  <div class="wrap">
 
-  <div class="cardx p-4 mb-3 d-flex justify-content-between align-items-center">
-    <div>
-      <h3 class="fw-bold mb-1">{{ event.title }}</h3>
-      <div class="text-muted">Registrations & Payments</div>
+    <!-- Header / Hero -->
+    <div class="hero mb-3">
+      <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-2" style="position:relative; z-index:1;">
+        <div>
+          <div class="tag mb-2">
+            <i class="bi bi-people"></i>
+            Registrations &amp; Payments
+          </div>
+          <h1 class="h4 fw-bold mb-1">{{ event.title }}</h1>
+          <div class="text-white-75">
+            Review registrations and verify payment proofs (if this is a paid event).
+          </div>
+        </div>
+
+        <div class="d-flex gap-2 flex-wrap">
+          <a class="btn btn-light soft pill-btn" href="{% url 'events:detail' event.id %}">
+            <i class="bi bi-arrow-left me-1"></i> Back
+          </a>
+          <a class="btn btn-light soft pill-btn" href="{% url 'events:list' %}">
+            <i class="bi bi-grid-1x2 me-1"></i> Events
+          </a>
+          <a class="btn btn-light soft pill-btn" href="{% url 'payments:staff_list' %}?status=pending">
+            <i class="bi bi-shield-check me-1"></i> Payments Queue
+          </a>
+        </div>
+      </div>
     </div>
-    <div class="d-flex gap-2">
-      <a class="btn btn-outline-dark pill" href="{% url 'events:detail' event.id %}">Back</a>
-      <a class="btn btn-outline-dark pill" href="{% url 'events:list' %}">Events</a>
-      <a class="btn btn-outline-dark pill" href="{% url 'payments:staff_list' %}?status=pending">Payments</a>
-    </div>
-  </div>
 
-  {% if messages %}
-    <div class="mb-3">
-      {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
-      {% endfor %}
-    </div>
-  {% endif %}
+    <!-- Messages -->
+    {% if messages %}
+      <div class="mb-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} nice-alert mb-2">{{ message }}</div>
+        {% endfor %}
+      </div>
+    {% endif %}
 
-  <div class="cardx p-3">
-    <div class="table-responsive">
-      <table class="table align-middle mb-0">
-        <thead>
-          <tr>
-            <th>Student</th>
-            <th>Email</th>
-            <th>Registered</th>
-            <th>Payment</th>
-            <th>Proof</th>
-            <th class="text-end">Action</th>
-          </tr>
-        </thead>
-        <tbody>
+    <!-- Table Card -->
+    <div class="app-card p-3">
+      <div class="table-responsive">
+        <table class="table app-table align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Student</th>
+              <th>Email</th>
+              <th>Registered</th>
+              <th>Payment Status</th>
+              <th>Proof</th>
+              <th class="text-end">Actions</th>
+            </tr>
+          </thead>
 
-          {% for r in registrations %}
-            {% with proof=proof_map|get_item:r.id %}
-              <tr>
-                <td class="fw-semibold">{{ r.user.username }}</td>
-                <td>{{ r.user.email|default:"—" }}</td>
-                <td>{{ r.registered_at|date:"M d, Y H:i" }}</td>
+          <tbody>
+            {% for r in registrations %}
+              {% with proof=proof_map|get_item:r.id %}
+                <tr>
+                  <td class="fw-semibold">{{ r.user.username }}</td>
+                  <td class="text-muted">{{ r.user.email|default:"—" }}</td>
+                  <td class="text-muted">{{ r.registered_at|date:"M d, Y • H:i" }}</td>
 
-                <td>
-                  {% if event.is_paid %}
-                    {% if proof %}
-                      {% if proof.status == "pending" %}
-                        <span class="tag tPending">Pending</span>
-                      {% elif proof.status == "approved" %}
-                        <span class="tag tApproved">Approved</span>
+                  <td>
+                    {% if event.is_paid %}
+                      {% if proof %}
+                        {% if proof.status == "pending" %}
+                          <span class="badge-soft bPending"><i class="bi bi-hourglass-split"></i> Pending</span>
+                        {% elif proof.status == "approved" %}
+                          <span class="badge-soft bApproved"><i class="bi bi-check2-circle"></i> Approved</span>
+                        {% else %}
+                          <span class="badge-soft bRejected"><i class="bi bi-x-circle"></i> Rejected</span>
+                        {% endif %}
                       {% else %}
-                        <span class="tag tRejected">Rejected</span>
+                        <span class="badge-soft bNone"><i class="bi bi-exclamation-circle"></i> No proof</span>
                       {% endif %}
                     {% else %}
-                      <span class="text-muted">No proof</span>
+                      <span class="badge-soft bNone"><i class="bi bi-check2"></i> Free event</span>
                     {% endif %}
-                  {% else %}
-                    <span class="text-muted">Free event</span>
-                  {% endif %}
-                </td>
+                  </td>
 
-                <td style="min-width:180px;">
-                  {% if event.is_paid and proof and proof.proof_image %}
-                    <a href="{{ proof.proof_image.url }}" target="_blank" class="text-decoration-none">
-                      <img src="{{ proof.proof_image.url }}"
-                           style="height:56px;width:100px;object-fit:cover;border-radius:10px;border:1px solid rgba(15,23,42,.12);">
-                    </a>
-                  {% else %}
-                    <span class="text-muted">—</span>
-                  {% endif %}
-                </td>
+                  <td style="min-width:170px;">
+                    {% if event.is_paid and proof and proof.proof_image %}
+                      <a href="{{ proof.proof_image.url }}" target="_blank" class="text-decoration-none">
+                        <img src="{{ proof.proof_image.url }}" class="thumb" alt="payment proof">
+                        <div class="small text-muted mt-1">Click to preview</div>
+                      </a>
+                    {% else %}
+                      <span class="text-muted">—</span>
+                    {% endif %}
+                  </td>
 
-                <td class="text-end">
-                  {% if event.is_paid and proof %}
-                    <form method="post" action="{% url 'payments:staff_action' proof.id %}" class="d-inline">
-                      {% csrf_token %}
-                      <button class="btn btn-success pill btn-sm" name="action" value="approve">Approve</button>
-                    </form>
+                  <td class="text-end">
+                    {% if event.is_paid and proof %}
+                      <div class="actions">
+                        <form method="post" action="{% url 'payments:staff_action' proof.id %}">
+                          {% csrf_token %}
+                          <button class="btn btn-success btn-sm pill-sm"
+                                  name="action" value="approve"
+                                  {% if proof.status == "approved" %}disabled{% endif %}>
+                            Approve
+                          </button>
+                        </form>
 
-                    <form method="post" action="{% url 'payments:staff_action' proof.id %}" class="d-inline">
-                      {% csrf_token %}
-                      <button class="btn btn-outline-danger pill btn-sm" name="action" value="reject">Reject</button>
-                    </form>
-                  {% else %}
-                    <span class="text-muted">—</span>
-                  {% endif %}
+                        <form method="post" action="{% url 'payments:staff_action' proof.id %}">
+                          {% csrf_token %}
+                          <button class="btn btn-outline-danger btn-sm pill-sm"
+                                  name="action" value="reject"
+                                  {% if proof.status == "rejected" %}disabled{% endif %}>
+                            Reject
+                          </button>
+                        </form>
+                      </div>
+                    {% else %}
+                      <span class="text-muted">—</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endwith %}
+            {% empty %}
+              <tr>
+                <td colspan="6">
+                  <div class="empty my-2">
+                    <div class="display-6 mb-2">🗂️</div>
+                    <div class="fw-bold mb-1">No registrations yet</div>
+                    <div class="small text-muted">When students register, they will appear here for review.</div>
+                  </div>
                 </td>
               </tr>
-            {% endwith %}
-          {% empty %}
-            <tr><td colspan="6" class="text-muted">No registrations yet.</td></tr>
-          {% endfor %}
+            {% endfor %}
+          </tbody>
 
-        </tbody>
-      </table>
+        </table>
+      </div>
     </div>
+
   </div>
 
-</div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

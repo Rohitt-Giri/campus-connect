@@ -1,225 +1,311 @@
-
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Payments Review | Campus Connect</title>
+  <title>Payments | Staff | Campus Connect</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
   <style>
     :root{
-      --g:#16a34a;
-      --g2:#22c55e;
-      --bd:rgba(15,23,42,.10);
+      --bg:#eef3f6;
       --muted:#64748b;
+      --border: rgba(15,23,42,.10);
+      --shadow: 0 18px 50px rgba(15,23,42,.10);
+      --shadow-sm: 0 10px 26px rgba(15,23,42,.08);
+      --radius: 18px;
+      --radius-lg: 22px;
+      --teal1:#0f766e;
+      --teal2:#20c997;
     }
+
     body{
-      background:
-        radial-gradient(900px 450px at 15% 10%, rgba(34,197,94,0.12), transparent 55%),
-        linear-gradient(120deg,#fff 0%,#f7fbf8 65%,#fff 100%);
-      font-family:system-ui;
+      background: radial-gradient(circle at 18% 12%, #d7f3ff 0%, var(--bg) 38%, var(--bg) 100%);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color:#0f172a;
+      min-height: 100vh;
     }
-    .wrap{max-width:1180px;margin:0 auto;padding:26px 16px 40px;}
-    .cardx{
-      border-radius:18px;
-      border:1px solid var(--bd);
-      background:rgba(255,255,255,.96);
-      box-shadow:0 14px 30px rgba(15,23,42,.06);
+
+    .wrap{ max-width: 1180px; margin:0 auto; padding: 22px 14px 40px; }
+
+    .hero{
+      border-radius: var(--radius-lg);
+      background: linear-gradient(135deg, var(--teal1) 0%, var(--teal2) 55%, #2dd4bf 100%);
+      color:#fff;
+      padding: 18px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(255,255,255,.20);
+      position:relative;
+      overflow:hidden;
     }
-    .pill{border-radius:999px;}
-    .brand{display:flex;gap:.7rem;align-items:center;text-decoration:none;color:#0f172a;font-weight:950;}
-    .badgeCC{
-      width:44px;height:44px;border-radius:14px;
-      background:linear-gradient(135deg,var(--g),var(--g2));
-      display:flex;align-items:center;justify-content:center;
-      font-weight:950;color:#06120a;
+    .hero:after{
+      content:"";
+      position:absolute;
+      right:-90px; top:-70px;
+      width: 280px; height: 280px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
     }
-    .row-title{font-weight:900;letter-spacing:-.02em;}
-    .muted{color:var(--muted);font-weight:650;}
+
     .tag{
-      display:inline-flex; align-items:center; gap:.4rem;
-      border-radius:999px; padding:.35rem .7rem;
-      font-weight:800; font-size:.85rem;
-      border:1px solid rgba(15,23,42,.10);
-      white-space:nowrap;
-    }
-    .tag.pending{background:#fff7ed;border-color:#fed7aa;color:#9a3412;}
-    .tag.approved{background:#ecfdf5;border-color:#bbf7d0;color:#166534;}
-    .tag.rejected{background:#fef2f2;border-color:#fecaca;color:#991b1b;}
-
-    .table thead th{
-      color:#0f172a;
-      font-weight:900;
-      border-bottom:1px solid rgba(15,23,42,.10) !important;
-    }
-    .table td{
-      vertical-align:middle;
-      border-top:1px solid rgba(15,23,42,.08) !important;
+      display:inline-flex; align-items:center; gap:8px;
+      border-radius:999px; padding:.38rem .75rem;
+      font-weight:900; font-size:.85rem;
+      border:1px solid rgba(255,255,255,.22);
+      background: rgba(255,255,255,.16);
+      backdrop-filter: blur(8px);
+      white-space: nowrap;
+      position:relative;
+      z-index:1;
     }
 
-    .filter-link{
-      text-decoration:none;
-      font-weight:900;
-      padding:.45rem .9rem;
-      border-radius:999px;
-      border:1px solid rgba(15,23,42,.12);
+    .pill-btn{ border-radius:999px; font-weight:900; padding: 10px 14px; }
+    .btn-light.soft{
+      background: rgba(255,255,255,.94);
+      border: 1px solid rgba(255,255,255,.35);
       color:#0f172a;
+    }
+
+    .app-card{
       background:#fff;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
     }
-    .filter-link.active{
-      border-color:rgba(34,197,94,.35);
-      background:rgba(34,197,94,.10);
-      color:#166534;
+
+    .muted{ color: var(--muted); }
+    .nice-alert{ border-radius: 16px; border: 1px solid rgba(15,23,42,.10); }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius: 999px;
+      padding: .35rem .7rem;
+      font-weight: 950;
+      font-size: .82rem;
+      border: 1px solid rgba(15,23,42,.12);
+      background:#f8fafc;
+      color:#0f172a;
+      white-space: nowrap;
     }
+    .stPending{ background:#fff7ed; border-color:#fed7aa; color:#9a3412; }
+    .stApproved{ background:#ecfdf5; border-color:#bbf7d0; color:#166534; }
+    .stRejected{ background:#fef2f2; border-color:#fecaca; color:#991b1b; }
+
+    .tabbar{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius: 18px;
+      padding: 10px;
+      box-shadow: var(--shadow-sm);
+    }
+    .tabbtn{
+      border-radius: 999px;
+      font-weight: 900;
+      padding: 10px 14px;
+      border: 1px solid transparent;
+      background: transparent;
+      color:#0f172a;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+    .tabbtn.active{
+      background: rgba(15,118,110,.12);
+      border-color: rgba(15,118,110,.22);
+      color: #0f766e;
+    }
+
+    .thumb{
+      width: 92px;
+      height: 54px;
+      border-radius: 12px;
+      border: 1px solid rgba(15,23,42,.12);
+      background:#f8fafc;
+      object-fit: cover;
+    }
+
+    .table > :not(caption) > * > * { padding: .85rem .9rem; }
+    .table thead th{ color: var(--muted); font-weight: 900; font-size: .85rem; text-transform: uppercase; letter-spacing:.04em; }
+    .table tbody td{ vertical-align: middle; }
+
+    .rowtitle{ font-weight: 950; }
+    .sub{ color: var(--muted); font-weight: 700; font-size: .9rem; }
   </style>
 </head>
 
 <body>
 <div class="wrap">
 
-  <!-- Top bar -->
-  <div class="cardx p-3 mb-3 d-flex justify-content-between align-items-center">
-    <a class="brand" href="{% url 'core:landing' %}">
-      <div class="badgeCC">CC</div>
+  <!-- HERO -->
+  <div class="hero mb-3">
+    <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-2" style="position:relative; z-index:1;">
       <div>
-        <div>Campus Connect</div>
-        <div class="small muted">Payments Review</div>
-      </div>
-    </a>
-
-    <div class="d-flex gap-2 align-items-center">
-      <div class="d-none d-md-block small fw-semibold">
-        Staff: <span class="muted">{{ request.user.username }}</span>
-      </div>
-      <a class="btn btn-outline-dark pill px-3" href="{% url 'staff:dashboard' %}">Back</a>
-    </div>
-  </div>
-
-  <!-- Header -->
-  <div class="cardx p-4 mb-3">
-    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-start">
-      <div>
-        <h3 class="row-title mb-1">Payments Review</h3>
-        <div class="muted">Approve or reject student payment proofs for paid events.</div>
+        <div class="tag mb-2"><i class="bi bi-cash-coin"></i> Staff • Payments</div>
+        <h1 class="h4 fw-bold mb-1">Payment submissions</h1>
+        <div class="text-white-75">Review and verify payment proofs submitted by students.</div>
       </div>
 
-      <!-- Search -->
-      <form class="d-flex gap-2" method="get">
-        <input type="hidden" name="status" value="{{ status|default:'pending' }}">
-        <input class="form-control pill" style="min-width:280px" name="q" value="{{ q|default:'' }}"
-               placeholder="Search event / student / email">
-        <button class="btn btn-success pill px-4" type="submit">Search</button>
-      </form>
-    </div>
-
-    <!-- Filters -->
-    <div class="d-flex gap-2 flex-wrap mt-3">
-      <a class="filter-link {% if status == 'pending' or not status %}active{% endif %}"
-         href="{% url 'payments:staff_list' %}?status=pending{% if q %}&q={{ q }}{% endif %}">
-        Pending
-      </a>
-      <a class="filter-link {% if status == 'approved' %}active{% endif %}"
-         href="{% url 'payments:staff_list' %}?status=approved{% if q %}&q={{ q }}{% endif %}">
-        Approved
-      </a>
-      <a class="filter-link {% if status == 'rejected' %}active{% endif %}"
-         href="{% url 'payments:staff_list' %}?status=rejected{% if q %}&q={{ q }}{% endif %}">
-        Rejected
-      </a>
+      <div class="d-flex gap-2 flex-wrap">
+        <a class="btn btn-light soft pill-btn" href="javascript:history.back()">
+          <i class="bi bi-arrow-left me-1"></i> Back
+        </a>
+      </div>
     </div>
   </div>
 
   {% if messages %}
     <div class="mb-3">
       {% for message in messages %}
-        <div class="alert alert-{{ message.tags }} mb-2">{{ message }}</div>
+        <div class="alert alert-{{ message.tags }} nice-alert mb-2">{{ message }}</div>
       {% endfor %}
     </div>
   {% endif %}
 
-  <!-- Table -->
-  <div class="cardx p-4">
-    {% if proofs %}
-      <div class="table-responsive">
-        <table class="table align-middle mb-0">
-          <thead>
-            <tr>
-              <th style="min-width:240px;">Event</th>
-              <th style="min-width:160px;">Student</th>
-              <th>Status</th>
-              <th style="min-width:160px;">Uploaded</th>
-              <th>Proof</th>
-              <th style="min-width:240px;">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for p in proofs %}
-              <tr>
-                <td class="fw-semibold">
-                  {{ p.registration.event.title }}
-                  <div class="small muted">
-                    {% if p.registration.event.is_paid %}
-                      Amount: <b>{{ p.registration.event.price }}</b>
-                    {% endif %}
-                  </div>
-                </td>
-
-                <td>
-                  <div class="fw-semibold">{{ p.registration.user.username }}</div>
-                  {% if p.registration.user.email %}
-                    <div class="small muted">{{ p.registration.user.email }}</div>
-                  {% endif %}
-                </td>
-
-                <td>
-                  <span class="tag {{ p.status }}">
-                    {{ p.get_status_display }}
-                  </span>
-                </td>
-
-                <td class="muted">
-                  {{ p.submitted_at|date:"M d, Y H:i" }}
-                </td>
-
-                <td>
-                  {% if p.proof_image %}
-                    <a class="btn btn-sm btn-outline-primary pill"
-                       href="{{ p.proof_image.url }}" target="_blank">
-                      View
-                    </a>
-                  {% else %}
-                    <span class="muted">No file</span>
-                  {% endif %}
-                </td>
-
-                <td>
-                  <div class="d-flex gap-2 flex-wrap">
-                    <a class="btn btn-sm btn-outline-dark pill"
-                       href="{% url 'payments:staff_review' p.id %}">
-                      Review
-                    </a>
-
-                    {% if p.status == "pending" %}
-                      <!-- Approve/Reject happen inside review page (recommended),
-                           but if you want one-click approve/reject, tell me and I'll add routes. -->
-                      <span class="muted small">Pending action</span>
-                    {% else %}
-                      <span class="muted small">Done</span>
-                    {% endif %}
-                  </div>
-                </td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+  <!-- STATUS TABS + FILTER -->
+  <div class="tabbar mb-3">
+    <div class="d-flex flex-column flex-lg-row justify-content-between gap-2">
+      <div class="d-flex flex-wrap gap-2">
+        <a class="tabbtn {% if status == 'pending' or not status %}active{% endif %}"
+           href="{% url 'payments:staff_list' %}?status=pending">
+          <i class="bi bi-hourglass-split"></i> Pending
+        </a>
+        <a class="tabbtn {% if status == 'approved' %}active{% endif %}"
+           href="{% url 'payments:staff_list' %}?status=approved">
+          <i class="bi bi-check-circle"></i> Approved
+        </a>
+        <a class="tabbtn {% if status == 'rejected' %}active{% endif %}"
+           href="{% url 'payments:staff_list' %}?status=rejected">
+          <i class="bi bi-x-circle"></i> Rejected
+        </a>
       </div>
-    {% else %}
-      <div class="muted">No payment proofs found.</div>
-    {% endif %}
+
+      <form method="get" class="d-flex gap-2 flex-wrap">
+        <input type="hidden" name="status" value="{{ status|default:'pending' }}">
+        <div style="min-width: 260px;">
+          <input class="form-control" name="q" value="{{ q|default:'' }}"
+                 placeholder="Search student/event/txn id...">
+        </div>
+        <button class="btn btn-dark pill-btn" type="submit">
+          <i class="bi bi-search me-1"></i> Search
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- TABLE -->
+  <div class="app-card p-3">
+    <div class="table-responsive">
+      <table class="table align-middle mb-0">
+        <thead>
+          <tr>
+            <th style="width:120px;">Proof</th>
+            <th>Student</th>
+            <th>Event</th>
+            <th>Amount</th>
+            <th>Method</th>
+            <th>Status</th>
+            <th class="text-end">Action</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for p in proofs %}
+            <tr>
+              <td>
+                {% if p.proof_image %}
+                  <a href="{{ p.proof_image.url }}" target="_blank" class="text-decoration-none">
+                    <img class="thumb" src="{{ p.proof_image.url }}" alt="Proof">
+                  </a>
+                {% else %}
+                  <div class="d-flex align-items-center justify-content-center"
+                       style="width:92px;height:54px;border-radius:12px;border:1px dashed rgba(15,23,42,.20);background:#f8fafc;color:var(--muted);font-weight:900;">
+                    —
+                  </div>
+                {% endif %}
+              </td>
+
+              <td>
+                <div class="rowtitle">{{ p.registration.user.username }}</div>
+                <div class="sub">{{ p.registration.user.email|default:"—" }}</div>
+              </td>
+
+              <td>
+                <div class="rowtitle">{{ p.registration.event.title }}</div>
+                <div class="sub">
+                  {% if p.txn_id %}Txn: {{ p.txn_id }}{% else %}Txn: —{% endif %}
+                </div>
+              </td>
+
+              <td class="fw-bold">
+                Rs {{ p.registration.event.price }}
+              </td>
+
+              <td class="text-capitalize">
+                {{ p.gateway|default:"—" }}
+              </td>
+
+              <td>
+                {% if p.status == "pending" %}
+                  <span class="chip stPending"><i class="bi bi-hourglass-split"></i> Pending</span>
+                {% elif p.status == "approved" %}
+                  <span class="chip stApproved"><i class="bi bi-check-circle"></i> Approved</span>
+                {% else %}
+                  <span class="chip stRejected"><i class="bi bi-x-circle"></i> Rejected</span>
+                {% endif %}
+              </td>
+
+              <td class="text-end">
+                <a class="btn btn-outline-primary pill-btn" href="{% url 'payments:staff_review' p.id %}">
+                  <i class="bi bi-eye me-1"></i> Review
+                </a>
+
+                {% if p.status == "pending" %}
+                  <form method="post" action="{% url 'payments:staff_action' p.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button class="btn btn-success pill-btn" name="action" value="approve" type="submit">
+                      <i class="bi bi-check2 me-1"></i> Approve
+                    </button>
+                  </form>
+
+                  <form method="post" action="{% url 'payments:staff_action' p.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button class="btn btn-outline-danger pill-btn" name="action" value="reject" type="submit">
+                      <i class="bi bi-x me-1"></i> Reject
+                    </button>
+                  </form>
+                {% endif %}
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="7">
+                <div class="p-4 text-center">
+                  <div class="display-6 mb-2">📭</div>
+                  <div class="fw-bold">No payments found</div>
+                  <div class="muted small">
+                    Try switching status or changing your search query.
+                  </div>
+                </div>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+
+      </table>
+    </div>
+  </div>
+
+  <div class="text-center small muted mt-4">
+    © {{ now|date:"Y" }} Campus Connect
   </div>
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
