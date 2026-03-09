@@ -1,0 +1,340 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Payments | Campus Connect</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <style>
+    :root{
+      --g:#16a34a;
+      --g2:#22c55e;
+      --bd:rgba(15,23,42,.10);
+      --muted:#64748b;
+      --shadow:0 14px 30px rgba(15,23,42,.06);
+      --radius:18px;
+    }
+
+    body{
+      background:
+        radial-gradient(900px 450px at 15% 10%, rgba(34,197,94,.14), transparent 55%),
+        linear-gradient(120deg, #eefbf3 0%, #f7fbff 65%, #fff 100%);
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      color:#0f172a;
+    }
+
+    .wrap{
+      max-width:1280px;
+      margin:0 auto;
+      padding:24px 14px 40px;
+    }
+
+    .cardx{
+      background:rgba(255,255,255,.92);
+      border:1px solid var(--bd);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .hero{
+      border-radius:22px;
+      background:linear-gradient(135deg, #0f766e 0%, #16a34a 55%, #4ade80 100%);
+      color:#fff;
+      padding:22px;
+      box-shadow:0 18px 50px rgba(15,23,42,.10);
+      position:relative;
+      overflow:hidden;
+      margin-bottom:18px;
+    }
+
+    .hero:after{
+      content:"";
+      position:absolute;
+      right:-90px;
+      top:-70px;
+      width:300px;
+      height:300px;
+      border-radius:999px;
+      background:rgba(255,255,255,.14);
+    }
+
+    .hero-inner{
+      position:relative;
+      z-index:1;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:16px;
+      flex-wrap:wrap;
+    }
+
+    .hero-kicker{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:.35rem .75rem;
+      font-size:.85rem;
+      font-weight:900;
+      background:rgba(255,255,255,.15);
+      border:1px solid rgba(255,255,255,.22);
+      margin-bottom:12px;
+    }
+
+    .hero h1{
+      font-weight:950;
+      letter-spacing:-.02em;
+      margin:0 0 8px;
+      font-size:clamp(1.6rem, 2.6vw, 2.4rem);
+      line-height:1.08;
+    }
+
+    .hero-sub{
+      max-width:650px;
+      color:rgba(255,255,255,.90);
+      font-weight:650;
+      line-height:1.65;
+      margin:0;
+    }
+
+    .btn-pill{
+      border-radius:999px;
+      padding:10px 16px;
+      font-weight:900;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .btn-hero-light{
+      background:#fff;
+      color:#0f172a;
+      border:1px solid rgba(255,255,255,.40);
+    }
+
+    .kpi-grid{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:16px;
+      margin-bottom:18px;
+    }
+
+    .kpi{
+      background:rgba(255,255,255,.92);
+      border:1px solid var(--bd);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:18px;
+    }
+
+    .kpi-label{
+      color:var(--muted);
+      font-size:.92rem;
+      font-weight:700;
+      margin-bottom:6px;
+    }
+
+    .kpi-num{
+      font-size:2rem;
+      font-weight:950;
+      line-height:1;
+      letter-spacing:-.02em;
+    }
+
+    .status-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:.42rem .78rem;
+      font-weight:850;
+      font-size:.82rem;
+      border:1px solid rgba(15,23,42,.12);
+    }
+
+    .st-none{
+      background:#f8fafc;
+      color:#334155;
+    }
+
+    .st-pending{
+      background:rgba(245,158,11,.12);
+      color:#92400e;
+      border-color:rgba(245,158,11,.18);
+    }
+
+    .st-approved{
+      background:rgba(34,197,94,.12);
+      color:#166534;
+      border-color:rgba(34,197,94,.18);
+    }
+
+    .st-rejected{
+      background:rgba(239,68,68,.12);
+      color:#991b1b;
+      border-color:rgba(239,68,68,.18);
+    }
+
+    .table thead th{
+      font-size:.82rem;
+      color:var(--muted);
+      font-weight:900;
+      border-bottom-color:rgba(15,23,42,.10);
+      white-space:nowrap;
+    }
+
+    .table td{
+      vertical-align:middle;
+      border-top-color:rgba(15,23,42,.08);
+      font-weight:650;
+    }
+
+    .amount{
+      font-weight:900;
+    }
+
+    .muted{
+      color:var(--muted);
+    }
+
+    .empty{
+      border:1px dashed rgba(15,23,42,.14);
+      border-radius:18px;
+      padding:30px 18px;
+      text-align:center;
+      color:var(--muted);
+      background:#f8fafc;
+    }
+
+    @media (max-width: 900px){
+      .kpi-grid{grid-template-columns:1fr;}
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div>
+        <div class="hero-kicker">
+          <i class="bi bi-credit-card"></i> Student Payments
+        </div>
+        <h1>My Payments</h1>
+        <p class="hero-sub">
+          View your paid event registrations, payment proof status, and upload or re-upload screenshots when needed.
+        </p>
+      </div>
+
+      <div class="d-flex gap-2 flex-wrap">
+        <a class="btn-pill btn-hero-light" href="{% url 'student:dashboard' %}">
+          <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="kpi-label">Pending</div>
+      <div class="kpi-num">{{ pending_count|default:0 }}</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Approved</div>
+      <div class="kpi-num">{{ approved_count|default:0 }}</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Rejected</div>
+      <div class="kpi-num">{{ rejected_count|default:0 }}</div>
+    </div>
+  </div>
+
+  <div class="cardx p-3">
+    {% if paid_regs %}
+      <div class="table-responsive">
+        <table class="table align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Event</th>
+              <th>Registered</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Method</th>
+              <th>Proof</th>
+              <th class="text-end">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in paid_regs %}
+              <tr>
+                <td>
+                  <div class="fw-bold">{{ row.event.title }}</div>
+                  <div class="small muted">
+                    {% if row.event.start_datetime %}{{ row.event.start_datetime|date:"M d, Y • h:i A" }}{% endif %}
+                    {% if row.event.location %} • {{ row.event.location }}{% endif %}
+                  </div>
+                </td>
+
+                <td>{{ row.registration.registered_at|date:"M d, Y" }}</td>
+
+                <td class="amount">Rs {{ row.event.price }}</td>
+
+                <td>
+                  {% if row.status == "pending" %}
+                    <span class="status-pill st-pending"><i class="bi bi-hourglass-split"></i> Pending</span>
+                  {% elif row.status == "approved" %}
+                    <span class="status-pill st-approved"><i class="bi bi-check-circle"></i> Approved</span>
+                  {% elif row.status == "rejected" %}
+                    <span class="status-pill st-rejected"><i class="bi bi-x-circle"></i> Rejected</span>
+                  {% else %}
+                    <span class="status-pill st-none"><i class="bi bi-dash-circle"></i> Not Submitted</span>
+                  {% endif %}
+                </td>
+
+                <td>
+                  {% if row.proof and row.proof.gateway %}
+                    {{ row.proof.gateway|title }}
+                  {% else %}
+                    —
+                  {% endif %}
+                </td>
+
+                <td>
+                  {% if row.proof and row.proof.proof_image %}
+                    <a class="btn btn-sm btn-outline-primary rounded-pill px-3" target="_blank" href="{{ row.proof.proof_image.url }}">
+                      View
+                    </a>
+                  {% else %}
+                    <span class="muted">—</span>
+                  {% endif %}
+                </td>
+
+                <td class="text-end">
+                  <a class="btn btn-success rounded-pill px-3"
+                     href="{% url 'payments:submit' row.registration.id %}">
+                    {% if row.proof %}Update Proof{% else %}Upload Proof{% endif %}
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="empty">
+        <div class="fw-bold mb-2" style="color:#0f172a;">No paid registrations yet</div>
+        <div class="small">
+          Once you register for a paid event, your payment status will appear here.
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+</body>
+</html>

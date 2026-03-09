@@ -257,3 +257,49 @@ def staff_payment_action_view(request, proof_id):
 
     messages.success(request, "Payment approved ✅" if proof.status == "approved" else "Payment rejected ❌")
     return redirect(request.META.get("HTTP_REFERER", "/payments/staff/?status=pending"))
+
+@login_required
+def student_payments_list_view(request):
+    paid_regs = []
+    pending_count = 0
+    approved_count = 0
+    rejected_count = 0
+
+    if EventRegistration:
+        regs_qs = EventRegistration.objects.select_related("event", "user").filter(
+            user=request.user,
+            event__is_paid=True
+        ).order_by("-registered_at")
+
+        proof_map = {}
+        if PaymentProof:
+            proofs = PaymentProof.objects.select_related("registration", "registration__event").filter(
+                registration__user=request.user
+            ).order_by("-id")
+
+            # latest proof per registration
+            for p in proofs:
+                if p.registration_id not in proof_map:
+                    proof_map[p.registration_id] = p
+
+            pending_count = sum(1 for p in proof_map.values() if p.status == "pending")
+            approved_count = sum(1 for p in proof_map.values() if p.status == "approved")
+            rejected_count = sum(1 for p in proof_map.values() if p.status == "rejected")
+
+        for reg in regs_qs:
+            proof = proof_map.get(reg.id)
+            paid_regs.append({
+                "registration": reg,
+                "event": reg.event,
+                "proof": proof,
+                "has_proof": proof is not None,
+                "status": proof.status if proof else "not_submitted",
+            })
+
+    return render(request, "payments/student_payments_list.html", {
+        "paid_regs": paid_regs,
+        "pending_count": pending_count,
+        "approved_count": approved_count,
+        "rejected_count": rejected_count,
+        "now": timezone.now(),
+    })

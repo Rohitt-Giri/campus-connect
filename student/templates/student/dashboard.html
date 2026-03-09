@@ -1,504 +1,1032 @@
+{% load static %}
 <!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Campus Connect — Student Dashboard</title>
+  <title>Campus Connect | Student Dashboard</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
   <style>
     :root{
-      --bg: #eef3f6;
-      --sidebar: #0b1320;
-      --sidebar-2: #0e1a2c;
-      --card: #ffffff;
-      --muted: #6b7280;
-      --border: rgba(15,23,42,.10);
-      --shadow: 0 18px 50px rgba(15,23,42,.10);
-      --shadow-sm: 0 10px 28px rgba(15,23,42,.08);
-
-      --radius: 18px;
-      --radius-lg: 22px;
-
-      --green-1: #0ea5a6;
-      --green-2: #20c997;
+      --g:#16a34a;
+      --g2:#22c55e;
+      --bd:rgba(15,23,42,.10);
+      --muted:#64748b;
+      --card:#ffffff;
+      --bg1:#eefbf3;
+      --bg2:#f7fbff;
+      --dark:#0f172a;
+      --shadow:0 14px 30px rgba(15,23,42,.06);
+      --radius:18px;
     }
+
+    *{box-sizing:border-box}
 
     body{
-      background: radial-gradient(circle at 20% 15%, #d7f3ff 0%, #eef3f6 35%, #eef3f6 100%);
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-      color:#0f172a;
+      margin:0;
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      color:var(--dark);
+      background:
+        radial-gradient(900px 450px at 15% 10%, rgba(34,197,94,.14), transparent 55%),
+        linear-gradient(120deg, var(--bg1) 0%, var(--bg2) 65%, #fff 100%);
       min-height:100vh;
-      overflow-x:hidden;
     }
 
-    /* Layout */
     .app{
       display:flex;
       min-height:100vh;
     }
 
-    /* Sidebar */
     .sidebar{
-      width: 280px;
-      background: linear-gradient(180deg, var(--sidebar) 0%, var(--sidebar-2) 100%);
-      color: rgba(255,255,255,.85);
-      padding: 18px 14px;
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      border-right: 1px solid rgba(255,255,255,.06);
-      box-shadow: inset -1px 0 0 rgba(255,255,255,.04);
+      width:270px;
+      flex-shrink:0;
+      background:rgba(255,255,255,.82);
+      backdrop-filter:blur(12px);
+      border-right:1px solid var(--bd);
+      padding:22px 16px;
+      display:flex;
+      flex-direction:column;
+      position:sticky;
+      top:0;
+      height:100vh;
     }
 
     .brand{
-      display:flex; align-items:center; gap:12px;
-      padding: 12px;
-      border-radius: var(--radius);
-      background: rgba(255,255,255,.05);
-      border: 1px solid rgba(255,255,255,.06);
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px;
+      border:1px solid var(--bd);
+      border-radius:18px;
+      background:rgba(255,255,255,.78);
+      box-shadow:var(--shadow);
+      margin-bottom:24px;
     }
 
-    .brand .logo{
-      width:44px;height:44px;border-radius:16px;
-      background: linear-gradient(135deg, #16a34a, #0ea5e9);
-      display:grid; place-items:center;
-      font-weight: 900;
-      color:#fff;
-      box-shadow: 0 14px 30px rgba(14,165,233,.18);
+    .brand-badge{
+      width:46px;
+      height:46px;
+      border-radius:14px;
+      background:linear-gradient(135deg,var(--g),var(--g2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      color:#06120a;
+      box-shadow:0 14px 28px rgba(34,197,94,.20);
+      flex-shrink:0;
     }
 
-    .navgroup{ margin-top: 18px; }
+    .brand-title{
+      font-weight:900;
+      line-height:1.1;
+      margin:0;
+      font-size:15px;
+    }
+
+    .brand-sub{
+      color:var(--muted);
+      font-size:12px;
+      margin:2px 0 0;
+      font-weight:650;
+    }
+
+    .menu-label{
+      color:var(--muted);
+      font-size:11px;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      padding:0 10px;
+      margin-bottom:8px;
+    }
+
     .navitem{
-      display:flex; align-items:center; gap:12px;
-      padding: 12px 12px;
-      margin: 8px 0;
-      border-radius: 16px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px;
+      border-radius:16px;
       text-decoration:none;
-      color: rgba(255,255,255,.82);
-      border: 1px solid transparent;
-      transition: background .12s ease, transform .12s ease;
-    }
-    .navitem:hover{
-      background: rgba(255,255,255,.06);
-      transform: translateY(-1px);
-      color:#fff;
-    }
-    .navitem.active{
-      background: rgba(16,185,129,.14);
-      border-color: rgba(16,185,129,.25);
-      color:#fff;
-    }
-    .navicon{
-      width: 38px; height: 38px; border-radius: 14px;
-      display:grid; place-items:center;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.06);
+      color:var(--dark);
+      border:1px solid transparent;
+      margin-bottom:8px;
+      font-weight:750;
+      transition:.16s ease;
+      background:transparent;
     }
 
-    .sidebar-footer{
-      position:absolute;
-      left:14px; right:14px; bottom:16px;
+    .navitem:hover{
+      background:rgba(255,255,255,.72);
+      border-color:var(--bd);
+    }
+
+    .navitem.active{
+      background:rgba(34,197,94,.12);
+      border-color:rgba(34,197,94,.20);
+      color:#166534;
+      box-shadow:var(--shadow);
+    }
+
+    .navicon{
+      width:38px;
+      height:38px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid var(--bd);
+      background:#fff;
+      font-size:15px;
+      flex-shrink:0;
+    }
+
+    .navitem.active .navicon{
+      background:rgba(34,197,94,.14);
+      border-color:rgba(34,197,94,.18);
+      color:#166534;
+    }
+
+    .nav-badge{
+      margin-left:auto;
+      border-radius:999px;
+      padding:2px 8px;
+      font-size:11px;
+      font-weight:800;
+      background:#ef4444;
+      color:#fff;
+    }
+
+    .sidebar-bottom{
+      margin-top:auto;
+      padding-top:18px;
+      border-top:1px solid var(--bd);
+    }
+
+    .userbox{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      border:1px solid var(--bd);
+      background:rgba(255,255,255,.78);
+      border-radius:16px;
+      padding:12px;
+      margin-bottom:10px;
+    }
+
+    .avatar,
+    .avatar-img{
+      width:38px;
+      height:38px;
+      border-radius:999px;
+      flex-shrink:0;
+    }
+
+    .avatar{
+      background:linear-gradient(135deg,var(--g),var(--g2));
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-weight:900;
+      color:#06120a;
+    }
+
+    .avatar-img{
+      object-fit:cover;
+      border:1px solid rgba(15,23,42,.10);
+      background:#fff;
     }
 
     .logoutbtn{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
       width:100%;
-      border-radius: 16px;
-      padding: 12px 14px;
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.08);
-      color:#fff;
+      border:1px solid var(--bd);
+      background:#fff;
+      color:var(--dark);
+      text-decoration:none;
+      border-radius:16px;
+      padding:11px 14px;
+      font-weight:800;
+      transition:.16s ease;
     }
 
-    /* Main */
+    .logoutbtn:hover{
+      background:#f8fafc;
+    }
+
     .main{
       flex:1;
-      padding: 18px 22px;
+      padding:24px;
+      min-width:0;
     }
 
-    /* Topbar */
     .topbar{
       display:flex;
       align-items:center;
-      gap:14px;
-      margin-bottom: 18px;
+      gap:12px;
+      margin-bottom:18px;
     }
 
-    .search{
+    .search-wrap{
       flex:1;
-      background:#fff;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 10px 14px;
       display:flex;
       align-items:center;
       gap:10px;
-      box-shadow: var(--shadow-sm);
+      background:rgba(255,255,255,.82);
+      border:1px solid var(--bd);
+      border-radius:999px;
+      padding:11px 16px;
+      box-shadow:var(--shadow);
     }
-    .search input{
+
+    .search-wrap input{
       border:0;
       outline:0;
-      flex:1;
-      font-size: .95rem;
+      background:transparent;
+      width:100%;
+      color:var(--dark);
+      font-size:14px;
     }
 
-    .chip{
-      background:#fff;
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 8px 12px;
+    .search-wrap input::placeholder{
+      color:var(--muted);
+    }
+
+    .circle-btn{
+      width:46px;
+      height:46px;
+      border-radius:999px;
+      border:1px solid var(--bd);
+      background:rgba(255,255,255,.82);
+      box-shadow:var(--shadow);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-decoration:none;
+      color:var(--dark);
+      position:relative;
+    }
+
+    .notif-dot{
+      position:absolute;
+      top:8px;
+      right:9px;
+      width:9px;
+      height:9px;
+      border-radius:999px;
+      background:#ef4444;
+      border:2px solid #fff;
+    }
+
+    .profile-chip{
       display:flex;
       align-items:center;
       gap:10px;
-      box-shadow: var(--shadow-sm);
-    }
-    .avatar{
-      width: 36px; height:36px;
-      border-radius: 999px;
-      display:grid; place-items:center;
-      font-weight: 900;
-      background: #10b981;
-      color:#fff;
-    }
-
-    .bell{
-      width: 44px; height:44px;
-      border-radius: 999px;
-      background:#fff;
-      border: 1px solid var(--border);
-      display:grid; place-items:center;
-      box-shadow: var(--shadow-sm);
-      position:relative;
-    }
-    .bell .dot{
-      position:absolute;
-      top: 10px; right: 12px;
-      width: 8px; height: 8px;
-      background:#ef4444;
+      background:rgba(255,255,255,.82);
+      border:1px solid var(--bd);
+      box-shadow:var(--shadow);
       border-radius:999px;
+      padding:6px 14px 6px 6px;
     }
 
-    /* Hero */
+    .profile-chip .avatar,
+    .profile-chip .avatar-img{
+      width:34px;
+      height:34px;
+      font-size:13px;
+    }
+
+    .profile-name{
+      font-weight:850;
+      font-size:13px;
+      margin:0;
+      line-height:1.1;
+    }
+
+    .profile-role{
+      color:var(--muted);
+      font-size:11px;
+      margin:0;
+      line-height:1.1;
+      font-weight:650;
+    }
+
     .hero{
-      background: linear-gradient(135deg, #0f766e 0%, #16c79a 45%, #2dd4bf 100%);
+      border-radius:22px;
+      background:linear-gradient(135deg, #0f766e 0%, #16a34a 55%, #4ade80 100%);
       color:#fff;
-      border-radius: var(--radius-lg);
-      padding: 22px;
-      box-shadow: var(--shadow);
+      padding:22px;
+      box-shadow:0 18px 50px rgba(15,23,42,.10);
       position:relative;
       overflow:hidden;
+      margin-bottom:18px;
     }
+
     .hero:after{
       content:"";
       position:absolute;
-      right:-80px; top:-50px;
-      width: 260px; height: 260px;
-      background: rgba(255,255,255,.12);
-      border-radius: 999px;
-      filter: blur(1px);
+      right:-90px;
+      top:-70px;
+      width:300px;
+      height:300px;
+      border-radius:999px;
+      background:rgba(255,255,255,.14);
     }
 
-    .hero .tag{
+    .hero-inner{
+      position:relative;
+      z-index:1;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:18px;
+      flex-wrap:wrap;
+    }
+
+    .hero-kicker{
       display:inline-flex;
       align-items:center;
       gap:8px;
-      background: rgba(255,255,255,.18);
-      border: 1px solid rgba(255,255,255,.22);
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-weight: 700;
-      font-size: .86rem;
+      border-radius:999px;
+      padding:.35rem .75rem;
+      font-size:.85rem;
+      font-weight:900;
+      background:rgba(255,255,255,.15);
+      border:1px solid rgba(255,255,255,.22);
+      margin-bottom:12px;
     }
 
-    .hero-actions .btn{
-      border-radius: 999px;
-      font-weight: 800;
-      padding: 10px 14px;
+    .hero h1{
+      font-weight:950;
+      letter-spacing:-.02em;
+      margin:0 0 8px;
+      font-size:clamp(1.8rem, 3vw, 2.6rem);
+      line-height:1.08;
+    }
+
+    .hero-sub{
+      max-width:620px;
+      color:rgba(255,255,255,.90);
+      font-weight:650;
+      line-height:1.65;
+      margin:0;
+    }
+
+    .hero-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+
+    .btn-pill{
+      border-radius:999px;
+      padding:10px 16px;
+      font-weight:900;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      transition:.16s ease;
+    }
+
+    .btn-primary-hero{
+      background:#fff;
+      color:#0f172a;
+      border:1px solid rgba(255,255,255,.40);
+    }
+
+    .btn-primary-hero:hover{
+      background:#f8fafc;
+    }
+
+    .btn-ghost-hero{
+      background:rgba(255,255,255,.12);
+      color:#fff;
+      border:1px solid rgba(255,255,255,.22);
+    }
+
+    .btn-ghost-hero:hover{
+      background:rgba(255,255,255,.18);
     }
 
     .hero-side{
       display:flex;
       flex-direction:column;
       gap:12px;
+      min-width:230px;
     }
 
-    .mini{
-      background: rgba(255,255,255,.16);
-      border: 1px solid rgba(255,255,255,.22);
-      border-radius: 16px;
-      padding: 12px 14px;
-      backdrop-filter: blur(8px);
+    .hero-mini{
+      border-radius:16px;
+      padding:14px 16px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.16);
+      backdrop-filter:blur(10px);
     }
-    .mini .title{ font-weight: 800; }
-    .mini .sub{ opacity:.9; font-size:.9rem; }
 
-    /* KPI cards */
-    .kpis{ margin-top: 16px; }
+    .hero-mini-label{
+      font-size:11px;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      color:rgba(255,255,255,.78);
+      font-weight:800;
+      margin-bottom:4px;
+    }
+
+    .hero-mini-value{
+      font-weight:900;
+      color:#fff;
+      line-height:1.35;
+    }
+
+    .kpi-grid{
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:16px;
+      margin-bottom:18px;
+    }
+
     .kpi{
-      background:#fff;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
-      padding: 14px 16px;
+      background:rgba(255,255,255,.90);
+      border:1px solid var(--bd);
+      border-radius:18px;
+      padding:18px;
+      box-shadow:var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .kpi-top{
+      position:absolute;
+      left:0;
+      top:0;
+      right:0;
+      height:4px;
+    }
+
+    .kpi-top.teal{background:linear-gradient(90deg,#06b6d4,#22c55e);}
+    .kpi-top.amber{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
+    .kpi-top.blue{background:linear-gradient(90deg,#3b82f6,#8b5cf6);}
+
+    .kpi-head{
       display:flex;
       align-items:center;
-      gap:14px;
-      height:100%;
-    }
-    .kpi .ic{
-      width:44px;height:44px;border-radius:16px;
-      display:grid;place-items:center;
-      background: rgba(16,185,129,.12);
-      border: 1px solid rgba(16,185,129,.18);
-      color:#047857;
-    }
-    .kpi .label{ color:#64748b; font-weight:700; font-size:.92rem; }
-    .kpi .value{ font-weight:900; font-size:1.4rem; margin-left:auto; }
-    .kpi .bar{
-      height: 6px;
-      border-radius: 999px;
-      background: rgba(2,132,199,.12);
-      overflow:hidden;
-      margin-top: 8px;
-    }
-    .kpi .bar > span{
-      display:block;
-      height:100%;
-      width: 58%;
-      background: linear-gradient(90deg, #14b8a6, #22c55e);
-      border-radius: 999px;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:8px;
     }
 
-    /* Quick actions */
-    .section-title{
-      margin-top: 18px;
-      font-weight: 900;
+    .kpi-num{
+      font-size:2rem;
+      font-weight:950;
+      letter-spacing:-.02em;
+      line-height:1;
+      margin-bottom:4px;
     }
 
-    .actioncard{
+    .kpi-label{
+      color:var(--muted);
+      font-weight:700;
+      font-size:.92rem;
+    }
+
+    .kpi-icon{
+      width:42px;
+      height:42px;
+      border-radius:14px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border:1px solid var(--bd);
       background:#fff;
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow-sm);
-      padding: 16px;
+      font-size:16px;
+    }
+
+    .kpi-icon.teal{color:#0891b2;background:rgba(6,182,212,.08);}
+    .kpi-icon.amber{color:#b45309;background:rgba(245,158,11,.10);}
+    .kpi-icon.blue{color:#2563eb;background:rgba(59,130,246,.10);}
+
+    .section-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:14px;
+      margin-top:8px;
+    }
+
+    .section-title{
+      font-weight:950;
+      letter-spacing:-.01em;
+      font-size:1.02rem;
+      margin:0;
+    }
+
+    .section-link{
+      text-decoration:none;
+      color:var(--g);
+      font-weight:850;
+      font-size:.95rem;
+    }
+
+    .action-grid{
+      display:grid;
+      grid-template-columns:repeat(2, 1fr);
+      gap:16px;
+      margin-bottom:18px;
+    }
+
+    .action-card{
+      background:rgba(255,255,255,.90);
+      border:1px solid var(--bd);
+      border-radius:18px;
+      padding:20px;
+      box-shadow:var(--shadow);
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:14px;
-      height:100%;
+      text-decoration:none;
+      color:var(--dark);
+      transition:.16s ease;
     }
-    .actionleft{
-      display:flex; align-items:center; gap:14px;
+
+    .action-card:hover{
+      transform:translateY(-2px);
     }
-    .actionicon{
-      width:52px;height:52px;border-radius:18px;
-      display:grid;place-items:center;
-      background: rgba(59,130,246,.10);
-      border: 1px solid rgba(59,130,246,.16);
+
+    .action-left{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+    }
+
+    .action-icon{
+      width:50px;
+      height:50px;
+      border-radius:16px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:20px;
+      flex-shrink:0;
+    }
+
+    .action-icon.teal{
+      background:rgba(34,197,94,.12);
+      color:#166534;
+      border:1px solid rgba(34,197,94,.18);
+    }
+
+    .action-icon.blue{
+      background:rgba(59,130,246,.10);
       color:#1d4ed8;
-      font-size: 20px;
+      border:1px solid rgba(59,130,246,.18);
     }
-    .actioncard .btn{
-      border-radius: 999px;
-      font-weight: 900;
-      padding: 10px 16px;
+
+    .action-title{
+      font-weight:900;
+      font-size:1rem;
+      margin-bottom:4px;
+    }
+
+    .action-sub{
+      color:var(--muted);
+      font-size:.92rem;
+      line-height:1.55;
+    }
+
+    .action-open{
+      border-radius:999px;
+      padding:9px 14px;
+      font-weight:850;
+      font-size:.9rem;
+      white-space:nowrap;
+      border:1px solid var(--bd);
+      background:#fff;
+      color:var(--dark);
+    }
+
+    .bottom-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:16px;
+    }
+
+    .panel{
+      background:rgba(255,255,255,.90);
+      border:1px solid var(--bd);
+      border-radius:18px;
+      padding:20px;
+      box-shadow:var(--shadow);
+      min-height:260px;
+    }
+
+    .activity-item{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px 0;
+      border-top:1px solid rgba(15,23,42,.06);
+    }
+
+    .activity-item:first-child{
+      border-top:0;
+      padding-top:0;
+    }
+
+    .activity-dot{
+      width:38px;
+      height:38px;
+      border-radius:12px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+      border:1px solid var(--bd);
+      background:#fff;
+    }
+
+    .activity-text{
+      flex:1;
+      min-width:0;
+    }
+
+    .activity-title{
+      font-weight:800;
+      font-size:.95rem;
+      margin-bottom:2px;
+    }
+
+    .activity-time{
+      color:var(--muted);
+      font-size:.82rem;
+      font-weight:650;
+    }
+
+    .activity-tag{
+      border-radius:999px;
+      padding:4px 10px;
+      font-size:.75rem;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    .tag-event{
+      background:rgba(34,197,94,.12);
+      color:#166534;
+      border:1px solid rgba(34,197,94,.18);
+    }
+
+    .tag-payment{
+      background:rgba(245,158,11,.12);
+      color:#92400e;
+      border:1px solid rgba(245,158,11,.18);
+    }
+
+    .tag-notice{
+      background:rgba(59,130,246,.12);
+      color:#1d4ed8;
+      border:1px solid rgba(59,130,246,.18);
+    }
+
+    .stat-row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+
+    .stat-mini{
+      border:1px solid var(--bd);
+      border-radius:16px;
+      padding:18px 14px;
+      background:#fff;
+      text-align:center;
+    }
+
+    .stat-num{
+      font-size:1.7rem;
+      font-weight:950;
+      letter-spacing:-.02em;
+      line-height:1;
+      margin-bottom:6px;
+    }
+
+    .stat-lbl{
+      color:var(--muted);
+      font-size:.82rem;
+      font-weight:700;
+    }
+
+    @media (max-width: 1100px){
+      .hero-inner{flex-direction:column;}
+      .hero-side{flex-direction:row; min-width:unset; width:100%;}
+    }
+
+    @media (max-width: 900px){
+      .sidebar{display:none;}
+      .kpi-grid{grid-template-columns:1fr 1fr;}
+      .action-grid{grid-template-columns:1fr;}
+      .bottom-grid{grid-template-columns:1fr;}
+    }
+
+    @media (max-width: 560px){
+      .main{padding:16px;}
+      .topbar{flex-wrap:wrap;}
+      .search-wrap{order:1; width:100%;}
+      .profile-chip{display:none;}
+      .kpi-grid{grid-template-columns:1fr;}
+      .hero{padding:18px;}
+      .hero-side{flex-direction:column;}
+      .stat-row{grid-template-columns:1fr;}
+      .action-card{flex-direction:column; align-items:flex-start;}
     }
   </style>
 </head>
 
 <body>
-  <div class="app">
+<div class="app">
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-      <div class="brand">
-        <div class="logo">CC</div>
-        <div>
-          <div class="fw-bold">Campus Connect</div>
-          <div class="small text-white-50">Student Portal</div>
-        </div>
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-badge">CC</div>
+      <div>
+        <p class="brand-title">Campus Connect</p>
+        <p class="brand-sub">Student Portal</p>
       </div>
+    </div>
 
-      <div class="navgroup">
-        <a class="navitem active" href="{% url 'student:dashboard' %}">
-          <div class="navicon"><i class="bi bi-house-door"></i></div>
-          <div class="fw-semibold">Dashboard</div>
-        </a>
+    <div class="menu-label">Main Menu</div>
 
-        <a class="navitem" href="{% url 'events:list' %}">
-          <div class="navicon"><i class="bi bi-calendar-event"></i></div>
-          <div class="fw-semibold">Events</div>
-        </a>
+    <a class="navitem active" href="{% url 'student:dashboard' %}">
+      <div class="navicon"><i class="bi bi-house-door-fill"></i></div>
+      Dashboard
+    </a>
 
-        <a class="navitem" href="{% if payments_url %}{{ payments_url }}{% else %}#{% endif %}">
-          <div class="navicon"><i class="bi bi-credit-card"></i></div>
-          <div class="fw-semibold">Payments</div>
-        </a>
+    <a class="navitem" href="{% url 'events:list' %}">
+      <div class="navicon"><i class="bi bi-calendar3"></i></div>
+      Events
+    </a>
 
-        <a class="navitem" href="{% url 'notices:list' %}">
-          <div class="navicon"><i class="bi bi-megaphone"></i></div>
-          <div class="fw-semibold">Notices</div>
-        </a>
+    <!-- ✅ FIXED payments link -->
+    <a class="navitem" href="{% url 'payments:my_payments' %}">
+      <div class="navicon"><i class="bi bi-credit-card"></i></div>
+      Payments
+      {% if payments_pending_count and payments_pending_count > 0 %}
+        <span class="nav-badge">{{ payments_pending_count }}</span>
+      {% endif %}
+    </a>
 
-        <a class="navitem" href="{% url 'lostfound:list' %}">
-          <div class="navicon"><i class="bi bi-box2-heart"></i></div>
-          <div class="fw-semibold">Lost &amp; Found</div>
-        </a>
+    <a class="navitem" href="{% url 'notices:list' %}">
+      <div class="navicon"><i class="bi bi-megaphone"></i></div>
+      Notices
+      {% if notices_count and notices_count > 0 %}
+        <span class="nav-badge">{{ notices_count }}</span>
+      {% endif %}
+    </a>
 
-        <a class="navitem" href="{% url 'accounts:my_profile' %}">
-          <div class="navicon"><i class="bi bi-person"></i></div>
-          <div class="fw-semibold">Profile</div>
-        </a>
+    <a class="navitem" href="{% url 'lostfound:list' %}">
+      <div class="navicon"><i class="bi bi-box2-heart"></i></div>
+      Lost &amp; Found
+    </a>
+
+    <a class="navitem" href="{% url 'accounts:my_profile' %}">
+      <div class="navicon"><i class="bi bi-person"></i></div>
+      Profile
+    </a>
+
+    <div class="sidebar-bottom">
+      <a class="logoutbtn" href="{% url 'accounts:logout' %}">
+        <i class="bi bi-box-arrow-right"></i> Sign Out
+      </a>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    {% if messages %}
+      <div class="mb-3">
+        {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} mb-2" style="border-radius:16px;">{{ message }}</div>
+        {% endfor %}
       </div>
+    {% endif %}
 
-      <div class="sidebar-footer">
-        <a class="btn logoutbtn" href="{% url 'accounts:logout' %}">
-          <i class="bi bi-box-arrow-right me-2"></i>Logout
-        </a>
-      </div>
-    </aside>
+    <div class="topbar">
+      <form class="search-wrap" method="get" action="{% url 'events:list' %}">
+        <i class="bi bi-search"></i>
+        <input name="q" value="{{ request.GET.q }}" placeholder="Search events..." />
+      </form>
 
-    <!-- Main -->
-    <main class="main">
+      <a class="circle-btn" href="{% url 'notifications:list' %}">
+        <i class="bi bi-bell"></i>
+        {% if unread_count and unread_count > 0 %}
+          <span class="notif-dot"></span>
+        {% endif %}
+      </a>
 
-      <!-- Topbar -->
-      <div class="topbar">
-        <div class="search">
-          <i class="bi bi-search text-secondary"></i>
-          <input placeholder="Search events, notices, items..." />
-        </div>
-
-        <a class="bell text-decoration-none text-dark" href="{% url 'notifications:list' %}">
-          <i class="bi bi-bell"></i>
-          {% if unread_count and unread_count > 0 %}<span class="dot"></span>{% endif %}
-        </a>
-
-        <div class="chip">
-          <div class="avatar">
+      <div class="profile-chip">
+        {% if profile and profile.photo %}
+          <img src="{{ profile.photo.url }}" alt="Profile" class="avatar-img" style="width:34px;height:34px;">
+        {% else %}
+          <div class="avatar" style="width:34px;height:34px;font-size:13px;">
             {{ request.user.username|default:"S"|slice:":1"|upper }}
           </div>
-          <div class="lh-sm">
-            <div class="fw-bold">{{ request.user.username|default:"Student" }}</div>
-            <div class="small text-muted">Student</div>
-          </div>
+        {% endif %}
+
+        <div>
+          <p class="profile-name">{{ request.user.username|default:"Student" }}</p>
+          <p class="profile-role">Student</p>
         </div>
       </div>
+    </div>
 
-      <!-- Hero -->
-      <div class="hero">
-        <div class="row g-3 align-items-center">
-          <div class="col-12 col-lg-8">
-            <div class="tag mb-2"><i class="bi bi-calendar3"></i> Today: {{ now|date:"M d, Y" }}</div>
-            <h2 class="fw-black mb-1" style="font-weight: 900;">Welcome back, {{ request.user.username|default:"Student" }} 👋</h2>
-            <div class="text-white-75">
-              Track event registrations, payment status, latest notices and lost &amp; found updates — all from one dashboard.
-            </div>
-
-            <div class="hero-actions d-flex gap-2 mt-3 flex-wrap">
-              <a class="btn btn-light" href="{% url 'events:list' %}">View Events</a>
-              <a class="btn btn-outline-light" href="{% url 'lostfound:list' %}">Post Lost Item</a>
-            </div>
+    <section class="hero">
+      <div class="hero-inner">
+        <div>
+          <div class="hero-kicker">
+            <i class="bi bi-mortarboard"></i> Student Dashboard
           </div>
 
-          <div class="col-12 col-lg-4">
-            <div class="hero-side">
-              <div class="mini">
-                <div class="title">Next Event</div>
-                <div class="sub">AI Workshop — 2:00 PM</div>
-              </div>
+          <h1>Welcome back, {{ request.user.username|default:"Student" }} 👋</h1>
 
-              <div class="mini">
-                <div class="title">Pending</div>
-                <div class="sub">{{ payments_pending_count|default:0 }} payment verification</div>
-              </div>
-            </div>
+          <p class="hero-sub">
+            Track event registrations, payment status, latest notices, and lost &amp; found updates — all in one place.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn-pill btn-primary-hero" href="{% url 'events:list' %}">
+              <i class="bi bi-calendar3"></i> View Events
+            </a>
+
+            <a class="btn-pill btn-ghost-hero" href="{% url 'lostfound:create' %}">
+              <i class="bi bi-plus-lg"></i> Post Lost/Found Item
+            </a>
           </div>
         </div>
-      </div>
 
-      <!-- KPI row -->
-      <div class="kpis">
-        <div class="row g-3">
-          <div class="col-12 col-lg-4">
-            <div class="kpi">
-              <div class="ic"><i class="bi bi-calendar2-week"></i></div>
-              <div class="flex-grow-1">
-                <div class="label">Upcoming Events</div>
-                <div class="bar"><span></span></div>
+        <div class="hero-side">
+          <div class="hero-mini">
+            <div class="hero-mini-label">Next Event</div>
+            {% if next_event %}
+              <div class="hero-mini-value">
+                {{ next_event.title }}<br>
+                <span style="font-size:13px;font-weight:700;color:rgba(255,255,255,.82);">
+                  {{ next_event.start_datetime|date:"M d, Y • h:i A" }}
+                </span>
               </div>
-              <div class="value">{{ upcoming_events_count|default:0 }}</div>
-            </div>
+            {% else %}
+              <div class="hero-mini-value">No upcoming events</div>
+            {% endif %}
           </div>
 
-          <div class="col-12 col-lg-4">
-            <div class="kpi">
-              <div class="ic" style="background:rgba(249,115,22,.12);border-color:rgba(249,115,22,.18);color:#c2410c">
-                <i class="bi bi-credit-card"></i>
-              </div>
-              <div class="flex-grow-1">
-                <div class="label">Pending Payments</div>
-                <div class="bar"><span style="width:45%"></span></div>
-              </div>
-              <div class="value">{{ payments_pending_count|default:0 }}</div>
-            </div>
-          </div>
-
-          <div class="col-12 col-lg-4">
-            <div class="kpi">
-              <div class="ic" style="background:rgba(59,130,246,.10);border-color:rgba(59,130,246,.16);color:#1d4ed8">
-                <i class="bi bi-megaphone"></i>
-              </div>
-              <div class="flex-grow-1">
-                <div class="label">New Notices</div>
-                <div class="bar"><span style="width:70%"></span></div>
-              </div>
-              <div class="value">{{ notices_count|default:0 }}</div>
+          <div class="hero-mini">
+            <div class="hero-mini-label">Pending</div>
+            <div class="hero-mini-value">
+              {{ payments_pending_count|default:0 }}
+              <span style="font-size:13px;font-weight:700;color:rgba(255,255,255,.82);">
+                verifications
+              </span>
             </div>
           </div>
         </div>
       </div>
+    </section>
 
-      <!-- Quick actions -->
-      <div class="d-flex justify-content-between align-items-center mt-4">
-        <div class="section-title">Quick Actions</div>
-        <a class="text-decoration-none fw-bold" style="color:#0f766e" href="{% url 'notices:list' %}">See all</a>
-      </div>
-
-      <div class="row g-3 mt-1">
-        <div class="col-12 col-lg-6">
-          <div class="actioncard">
-            <div class="actionleft">
-              <div class="actionicon"><i class="bi bi-ticket-perforated"></i></div>
-              <div>
-                <div class="fw-bold">Browse Events</div>
-                <div class="small text-muted">Register and view event participation status.</div>
-              </div>
-            </div>
-            <a class="btn btn-success" href="{% url 'events:list' %}">Open</a>
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-top teal"></div>
+        <div class="kpi-head">
+          <div>
+            <div class="kpi-num">{{ upcoming_events_count|default:0 }}</div>
+            <div class="kpi-label">Upcoming Events</div>
           </div>
-        </div>
-
-        <div class="col-12 col-lg-6">
-          <div class="actioncard">
-            <div class="actionleft">
-              <div class="actionicon" style="background:rgba(16,185,129,.10);border-color:rgba(16,185,129,.16);color:#047857">
-                <i class="bi bi-search-heart"></i>
-              </div>
-              <div>
-                <div class="fw-bold">Lost &amp; Found</div>
-                <div class="small text-muted">Report lost items or claim found items securely.</div>
-              </div>
-            </div>
-            <a class="btn btn-success" href="{% url 'lostfound:list' %}">Open</a>
-          </div>
+          <div class="kpi-icon teal"><i class="bi bi-calendar2-week"></i></div>
         </div>
       </div>
 
-    </main>
-  </div>
+      <div class="kpi">
+        <div class="kpi-top amber"></div>
+        <div class="kpi-head">
+          <div>
+            <div class="kpi-num">{{ payments_pending_count|default:0 }}</div>
+            <div class="kpi-label">Pending Payments</div>
+          </div>
+          <div class="kpi-icon amber"><i class="bi bi-credit-card"></i></div>
+        </div>
+      </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+      <div class="kpi">
+        <div class="kpi-top blue"></div>
+        <div class="kpi-head">
+          <div>
+            <div class="kpi-num">{{ notices_count|default:0 }}</div>
+            <div class="kpi-label">Active Notices</div>
+          </div>
+          <div class="kpi-icon blue"><i class="bi bi-megaphone"></i></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <h3 class="section-title">Quick Actions</h3>
+      <a class="section-link" href="{% url 'notices:list' %}">View Notices</a>
+    </div>
+
+    <div class="action-grid">
+      <a class="action-card" href="{% url 'events:list' %}">
+        <div class="action-left">
+          <div class="action-icon teal"><i class="bi bi-ticket-perforated"></i></div>
+          <div>
+            <div class="action-title">Browse Events</div>
+            <div class="action-sub">Register and view your event participation status.</div>
+          </div>
+        </div>
+        <span class="action-open">Open</span>
+      </a>
+
+      <a class="action-card" href="{% url 'lostfound:list' %}">
+        <div class="action-left">
+          <div class="action-icon blue"><i class="bi bi-search-heart"></i></div>
+          <div>
+            <div class="action-title">Lost &amp; Found</div>
+            <div class="action-sub">Report lost items or claim found items securely.</div>
+          </div>
+        </div>
+        <span class="action-open">Open</span>
+      </a>
+    </div>
+
+    <div class="bottom-grid">
+      <div class="panel">
+        <div class="section-head" style="margin-top:0;">
+          <h3 class="section-title">Recent Activity</h3>
+        </div>
+
+        {% if recent_activity %}
+          {% for a in recent_activity %}
+            <div class="activity-item">
+              <div class="activity-dot" style="color:#166534;background:rgba(34,197,94,.10);">
+                <i class="bi bi-activity"></i>
+              </div>
+              <div class="activity-text">
+                <div class="activity-title">{{ a.title }}</div>
+                <div class="activity-time">{{ a.time }}</div>
+              </div>
+              {% if a.tag == "Event" %}
+                <span class="activity-tag tag-event">{{ a.tag }}</span>
+              {% elif a.tag == "Payment" %}
+                <span class="activity-tag tag-payment">{{ a.tag }}</span>
+              {% elif a.tag == "Notice" %}
+                <span class="activity-tag tag-notice">{{ a.tag }}</span>
+              {% endif %}
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="text-muted" style="font-weight:700;font-size:.95rem;">
+            No recent activity yet.
+          </div>
+        {% endif %}
+      </div>
+
+      <div class="panel">
+        <div class="section-head" style="margin-top:0;">
+          <h3 class="section-title">Your Stats</h3>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat-mini">
+            <div class="stat-num" style="color:#16a34a;">{{ events_joined_count|default:0 }}</div>
+            <div class="stat-lbl">Events Joined</div>
+          </div>
+
+          <div class="stat-mini">
+            <div class="stat-num" style="color:#d97706;">{{ payments_pending_count|default:0 }}</div>
+            <div class="stat-lbl">Pending Pay</div>
+          </div>
+
+          <div class="stat-mini">
+            <div class="stat-num" style="color:#2563eb;">{{ notices_count|default:0 }}</div>
+            <div class="stat-lbl">Notices</div>
+          </div>
+
+          <div class="stat-mini">
+            <div class="stat-num" style="color:#ef4444;">{{ my_items_count|default:0 }}</div>
+            <div class="stat-lbl">Items Posted</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
 </body>
 </html>
