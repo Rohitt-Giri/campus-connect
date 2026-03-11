@@ -3,7 +3,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
 
-from accounts.models import User
+from accounts.models import User, UserProfile
 from notices.models import Notice
 
 # optional modules (safe)
@@ -38,24 +38,21 @@ def staff_dashboard_view(request):
 
     now = timezone.now()
 
+    # ✅ LOAD PROFILE
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+
     # =========================
-    # EVENTS (DB dynamic, consistent)
+    # EVENTS
     # =========================
-    active_events_qs = []
     active_events_count = 0
     published_events_count = 0
     recent_events = []
 
     if Event:
-        # IMPORTANT: consistent definition (same as admin)
         active_events_qs = Event.objects.filter(is_active=True, archived_at__isnull=True)
 
         active_events_count = active_events_qs.count()
-
-        # Only published (if you want this as a separate stat)
         published_events_count = active_events_qs.filter(status="published").count()
-
-        # Optional: show latest events list in UI later
         recent_events = active_events_qs.order_by("-created_at")[:5]
 
     # =========================
@@ -65,16 +62,19 @@ def staff_dashboard_view(request):
     published_count = Notice.objects.filter(is_active=True).count()
 
     # =========================
-    # PAYMENTS (pending)
+    # PAYMENTS
     # =========================
     payments_pending_count = 0
     pending_proofs = []
 
     if PaymentProof:
-        base = PaymentProof.objects.select_related("registration__event", "registration__user")
+        base = PaymentProof.objects.select_related(
+            "registration__event",
+            "registration__user"
+        )
+
         payments_pending_count = base.filter(status="pending").count()
 
-        # Safe ordering (some projects use submitted_at, others created_at)
         if hasattr(PaymentProof, "submitted_at"):
             order_field = "-submitted_at"
         elif hasattr(PaymentProof, "created_at"):
@@ -85,40 +85,38 @@ def staff_dashboard_view(request):
         pending_proofs = base.filter(status="pending").order_by(order_field)[:6]
 
     # =========================
-    # LOST & FOUND CLAIMS (pending)
+    # CLAIMS
     # =========================
     pending_claims_count = 0
     if ClaimRequest:
         pending_claims_count = ClaimRequest.objects.filter(status="pending").count()
 
-    # =========================
-    # CONTEXT (NO CRASH GUARANTEE)
-    # =========================
     context = {
-        # Notices
+        # profile
+        "profile": profile,
+
+        # notices
         "recent_notices": recent_notices,
         "published_count": published_count,
 
-        # Payments
+        # payments
         "payments_pending_count": payments_pending_count,
         "pending_proofs": pending_proofs,
 
-        # Claims + Events
+        # claims
         "pending_claims_count": pending_claims_count,
+
+        # events
         "published_events_count": published_events_count,
-
-        # ✅ aliases expected by your template
         "active_events": active_events_count,
-        "pending_claims": pending_claims_count,
-
-        # Optional (for future UI sections)
         "recent_events": recent_events,
+
+        # aliases for template
+        "pending_claims": pending_claims_count,
 
         # UI
         "refresh_seconds": 30,
         "year": now.year,
-
-        # navbar safe
         "unread_count": 0,
     }
 

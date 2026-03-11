@@ -212,6 +212,17 @@
       flex:0 0 auto;
     }
 
+    .avatar-img{
+      width:38px;
+      height:38px;
+      border-radius:999px;
+      object-fit:cover;
+      border:1px solid rgba(15,23,42,.10);
+      background:#fff;
+      display:block;
+      flex:0 0 auto;
+    }
+
     .logoutbtn{
       display:flex;
       align-items:center;
@@ -312,6 +323,11 @@
       width:34px;
       height:34px;
       font-size:13px;
+    }
+
+    .profile-chip .avatar-img{
+      width:34px;
+      height:34px;
     }
 
     .profile-name{
@@ -773,16 +789,6 @@
     </div>
 
     <div class="sidebar-bottom">
-      <div class="userbox">
-        <div class="avatar">{{ request.user.username|default:"S"|slice:":1"|upper }}</div>
-        <div>
-          <div style="font-size:13px;font-weight:850;color:var(--text);line-height:1.1;">
-            {{ request.user.username|default:"Staff" }}
-          </div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px;">Staff Member</div>
-        </div>
-      </div>
-
       <a class="logoutbtn" href="{% url 'accounts:logout' %}">
         <i class="bi bi-box-arrow-right"></i> Sign Out
       </a>
@@ -815,7 +821,11 @@
       </a>
 
       <div class="profile-chip">
-        <div class="avatar">{{ request.user.username|default:"S"|slice:":1"|upper }}</div>
+        {% if profile and profile.photo %}
+          <img src="{{ profile.photo.url }}" alt="Profile Photo" class="avatar-img">
+        {% else %}
+          <div class="avatar">{{ request.user.username|default:"S"|slice:":1"|upper }}</div>
+        {% endif %}
         <div>
           <p class="profile-name">{{ request.user.username|default:"Staff" }}</p>
           <p class="profile-role">Staff</p>

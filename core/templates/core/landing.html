@@ -2,553 +2,611 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Campus Connect | Home</title>
-
-  <!-- Bootstrap 5 -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Campus Connect — Modern Campus Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@400;500;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300;1,9..144,500&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg:#f7fbf8;
-      --card:#ffffff;
-      --text:#0f172a;
-      --muted:#475569;
-      --border: rgba(15,23,42,0.10);
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-      --green:#16a34a;
-      --green-2:#22c55e;
-      --green-soft:#eafff1;
-
-      --shadow: 0 18px 45px rgba(15,23,42,0.10);
-      --shadow2: 0 10px 28px rgba(15,23,42,0.08);
-      --radius: 18px;
-    }
-
-    body{
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(900px 450px at 15% 10%, rgba(34,197,94,0.18), transparent 55%),
-        linear-gradient(120deg, #ffffff 0%, var(--bg) 65%, #ffffff 100%);
-    }
-
-    /* NAV */
-    .cc-nav{
-      background: rgba(255,255,255,0.80);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-    .brand{
-      text-decoration:none;
-      color: var(--text);
-      font-weight: 900;
-      letter-spacing: -0.02em;
-      display:flex;
-      align-items:center;
-      gap:.75rem;
-    }
-    .brand-badge{
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, var(--green), var(--green-2));
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      color: #06120a;
-      font-weight: 950;
-      box-shadow: 0 14px 30px rgba(34,197,94,0.22);
-    }
-    .nav-link{
-      color: var(--muted);
-      font-weight: 700;
-    }
-    .nav-link:hover{ color: var(--text); }
-
-    .btn-pill{
-      border-radius: 999px;
-      padding: .6rem 1.2rem;
-      font-weight: 800;
-    }
-    .btn-ghost{
-      border: 1px solid rgba(15,23,42,0.18);
-      background: #fff;
-      color: var(--text);
-    }
-    .btn-ghost:hover{ background: #f8fafc; }
-
-    .btn-primary-cc{
-      border: 0;
-      background: linear-gradient(135deg, var(--green), var(--green-2));
-      color: #06120a;
-      box-shadow: 0 16px 34px rgba(34,197,94,0.25);
-    }
-    .btn-primary-cc:hover{ filter: brightness(1.02); }
-
-    /* HERO */
-    .hero{
-      padding: 3.5rem 0 2.25rem;
-    }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap:.5rem;
-      padding:.45rem .8rem;
-      border-radius: 999px;
-      background: rgba(34,197,94,0.10);
-      border: 1px solid rgba(34,197,94,0.20);
-      color: #0b3d1f;
-      font-weight: 800;
-      font-size: .9rem;
-    }
-    .pill-dot{
-      width:10px;height:10px;border-radius:999px;
-      background: var(--green-2);
-      box-shadow: 0 0 0 6px rgba(34,197,94,0.12);
+    :root {
+      --bg:        #f4f6f5;
+      --bg-2:      #eaf0ec;
+      --panel:     #ffffff;
+      --panel-2:   #f8faf9;
+      --border:    rgba(0,0,0,0.08);
+      --border-2:  rgba(0,0,0,0.14);
+      --text:      #0d1f15;
+      --text-2:    #3d5c48;
+      --text-3:    #7a9e88;
+      --green:     #16a34a;
+      --green-dim: rgba(22,163,74,0.10);
+      --green-glow:rgba(22,163,74,0.22);
+      --green-grad:linear-gradient(135deg,#15803d,#16a34a 55%,#22c55e);
+      --blue:      #2563eb;
+      --blue-dim:  rgba(37,99,235,0.10);
+      --amber:     #d97706;
+      --amber-dim: rgba(217,119,6,0.10);
+      --red-dim:   rgba(220,38,38,0.10);
+      --r:14px; --r-lg:20px; --r-xl:28px;
     }
 
-    .hero h1{
-      font-weight: 950;
-      letter-spacing: -0.03em;
-      font-size: clamp(2.2rem, 3.6vw, 3.4rem);
-      line-height: 1.05;
-      margin: 1rem 0 .8rem;
-    }
-    .hero p{
-      color: var(--muted);
-      font-size: 1.05rem;
-      line-height: 1.7;
-      max-width: 58ch;
-    }
+    html { scroll-behavior: smooth; }
+    body { font-family:'Cabinet Grotesk',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; line-height:1.6; -webkit-font-smoothing:antialiased; }
+    a { text-decoration:none; color:inherit; }
 
-    .hero-card{
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 1.75rem;
+    /* subtle grid bg */
+    body::before {
+      content:''; position:fixed; inset:0; z-index:0; pointer-events:none;
+      background-image: linear-gradient(rgba(22,163,74,0.035) 1px,transparent 1px), linear-gradient(90deg,rgba(22,163,74,0.035) 1px,transparent 1px);
+      background-size:60px 60px;
+      mask-image:radial-gradient(ellipse 80% 50% at 50% 0%,black 30%,transparent 100%);
     }
-    .hero-card h5{
-      font-weight: 900;
-      margin-bottom: 1rem;
-      letter-spacing: -0.01em;
-    }
-    .check{
-      display:flex;
-      gap:.75rem;
-      align-items:flex-start;
-      margin-bottom: .85rem;
-      color: var(--muted);
-      font-weight: 600;
-    }
-    .check i{
-      width: 22px;
-      height: 22px;
-      border-radius: 8px;
-      background: rgba(34,197,94,0.14);
-      border: 1px solid rgba(34,197,94,0.22);
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      color: var(--green);
-      font-style: normal;
-      font-weight: 900;
-      margin-top: 2px;
-    }
+    .bg-glow { position:fixed; top:-200px; left:-150px; width:700px; height:700px; background:radial-gradient(circle,rgba(22,163,74,0.07),transparent 65%); pointer-events:none; z-index:0; }
 
-    /* SECTIONS */
-    .section{
-      padding: 3rem 0;
-    }
-    .section-title{
-      font-weight: 950;
-      letter-spacing: -0.02em;
-      margin-bottom: .4rem;
-    }
-    .section-sub{
-      color: var(--muted);
-      max-width: 70ch;
-    }
+    .wrap { max-width:1160px; margin:0 auto; padding:0 28px; position:relative; z-index:2; }
 
-    /* User cards */
-    .user-tabs{
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow2);
-      padding: .6rem;
-      display:flex;
-      gap:.5rem;
-      flex-wrap: wrap;
-    }
-    .tab-btn{
-      border: 1px solid rgba(15,23,42,0.10);
-      background: #fff;
-      border-radius: 999px;
-      padding: .55rem 1rem;
-      font-weight: 800;
-      color: var(--muted);
-      cursor: pointer;
-      transition: all .12s ease;
-      user-select: none;
-    }
-    .tab-btn.active{
-      background: rgba(34,197,94,0.12);
-      border-color: rgba(34,197,94,0.22);
-      color: #0b3d1f;
-    }
+    /* ── BUTTONS ── */
+    .btn { display:inline-flex; align-items:center; gap:8px; font-family:'Cabinet Grotesk',sans-serif; font-weight:700; border-radius:10px; cursor:pointer; border:none; transition:all 0.18s ease; white-space:nowrap; letter-spacing:-0.01em; text-decoration:none; }
+    .btn-sm  { font-size:0.83rem; padding:7px 16px; }
+    .btn-lg  { font-size:0.97rem; padding:13px 28px; border-radius:12px; }
+    .btn-xl  { font-size:1.05rem; padding:15px 34px; border-radius:14px; }
+    .btn-green { background:var(--green-grad); color:#fff; box-shadow:0 4px 20px rgba(22,163,74,0.28),inset 0 1px 0 rgba(255,255,255,0.15); }
+    .btn-green:hover { filter:brightness(1.06); transform:translateY(-1px); box-shadow:0 8px 28px rgba(22,163,74,0.38); }
+    .btn-ghost { background:var(--panel); color:var(--text-2); border:1px solid var(--border-2); box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+    .btn-ghost:hover { border-color:var(--green); color:var(--green); background:var(--green-dim); }
+    .btn-outline { background:transparent; color:var(--green); border:1.5px solid rgba(22,163,74,0.4); border-radius:14px; font-family:'Cabinet Grotesk',sans-serif; font-weight:700; font-size:1.05rem; padding:15px 34px; display:inline-flex; align-items:center; gap:8px; transition:all 0.18s; cursor:pointer; letter-spacing:-0.01em; }
+    .btn-outline:hover { background:var(--green-dim); border-color:var(--green); }
+    .btn-white { background:#fff; color:var(--green); font-family:'Cabinet Grotesk',sans-serif; font-weight:800; font-size:1.05rem; padding:15px 34px; border-radius:14px; display:inline-flex; align-items:center; gap:8px; border:none; cursor:pointer; transition:all 0.18s; letter-spacing:-0.01em; }
+    .btn-white:hover { background:#f0fdf4; transform:translateY(-1px); box-shadow:0 8px 24px rgba(0,0,0,0.12); }
+    .btn-white-ghost { background:rgba(255,255,255,0); color:#fff; border:2px solid rgba(255,255,255,0.5); font-family:'Cabinet Grotesk',sans-serif; font-weight:700; font-size:1.05rem; padding:13px 34px; border-radius:14px; display:inline-flex; align-items:center; gap:8px; cursor:pointer; transition:all 0.18s; letter-spacing:-0.01em; }
+    .btn-white-ghost:hover { background:rgba(255,255,255,0.12); border-color:#fff; }
+    .arrow { transition:transform 0.2s; }
+    .btn:hover .arrow, .btn-white:hover .arrow, .btn-outline:hover .arrow { transform:translateX(3px); }
 
-    .panel{
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow2);
-      padding: 1.5rem;
-      min-height: 210px;
-    }
-    .panel h5{
-      font-weight: 900;
-      letter-spacing: -0.01em;
-      margin-bottom: .5rem;
-    }
-    .panel p{ color: var(--muted); margin-bottom: 1rem; }
+    /* ── ANNOUNCE BAR ── */
+    .announce-bar { background:var(--green-grad); text-align:center; padding:9px 16px; font-size:0.82rem; font-weight:700; color:#fff; z-index:201; position:relative; }
+    .announce-bar a { color:#fff; font-weight:800; text-decoration:underline; }
 
-    .chips{
-      display:flex;
-      gap:.5rem;
-      flex-wrap: wrap;
-    }
-    .chip{
-      border-radius: 999px;
-      padding: .35rem .75rem;
-      font-weight: 800;
-      font-size: .9rem;
-      background: var(--green-soft);
-      border: 1px solid rgba(34,197,94,0.18);
-      color: #0b3d1f;
-    }
+    /* ── NAV ── */
+    .nav { position:sticky; top:0; z-index:200; background:rgba(255,255,255,0.88); backdrop-filter:blur(20px); border-bottom:1px solid var(--border); box-shadow:0 1px 0 rgba(255,255,255,0.9); }
+    .nav-inner { display:flex; align-items:center; height:66px; justify-content:space-between; gap:20px; }
+    .logo { display:flex; align-items:center; gap:11px; }
+    .logo-mark { width:36px; height:36px; border-radius:10px; background:var(--green-grad); display:flex; align-items:center; justify-content:center; font-weight:900; font-size:0.85rem; color:#fff; box-shadow:0 4px 14px rgba(22,163,74,0.30); }
+    .logo-text { font-size:1rem; font-weight:800; letter-spacing:-0.03em; color:var(--text); }
+    .logo-text span { color:var(--green); }
+    .nav-links { display:flex; align-items:center; gap:2px; }
+    .nav-a { padding:6px 14px; border-radius:8px; font-size:0.875rem; font-weight:600; color:var(--text-2); transition:color 0.15s,background 0.15s; }
+    .nav-a:hover { color:var(--green); background:var(--green-dim); }
+    .nav-right { display:flex; align-items:center; gap:10px; }
 
-    /* Feature cards */
-    .f-card{
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow2);
-      padding: 1.5rem;
-      height: 100%;
-      transition: transform .12s ease;
-    }
-    .f-card:hover{ transform: translateY(-3px); }
-    .f-icon{
-      width: 46px;
-      height: 46px;
-      border-radius: 16px;
-      background: rgba(34,197,94,0.12);
-      border: 1px solid rgba(34,197,94,0.22);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      font-weight: 950;
-      color: #0b3d1f;
-      margin-bottom: .9rem;
-    }
-    .f-card h6{
-      font-weight: 900;
-      margin-bottom: .4rem;
-    }
-    .f-card p{
-      color: var(--muted);
-      margin: 0;
-      line-height: 1.65;
-    }
+    /* ── HERO ── */
+    .hero { padding:100px 0 80px; }
+    .hero-badge { display:inline-flex; align-items:center; gap:8px; padding:5px 12px 5px 6px; border-radius:999px; background:var(--green-dim); border:1px solid rgba(22,163,74,0.25); font-size:0.78rem; font-weight:700; color:var(--green); margin-bottom:30px; animation:fadeUp 0.5s ease both; }
+    .hero-badge-dot { background:var(--green); color:#fff; padding:2px 8px; border-radius:999px; font-size:0.72rem; }
+    .hero-title { font-family:'Fraunces',serif; font-size:clamp(2.8rem,5.5vw,5.2rem); font-weight:300; line-height:1.06; letter-spacing:-0.03em; color:var(--text); animation:fadeUp 0.5s 0.08s ease both; margin-bottom:24px; }
+    .hero-title em { font-style:italic; font-weight:500; color:var(--green); }
+    .hero-title .acc { position:relative; display:inline-block; }
+    .hero-title .acc::after { content:''; position:absolute; bottom:6px; left:0; right:0; height:3px; background:linear-gradient(90deg,var(--green),transparent); border-radius:2px; opacity:0.4; }
+    .hero-sub { font-size:1.05rem; color:var(--text-2); line-height:1.75; max-width:56ch; font-weight:500; animation:fadeUp 0.5s 0.16s ease both; margin-bottom:38px; }
+    .hero-cta { display:flex; gap:12px; flex-wrap:wrap; animation:fadeUp 0.5s 0.24s ease both; margin-bottom:10px; }
+    .cta-note { font-size:0.78rem; color:var(--text-3); font-weight:600; margin-top:10px; animation:fadeUp 0.5s 0.32s ease both; }
 
-    /* How */
-    .step{
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow2);
-      padding: 1.2rem 1.2rem;
-      display:flex;
-      gap: 1rem;
-      height: 100%;
-    }
-    .step-num{
-      width: 40px;height: 40px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, var(--green), var(--green-2));
-      color: #06120a;
-      font-weight: 950;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      flex: 0 0 auto;
-    }
-    .step h6{ font-weight: 900; margin: 0; }
-    .step p{ color: var(--muted); margin:.25rem 0 0; }
+    /* hero visual */
+    .hero-visual { animation:fadeUp 0.7s 0.3s ease both; position:relative; margin-top:64px; }
+    .hero-visual::before { content:''; position:absolute; top:-2px; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,var(--green),transparent); }
+    .db-preview { background:var(--panel); border:1px solid var(--border); border-radius:var(--r-xl); overflow:hidden; box-shadow:0 40px 100px rgba(0,0,0,0.12); }
+    .db-topbar { background:var(--panel-2); border-bottom:1px solid var(--border); padding:14px 20px; display:flex; align-items:center; gap:14px; }
+    .db-dots { display:flex; gap:6px; }
+    .db-dot { width:11px; height:11px; border-radius:50%; }
+    .db-dot.r{background:#ff5f57} .db-dot.y{background:#febc2e} .db-dot.g{background:#28c840}
+    .db-url { flex:1; background:var(--bg-2); border:1px solid var(--border); border-radius:6px; padding:5px 12px; font-size:0.75rem; color:var(--text-3); font-weight:600; max-width:340px; }
+    .db-body { display:flex; min-height:340px; }
+    .db-sidebar { width:200px; flex-shrink:0; background:var(--panel); border-right:1px solid var(--border); padding:20px 12px; }
+    .db-sidebar-hd { display:flex; align-items:center; gap:8px; padding:0 8px 20px; border-bottom:1px solid var(--border); margin-bottom:16px; }
+    .db-logo-mark { width:28px; height:28px; border-radius:8px; background:var(--green-grad); display:flex; align-items:center; justify-content:center; font-weight:900; color:#fff; font-size:0.75rem; }
+    .db-logo-text { font-size:0.82rem; font-weight:800; color:var(--text); }
+    .db-nav-item { display:flex; align-items:center; gap:8px; padding:7px 10px; border-radius:8px; margin-bottom:3px; font-size:0.78rem; font-weight:600; color:var(--text-3); }
+    .db-nav-item.active { background:var(--green-dim); color:var(--green); }
+    .db-nav-icon { width:16px; height:16px; border-radius:4px; background:currentColor; opacity:0.4; }
+    .db-main { flex:1; padding:24px; background:var(--bg); }
+    .db-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; }
+    .db-head h4 { font-size:0.95rem; font-weight:800; color:var(--text); }
+    .db-live { background:var(--green-dim); color:var(--green); border:1px solid rgba(22,163,74,0.2); padding:3px 10px; border-radius:999px; font-size:0.72rem; font-weight:700; }
+    .db-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:20px; }
+    .db-stat { background:var(--panel); border:1px solid var(--border); border-radius:10px; padding:14px; }
+    .db-val { font-family:'Fraunces',serif; font-size:1.5rem; font-weight:300; letter-spacing:-0.03em; }
+    .db-val.g{color:var(--green)} .db-val.b{color:var(--blue)} .db-val.a{color:var(--amber)}
+    .db-lbl { font-size:0.7rem; font-weight:700; color:var(--text-3); margin-top:3px; letter-spacing:0.04em; text-transform:uppercase; }
+    .db-row { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; margin-bottom:4px; background:var(--panel); border:1px solid var(--border); font-size:0.76rem; font-weight:600; color:var(--text-2); }
+    .db-row:first-child { background:rgba(22,163,74,0.05); border-color:rgba(22,163,74,0.18); }
+    .db-row-name { flex:1; }
+    .db-row-date { color:var(--text-3); font-size:0.7rem; }
+    .db-pill { padding:2px 8px; border-radius:999px; font-size:0.68rem; font-weight:700; flex-shrink:0; }
+    .db-pill.g { background:var(--green-dim); color:var(--green); }
+    .db-pill.b { background:var(--blue-dim); color:var(--blue); }
+    .db-pill.a { background:var(--amber-dim); color:var(--amber); }
+    .db-pill.r { background:var(--red-dim); color:#dc2626; }
+    /* float cards */
+    .fc { position:absolute; background:var(--panel); border:1px solid var(--border); border-radius:14px; padding:14px 16px; box-shadow:0 16px 40px rgba(0,0,0,0.10); font-size:0.8rem; }
+    .fc-1 { right:-80px; top:60px; animation:floatY 4s ease-in-out infinite; }
+    .fc-2 { left:-70px; bottom:80px; animation:floatY 4s 1.5s ease-in-out infinite; }
+    @keyframes floatY { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+    .fc-lbl { font-size:0.7rem; color:var(--text-3); font-weight:700; margin-bottom:6px; letter-spacing:0.04em; text-transform:uppercase; }
+    .fc-val { font-family:'Fraunces',serif; font-size:1.3rem; font-weight:300; color:var(--green); letter-spacing:-0.03em; }
+    .fc-sub { font-size:0.7rem; color:var(--text-3); font-weight:600; margin-top:2px; }
+    .fc-row { display:flex; align-items:center; gap:6px; margin-bottom:5px; }
+    .fc-dot { width:7px; height:7px; border-radius:50%; }
+    .fc-dot.g{background:var(--green)} .fc-dot.b{background:var(--blue)} .fc-dot.a{background:var(--amber)}
+    .fc-txt { font-size:0.75rem; font-weight:600; color:var(--text-2); flex:1; }
+    .fc-num { font-size:0.75rem; font-weight:800; color:var(--text); }
 
-    /* Footer */
-    footer{
-      margin-top: 2.5rem;
-      border-top: 1px solid var(--border);
-      background: rgba(255,255,255,0.80);
-      backdrop-filter: blur(10px);
-      padding: 1.6rem 0;
-      color: var(--muted);
-      font-weight: 600;
-      font-size: .95rem;
-    }
+    /* ── PROOF STRIP ── */
+    .proof-strip { border-top:1px solid var(--border); border-bottom:1px solid var(--border); padding:28px 0; background:var(--panel); }
+    .proof-inner { display:flex; align-items:center; justify-content:center; gap:40px; flex-wrap:wrap; }
+    .proof-stat { text-align:center; }
+    .proof-num { font-family:'Fraunces',serif; font-size:2rem; font-weight:300; color:var(--text); letter-spacing:-0.04em; }
+    .proof-num em { font-style:italic; color:var(--green); }
+    .proof-lbl { font-size:0.75rem; font-weight:700; color:var(--text-3); letter-spacing:0.06em; text-transform:uppercase; margin-top:2px; }
+    .proof-div { width:1px; height:44px; background:var(--border); }
 
-    @media (max-width: 992px){
-      .hero{ padding: 2.5rem 0 1.75rem; }
-    }
+    /* ── SECTION SHARED ── */
+    .section { padding:100px 0; }
+    .eyebrow { display:inline-flex; align-items:center; gap:8px; font-size:0.75rem; font-weight:700; letter-spacing:0.10em; text-transform:uppercase; color:var(--green); margin-bottom:16px; }
+    .eyebrow-line { width:28px; height:1.5px; background:var(--green); }
+    .section-h2 { font-family:'Fraunces',serif; font-size:clamp(1.9rem,3.2vw,3rem); font-weight:300; letter-spacing:-0.03em; line-height:1.1; color:var(--text); margin-bottom:16px; }
+    .section-h2 em { font-style:italic; color:var(--green); }
+    .section-desc { color:var(--text-2); font-size:0.97rem; line-height:1.75; max-width:58ch; font-weight:500; }
+
+    /* ── FEATURES ── */
+    .feat-grid { display:grid; grid-template-columns:1fr 1fr; gap:1px; margin-top:60px; background:var(--border); border:1px solid var(--border); border-radius:var(--r-xl); overflow:hidden; box-shadow:0 8px 32px rgba(0,0,0,0.07); }
+    @media(max-width:740px){.feat-grid{grid-template-columns:1fr}}
+    .feat-card { background:var(--panel); padding:40px 36px; transition:background 0.2s; position:relative; overflow:hidden; }
+    .feat-card:hover { background:var(--panel-2); }
+    .feat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--green-grad); transform:scaleX(0); transform-origin:left; transition:transform 0.3s ease; }
+    .feat-card:hover::before { transform:scaleX(1); }
+    .feat-num { font-family:'Fraunces',serif; font-size:0.8rem; font-style:italic; color:var(--text-3); margin-bottom:8px; }
+    .feat-icon { width:52px; height:52px; border-radius:14px; margin-bottom:24px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; }
+    .feat-icon.g{background:var(--green-dim);border:1px solid rgba(22,163,74,0.2)}
+    .feat-icon.b{background:var(--blue-dim);border:1px solid rgba(37,99,235,0.2)}
+    .feat-icon.a{background:var(--amber-dim);border:1px solid rgba(217,119,6,0.2)}
+    .feat-icon.r{background:var(--red-dim);border:1px solid rgba(220,38,38,0.2)}
+    .feat-card h4 { font-size:1.12rem; font-weight:800; color:var(--text); margin-bottom:10px; letter-spacing:-0.02em; }
+    .feat-card p { font-size:0.9rem; color:var(--text-2); line-height:1.72; font-weight:500; margin-bottom:20px; }
+    .feat-tags { display:flex; gap:6px; flex-wrap:wrap; }
+    .feat-tag { padding:4px 10px; border-radius:6px; font-size:0.74rem; font-weight:700; background:var(--bg-2); border:1px solid var(--border-2); color:var(--text-3); }
+
+    /* ── SPOTLIGHT ── */
+    .spotlight-grid { display:grid; grid-template-columns:1fr 1fr; gap:60px; align-items:center; }
+    @media(max-width:800px){.spotlight-grid{grid-template-columns:1fr;gap:36px}}
+    .spotlight-ui { background:var(--panel); border:1px solid var(--border); border-radius:var(--r-xl); overflow:hidden; box-shadow:0 16px 48px rgba(0,0,0,0.09); }
+    .spl-hd { background:var(--panel-2); border-bottom:1px solid var(--border); padding:14px 20px; display:flex; align-items:center; gap:10px; }
+    .spl-hd-title { font-size:0.82rem; font-weight:700; color:var(--text-2); flex:1; }
+    .spl-hd-action { font-size:0.72rem; font-weight:700; color:var(--green); background:var(--green-dim); border:1px solid rgba(22,163,74,0.2); padding:3px 10px; border-radius:6px; }
+    .spl-body { padding:20px; }
+    .spl-event { display:flex; gap:12px; padding:12px; border-radius:10px; background:var(--bg-2); border:1px solid var(--border); margin-bottom:10px; align-items:flex-start; transition:all 0.15s; }
+    .spl-event:hover { border-color:rgba(22,163,74,0.25); }
+    .spl-event:first-child { border-color:rgba(22,163,74,0.25); background:rgba(22,163,74,0.04); }
+    .spl-date { background:var(--panel); border:1px solid var(--border); border-radius:8px; padding:6px 10px; text-align:center; flex-shrink:0; }
+    .spl-day { font-family:'Fraunces',serif; font-size:1.3rem; font-weight:300; color:var(--green); line-height:1; }
+    .spl-mon { font-size:0.65rem; font-weight:800; color:var(--text-3); text-transform:uppercase; letter-spacing:0.06em; }
+    .spl-info { flex:1; }
+    .spl-name { font-size:0.85rem; font-weight:700; color:var(--text); margin-bottom:3px; }
+    .spl-meta { font-size:0.74rem; color:var(--text-3); font-weight:600; }
+    .spl-meta b { color:var(--text-2); }
+    .spl-badge { font-size:0.68rem; font-weight:700; padding:3px 8px; border-radius:5px; flex-shrink:0; }
+    .spl-badge.open{background:var(--green-dim);color:var(--green);border:1px solid rgba(22,163,74,0.2)}
+    .spl-badge.full{background:var(--red-dim);color:#dc2626;border:1px solid rgba(220,38,38,0.2)}
+    .spl-badge.soon{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(217,119,6,0.2)}
+    .spl-ft { border-top:1px solid var(--border); padding:12px 20px; display:flex; justify-content:space-between; align-items:center; }
+    .spl-ft-note { font-size:0.74rem; font-weight:600; color:var(--text-3); }
+    .spl-ft-link { font-size:0.78rem; font-weight:700; color:var(--green); }
+    .module-list { margin-top:36px; display:flex; flex-direction:column; gap:20px; }
+    .mod-item { display:flex; gap:16px; align-items:flex-start; padding:18px; border-radius:12px; border:1px solid var(--border); background:var(--panel); transition:all 0.18s; }
+    .mod-item:hover { border-color:rgba(22,163,74,0.25); background:var(--panel-2); }
+    .mod-icon { width:38px; height:38px; border-radius:10px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1rem; }
+    .mod-icon.g{background:var(--green-dim)} .mod-icon.b{background:var(--blue-dim)} .mod-icon.a{background:var(--amber-dim)}
+    .mod-text h6 { font-size:0.9rem; font-weight:800; color:var(--text); margin-bottom:3px; }
+    .mod-text p { font-size:0.83rem; color:var(--text-2); font-weight:500; line-height:1.55; }
+
+    /* ── ROLES ── */
+    .roles-section { background:var(--panel); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+    .roles-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:56px; }
+    @media(max-width:800px){.roles-grid{grid-template-columns:1fr}}
+    .role-card { background:var(--bg); border:1px solid var(--border); border-radius:var(--r-xl); padding:36px 30px; position:relative; overflow:hidden; transition:transform 0.2s,box-shadow 0.2s; }
+    .role-card:hover { transform:translateY(-4px); box-shadow:0 16px 40px rgba(0,0,0,0.09); }
+    .role-card::after { content:attr(data-num); position:absolute; right:-10px; top:-20px; font-family:'Fraunces',serif; font-size:7rem; font-weight:300; font-style:italic; color:rgba(0,0,0,0.04); line-height:1; pointer-events:none; }
+    .role-badge { display:inline-flex; align-items:center; gap:6px; padding:4px 12px; border-radius:999px; font-size:0.75rem; font-weight:700; margin-bottom:20px; }
+    .rb-g{background:var(--green-dim);color:var(--green);border:1px solid rgba(22,163,74,0.2)}
+    .rb-b{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(37,99,235,0.2)}
+    .rb-a{background:var(--amber-dim);color:var(--amber);border:1px solid rgba(217,119,6,0.2)}
+    .role-card h4 { font-family:'Fraunces',serif; font-size:1.5rem; font-weight:300; font-style:italic; color:var(--text); margin-bottom:10px; }
+    .role-card p { font-size:0.88rem; color:var(--text-2); line-height:1.7; font-weight:500; margin-bottom:24px; }
+    .role-perms { display:flex; flex-direction:column; gap:8px; }
+    .role-perm { display:flex; align-items:center; gap:10px; font-size:0.84rem; font-weight:600; color:var(--text-2); }
+    .rp-icon { width:20px; height:20px; border-radius:6px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:0.6rem; }
+    .rp-g{background:var(--green-dim);color:var(--green)} .rp-b{background:var(--blue-dim);color:var(--blue)} .rp-a{background:var(--amber-dim);color:var(--amber)}
+
+    /* ── PROCESS ── */
+    .process-steps { display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:0; margin-top:64px; border:1px solid var(--border); border-radius:var(--r-xl); overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,0.07); }
+    @media(max-width:800px){.process-steps{grid-template-columns:1fr 1fr}}
+    @media(max-width:500px){.process-steps{grid-template-columns:1fr}}
+    .p-step { padding:36px 28px; border-right:1px solid var(--border); background:var(--panel); position:relative; overflow:hidden; transition:background 0.2s; }
+    .p-step:last-child{border-right:none}
+    .p-step:hover{background:var(--panel-2)}
+    .p-step::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--green-grad); opacity:0; transition:opacity 0.2s; }
+    .p-step:hover::before{opacity:1}
+    .p-num { font-family:'Fraunces',serif; font-size:3rem; font-weight:300; font-style:italic; color:rgba(22,163,74,0.18); line-height:1; margin-bottom:20px; }
+    .p-step h5 { font-size:0.97rem; font-weight:800; color:var(--text); margin-bottom:8px; }
+    .p-step p { font-size:0.84rem; color:var(--text-2); line-height:1.65; font-weight:500; }
+    .p-badge { display:inline-block; margin-top:16px; padding:3px 10px; border-radius:5px; font-size:0.7rem; font-weight:700; }
+    .pb-g{background:var(--green-dim);color:var(--green)} .pb-b{background:var(--blue-dim);color:var(--blue)} .pb-a{background:var(--amber-dim);color:var(--amber)} .pb-w{background:var(--bg-2);color:var(--text-3);border:1px solid var(--border)}
+
+    /* ── TESTIMONIALS ── */
+    .testi-section { background:var(--panel); border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+    .testi-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:20px; margin-top:56px; }
+    @media(max-width:800px){.testi-grid{grid-template-columns:1fr}}
+    .testi-card { background:var(--bg); border:1px solid var(--border); border-radius:var(--r-lg); padding:28px 24px; transition:transform 0.18s,box-shadow 0.18s; }
+    .testi-card:hover{transform:translateY(-3px);box-shadow:0 12px 32px rgba(0,0,0,0.09)}
+    .testi-stars{display:flex;gap:3px;margin-bottom:14px}
+    .star{color:var(--amber);font-size:0.85rem}
+    .testi-quote{font-family:'Fraunces',serif;font-size:1rem;font-weight:300;font-style:italic;color:var(--text);line-height:1.65;margin-bottom:20px}
+    .testi-quote::before{content:'\201C'} .testi-quote::after{content:'\201D'}
+    .testi-author{display:flex;align-items:center;gap:10px}
+    .testi-avatar{width:36px;height:36px;border-radius:50%;background:var(--green-grad);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:0.85rem}
+    .testi-name{font-size:0.84rem;font-weight:800;color:var(--text)}
+    .testi-role{font-size:0.74rem;font-weight:600;color:var(--text-3)}
+
+    /* ── COMPARE ── */
+    .compare-table{width:100%;border-collapse:collapse;margin-top:48px;border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.07)}
+    .compare-table thead tr{background:var(--panel-2)}
+    .compare-table th{padding:18px 24px;font-size:0.82rem;font-weight:700;color:var(--text-2);text-align:left;border-bottom:1px solid var(--border)}
+    .compare-table th:first-child{width:38%}
+    .compare-table th.hl{color:var(--green)}
+    .compare-table td{padding:15px 24px;font-size:0.87rem;font-weight:600;color:var(--text-2);border-bottom:1px solid var(--border);background:var(--panel)}
+    .compare-table tr:last-child td{border-bottom:none}
+    .compare-table tr:hover td{background:var(--panel-2)}
+    .compare-table td.fn{color:var(--text);font-weight:700}
+    .compare-table td.hl{color:var(--green)}
+    .chk-y{color:var(--green);font-size:1.1rem} .chk-n{color:var(--text-3)} .chk-p{color:var(--amber)}
+
+    /* ── FAQ ── */
+    .faq-list{margin-top:48px;display:flex;flex-direction:column;gap:12px}
+    .faq-item{background:var(--panel);border:1px solid var(--border);border-radius:var(--r);overflow:hidden;transition:border-color 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+    .faq-item:hover{border-color:rgba(22,163,74,0.25)}
+    .faq-item.open{border-color:rgba(22,163,74,0.35)}
+    .faq-q{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;cursor:pointer;font-size:0.93rem;font-weight:700;color:var(--text)}
+    .faq-icon{width:28px;height:28px;border-radius:8px;flex-shrink:0;background:var(--bg-2);display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:var(--text-3);transition:all 0.2s}
+    .faq-item.open .faq-icon{background:var(--green-dim);color:var(--green);transform:rotate(45deg)}
+    .faq-a{max-height:0;overflow:hidden;transition:max-height 0.3s ease}
+    .faq-a-inner{padding:0 24px 20px;font-size:0.88rem;color:var(--text-2);line-height:1.72;font-weight:500}
+    .faq-item.open .faq-a{max-height:200px}
+
+    /* ── CTA — green gradient hero style matching dashboard ── */
+    .cta-section{background:var(--green-grad);padding:100px 0;text-align:center;position:relative;overflow:hidden}
+    .cta-section::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.05) 1px,transparent 1px);background-size:56px 56px}
+    .cta-section::after{content:'';position:absolute;right:-100px;top:-100px;width:450px;height:450px;border-radius:50%;background:rgba(255,255,255,0.09);pointer-events:none}
+    .cta-inner{position:relative;z-index:1}
+    .cta-eyebrow{display:flex;align-items:center;justify-content:center;gap:8px;font-size:0.75rem;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:rgba(255,255,255,0.70);margin-bottom:20px}
+    .cta-eyebrow-line{width:28px;height:1.5px;background:rgba(255,255,255,0.50)}
+    .cta-h2{font-family:'Fraunces',serif;font-size:clamp(2.2rem,4vw,3.6rem);font-weight:300;font-style:italic;color:#fff;letter-spacing:-0.03em;margin-bottom:14px}
+    .cta-desc{color:rgba(255,255,255,0.85);font-size:0.97rem;line-height:1.7;max-width:50ch;margin:0 auto 40px}
+    .cta-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+    .cta-feats{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-top:28px}
+    .cta-feat{display:flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:600;color:rgba(255,255,255,0.75)}
+    .cta-feat::before{content:'✓';color:#bbf7d0;font-weight:900}
+
+    /* ── FOOTER ── */
+    footer{background:var(--text);padding:72px 0 0}
+    .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:48px;padding-bottom:56px}
+    @media(max-width:960px){.footer-top{grid-template-columns:1fr 1fr;gap:36px}}
+    @media(max-width:540px){.footer-top{grid-template-columns:1fr}}
+    .fl-logo{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+    .fl-logo-mark{width:34px;height:34px;border-radius:10px;background:var(--green-grad);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:0.85rem}
+    .fl-logo-text{font-size:0.97rem;font-weight:900;color:#fff}
+    .fl-logo-text span{color:#4ade80}
+    .fl-desc{font-size:0.85rem;color:rgba(255,255,255,0.38);line-height:1.7;max-width:28ch;margin-bottom:22px}
+    .fl-badges{display:flex;gap:8px;flex-wrap:wrap}
+    .fl-badge{padding:4px 10px;border-radius:6px;font-size:0.72rem;font-weight:700;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);color:rgba(255,255,255,0.38)}
+    .footer-col h6{font-size:0.72rem;font-weight:700;letter-spacing:0.10em;text-transform:uppercase;color:rgba(255,255,255,0.35);margin-bottom:16px}
+    .footer-links{display:flex;flex-direction:column;gap:10px}
+    .footer-link{font-size:0.86rem;font-weight:600;color:rgba(255,255,255,0.48);transition:color 0.15s;display:flex;align-items:center;gap:6px}
+    .footer-link:hover{color:#4ade80}
+    .footer-link .new{font-size:0.64rem;font-weight:700;padding:2px 6px;border-radius:4px;background:rgba(22,163,74,0.2);color:#4ade80}
+    .footer-div{border:none;border-top:1px solid rgba(255,255,255,0.08)}
+    .footer-bottom{padding:22px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px}
+    .footer-bottom-l{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+    .footer-copy{font-size:0.78rem;font-weight:600;color:rgba(255,255,255,0.30)}
+    .footer-legal{display:flex;gap:16px}
+    .footer-legal a{font-size:0.78rem;font-weight:600;color:rgba(255,255,255,0.30);transition:color 0.15s}
+    .footer-legal a:hover{color:rgba(255,255,255,0.60)}
+    .footer-social{display:flex;gap:10px}
+    .fsb{width:34px;height:34px;border-radius:8px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:0.75rem;font-weight:700;color:rgba(255,255,255,0.38);transition:all 0.15s}
+    .fsb:hover{border-color:rgba(74,222,128,0.4);color:#4ade80;background:rgba(22,163,74,0.15)}
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity 0.55s ease,transform 0.55s ease}
+    .reveal.up{opacity:1;transform:translateY(0)}
+    .d1{transition-delay:0.08s} .d2{transition-delay:0.16s} .d3{transition-delay:0.24s}
+    @media(max-width:640px){.hide-mob{display:none!important}.hero{padding:72px 0 60px}.section{padding:72px 0}.fc-1,.fc-2{display:none}}
+    ::-webkit-scrollbar{width:6px} ::-webkit-scrollbar-track{background:var(--bg)} ::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:3px} ::-webkit-scrollbar-thumb:hover{background:rgba(22,163,74,0.4)}
   </style>
 </head>
-
 <body>
-  <!-- NAVBAR -->
-  <nav class="cc-nav py-3">
-    <div class="container d-flex align-items-center justify-content-between gap-3">
-      <a class="brand" href="{% url 'core:landing' %}">
-        <span class="brand-badge">CC</span>
-        <span>Campus Connect</span>
+
+<div class="bg-glow"></div>
+
+<!-- ANNOUNCE BAR -->
+<div class="announce-bar">
+  🎓 &nbsp;Campus Connect is now open for institutions — <a href="{% url 'accounts:register' %}">Get early access →</a>
+</div>
+
+<!-- NAVBAR -->
+<nav class="nav">
+  <div class="wrap">
+    <div class="nav-inner">
+      <a class="logo" href="{% url 'core:landing' %}">
+        <div class="logo-mark">CC</div>
+        <span class="logo-text">Campus<span>Connect</span></span>
       </a>
-
-      <div class="d-flex align-items-center gap-3">
-        <a class="nav-link d-none d-md-inline" href="#users">Users</a>
-        <a class="nav-link d-none d-md-inline" href="#features">Features</a>
-        <a class="nav-link d-none d-md-inline" href="#how">How it works</a>
-        <a class="btn btn-pill btn-ghost" href="{% url 'accounts:login' %}">Login</a>
-        <a class="btn btn-pill btn-primary-cc d-none d-sm-inline" href="{% url 'accounts:register' %}">Register</a>
+      <div class="nav-links hide-mob">
+        <a class="nav-a" href="#features">Features</a>
+        <a class="nav-a" href="#roles">Roles</a>
+        <a class="nav-a" href="#process">Process</a>
+        <a class="nav-a" href="#faq">FAQ</a>
+      </div>
+      <div class="nav-right">
+        <a class="btn btn-sm btn-ghost" href="{% url 'accounts:login' %}">Sign in</a>
+        <a class="btn btn-sm btn-green" href="{% url 'accounts:register' %}">Get Started <span class="arrow">→</span></a>
       </div>
     </div>
-  </nav>
+  </div>
+</nav>
 
-  <!-- HERO -->
-  <header class="hero">
-    <div class="container">
-      <div class="row align-items-center g-4">
-        <div class="col-lg-6">
-          <span class="pill"><span class="pill-dot"></span> Admin approval • Role-based access</span>
-
-          <h1>One portal for campus life.</h1>
-
-          <p>
-            Campus Connect is a non-academic campus management system that helps students and staff
-            manage events, notices, lost &amp; found, and payments — all in one place.
-          </p>
-
-          <div class="d-flex gap-2 flex-wrap mt-4">
-            <a class="btn btn-pill btn-primary-cc" href="{% url 'accounts:register' %}">Get Started</a>
-            <a class="btn btn-pill btn-ghost" href="{% url 'accounts:login' %}">Login</a>
-          </div>
-
-          <div class="chips mt-4">
-            <span class="chip">Events</span>
-            <span class="chip">Notices</span>
-            <span class="chip">Lost &amp; Found</span>
-            <span class="chip">Payments</span>
-            <span class="chip">Reports (later)</span>
-          </div>
-        </div>
-
-        <div class="col-lg-6">
-          <div class="hero-card">
-            <h5>Why Campus Connect?</h5>
-
-            <div class="check"><i>✓</i><div>Centralized campus information and announcements</div></div>
-            <div class="check"><i>✓</i><div>Secure login with admin approval workflow</div></div>
-            <div class="check"><i>✓</i><div>Event registration linked with payments</div></div>
-            <div class="check"><i>✓</i><div>Lost &amp; found reporting and claim requests</div></div>
-            <div class="check"><i>✓</i><div>Clean dashboards based on user role</div></div>
-
-            <div class="mt-3" style="color:var(--muted); font-weight:800;">
-              Built with Django + MySQL + Bootstrap
-            </div>
-          </div>
-        </div>
-      </div>
+<!-- HERO -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-badge"><span class="hero-badge-dot">New</span> Built with Django · MySQL · Bootstrap 5</div>
+    <h1 class="hero-title">The modern campus<br><em>management platform</em><br><span class="acc">built to connect</span> everyone.</h1>
+    <p class="hero-sub">Campus Connect centralises events, notices, lost &amp; found, and payments into one role-aware platform — giving students, staff, and admins exactly what they need, nothing they don't.</p>
+    <div class="hero-cta">
+      <a class="btn btn-xl btn-green" href="{% url 'accounts:register' %}">Create free account <span class="arrow">→</span></a>
+      <a class="btn btn-lg btn-ghost" href="{% url 'accounts:login' %}">Sign in to dashboard</a>
     </div>
-  </header>
+    <div class="cta-note">✓ Free to use &nbsp;·&nbsp; ✓ No credit card needed &nbsp;·&nbsp; ✓ Live in minutes</div>
 
-  <!-- USERS (MST-like “Users” section vibe) -->
-  <section id="users" class="section">
-    <div class="container">
-      <h2 class="section-title">Built for everyone on campus</h2>
-      <p class="section-sub">
-        Campus Connect is designed with clear responsibilities so the system remains secure and easy to manage.
-      </p>
-
-      <div class="row g-4 mt-2">
-        <div class="col-lg-5">
-          <div class="user-tabs" id="userTabs">
-            <div class="tab-btn active" data-tab="student">Student</div>
-            <div class="tab-btn" data-tab="staff">Staff</div>
-            <div class="tab-btn" data-tab="admin">Admin</div>
+    <div class="hero-visual">
+      <div class="fc fc-1"><div class="fc-lbl">Registrations today</div><div class="fc-val">+48</div><div class="fc-sub">↑ 22% vs last week</div></div>
+      <div class="fc fc-2"><div class="fc-lbl">Module status</div><div class="fc-row"><span class="fc-dot g"></span><span class="fc-txt">Events</span><span class="fc-num">Active</span></div><div class="fc-row"><span class="fc-dot b"></span><span class="fc-txt">Notices</span><span class="fc-num">Active</span></div><div class="fc-row"><span class="fc-dot a"></span><span class="fc-txt">Payments</span><span class="fc-num">Active</span></div></div>
+      <div class="db-preview">
+        <div class="db-topbar"><div class="db-dots"><span class="db-dot r"></span><span class="db-dot y"></span><span class="db-dot g"></span></div><div class="db-url">campus-connect.edu/dashboard</div></div>
+        <div class="db-body">
+          <div class="db-sidebar">
+            <div class="db-sidebar-hd"><div class="db-logo-mark">CC</div><span class="db-logo-text">Campus</span></div>
+            <div class="db-nav-item active"><span class="db-nav-icon"></span>Dashboard</div>
+            <div class="db-nav-item"><span class="db-nav-icon"></span>Events</div>
+            <div class="db-nav-item"><span class="db-nav-icon"></span>Notices</div>
+            <div class="db-nav-item"><span class="db-nav-icon"></span>Lost &amp; Found</div>
+            <div class="db-nav-item"><span class="db-nav-icon"></span>Payments</div>
           </div>
-        </div>
-
-        <div class="col-lg-7">
-          <div class="panel" id="tabPanel">
-            <!-- Default: Student -->
-            <h5>Student</h5>
-            <p>
-              Students can view notices, register for events, complete payments (if required),
-              and use Lost &amp; Found to report or claim items.
-            </p>
-            <div class="chips">
-              <span class="chip">View Notices</span>
-              <span class="chip">Register Events</span>
-              <span class="chip">Payments</span>
-              <span class="chip">Lost &amp; Found</span>
+          <div class="db-main">
+            <div class="db-head"><h4>Overview Dashboard</h4><span class="db-live">● Live</span></div>
+            <div class="db-stats">
+              <div class="db-stat"><div class="db-val g">142</div><div class="db-lbl">Active Students</div></div>
+              <div class="db-stat"><div class="db-val b">8</div><div class="db-lbl">Upcoming Events</div></div>
+              <div class="db-stat"><div class="db-val a">23</div><div class="db-lbl">Open L&amp;F Items</div></div>
             </div>
+            <div class="db-row"><span class="db-row-name">Tech Symposium 2026</span><span class="db-pill g">Open</span><span class="db-row-date">Mar 18</span></div>
+            <div class="db-row"><span class="db-row-name">Annual Sports Meet</span><span class="db-pill a">Pending</span><span class="db-row-date">Mar 24</span></div>
+            <div class="db-row"><span class="db-row-name">Cultural Night</span><span class="db-pill b">Scheduled</span><span class="db-row-date">Apr 2</span></div>
+            <div class="db-row"><span class="db-row-name">Workshop: AI &amp; Society</span><span class="db-pill r">Full</span><span class="db-row-date">Apr 8</span></div>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</header>
 
-  <!-- FEATURES -->
-  <section id="features" class="section" style="padding-top:0;">
-    <div class="container">
-      <h2 class="section-title">Core features</h2>
-      <p class="section-sub">Only the modules needed for your project (clean and complete).</p>
+<!-- PROOF STRIP -->
+<div class="proof-strip">
+  <div class="wrap"><div class="proof-inner">
+    <div class="proof-stat"><div class="proof-num"><em>3</em></div><div class="proof-lbl">User Roles</div></div>
+    <div class="proof-div"></div>
+    <div class="proof-stat"><div class="proof-num"><em>4</em></div><div class="proof-lbl">Core Modules</div></div>
+    <div class="proof-div"></div>
+    <div class="proof-stat"><div class="proof-num"><em>1</em></div><div class="proof-lbl">Unified Platform</div></div>
+    <div class="proof-div"></div>
+    <div class="proof-stat"><div class="proof-num"><em>∞</em></div><div class="proof-lbl">Scale Ready</div></div>
+    <div class="proof-div"></div>
+    <div class="proof-stat"><div class="proof-num"><em>100%</em></div><div class="proof-lbl">Role-Gated Access</div></div>
+  </div></div>
+</div>
 
-      <div class="row g-3 mt-3">
-        <div class="col-md-6 col-lg-3">
-          <div class="f-card">
-            <div class="f-icon">EV</div>
-            <h6>Events &amp; Registration</h6>
-            <p>Create events, manage capacity, and allow students to register.</p>
-          </div>
+<!-- FEATURES -->
+<section id="features" class="section">
+  <div class="wrap">
+    <div class="eyebrow reveal"><span class="eyebrow-line"></span>Core modules</div>
+    <h2 class="section-h2 reveal">Everything your campus<br><em>actually needs</em></h2>
+    <p class="section-desc reveal">Four focused modules designed to work together — not bolted-on features, but a cohesive platform built around how campuses actually operate.</p>
+    <div class="feat-grid">
+      <div class="feat-card reveal"><div class="feat-num">01 /</div><div class="feat-icon g">🗓</div><h4>Events &amp; Registration</h4><p>Create and manage campus events with full registration control. Set capacity limits, open/close registration, and connect directly with the payment module for paid events.</p><div class="feat-tags"><span class="feat-tag">Capacity control</span><span class="feat-tag">Registration flow</span><span class="feat-tag">Payment link</span><span class="feat-tag">Admin management</span></div></div>
+      <div class="feat-card reveal d1"><div class="feat-num">02 /</div><div class="feat-icon b">📣</div><h4>Notices &amp; Announcements</h4><p>Publish campus-wide and role-specific announcements. Students and staff see what's relevant to them — no information overload, no important updates getting buried.</p><div class="feat-tags"><span class="feat-tag">Role targeting</span><span class="feat-tag">Rich content</span><span class="feat-tag">Priority levels</span><span class="feat-tag">Archive</span></div></div>
+      <div class="feat-card reveal"><div class="feat-num">03 /</div><div class="feat-icon a">🔍</div><h4>Lost &amp; Found System</h4><p>A transparent reporting system for lost and found items. Students report missing belongings, others post found items, and claim requests are managed through a clean verification workflow.</p><div class="feat-tags"><span class="feat-tag">Item reporting</span><span class="feat-tag">Claim requests</span><span class="feat-tag">Status tracking</span><span class="feat-tag">Admin verify</span></div></div>
+      <div class="feat-card reveal d1"><div class="feat-num">04 /</div><div class="feat-icon r">💳</div><h4>Payment Tracking</h4><p>Integrated fee management linked to event registrations. Track payment status per student, record transactions, and give admins a clean financial overview — all in one place.</p><div class="feat-tags"><span class="feat-tag">Event fees</span><span class="feat-tag">Status tracking</span><span class="feat-tag">Receipt records</span><span class="feat-tag">Admin view</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SPOTLIGHT -->
+<section class="section" style="padding-top:0;background:var(--panel);border-top:1px solid var(--border);">
+  <div class="wrap" style="padding-top:80px;">
+    <div class="spotlight-grid">
+      <div class="spotlight-ui reveal">
+        <div class="spl-hd"><span style="font-size:0.85rem;">🗓</span><span class="spl-hd-title">Events — March 2026</span><span class="spl-hd-action">+ New Event</span></div>
+        <div class="spl-body">
+          <div class="spl-event"><div class="spl-date"><div class="spl-day">18</div><div class="spl-mon">Mar</div></div><div class="spl-info"><div class="spl-name">Tech Symposium 2026</div><div class="spl-meta">Auditorium A &nbsp;·&nbsp; <b>48 / 100</b> registered</div></div><span class="spl-badge open">Open</span></div>
+          <div class="spl-event"><div class="spl-date"><div class="spl-day">24</div><div class="spl-mon">Mar</div></div><div class="spl-info"><div class="spl-name">Annual Sports Meet</div><div class="spl-meta">Sports Complex &nbsp;·&nbsp; <b>89 / 200</b> registered</div></div><span class="spl-badge soon">Filling</span></div>
+          <div class="spl-event"><div class="spl-date"><div class="spl-day">02</div><div class="spl-mon">Apr</div></div><div class="spl-info"><div class="spl-name">Workshop: AI &amp; Society</div><div class="spl-meta">Hall B &nbsp;·&nbsp; <b>60 / 60</b> registered</div></div><span class="spl-badge full">Full</span></div>
+          <div class="spl-event"><div class="spl-date"><div class="spl-day">08</div><div class="spl-mon">Apr</div></div><div class="spl-info"><div class="spl-name">Cultural Night</div><div class="spl-meta">Main Stage &nbsp;·&nbsp; <b>12 / 300</b> registered</div></div><span class="spl-badge open">Open</span></div>
         </div>
-
-        <div class="col-md-6 col-lg-3">
-          <div class="f-card">
-            <div class="f-icon">NO</div>
-            <h6>Notices</h6>
-            <p>Publish announcements and keep the campus updated centrally.</p>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3">
-          <div class="f-card">
-            <div class="f-icon">LF</div>
-            <h6>Lost &amp; Found</h6>
-            <p>Report lost items, post found items, and submit claim requests.</p>
-          </div>
-        </div>
-
-        <div class="col-md-6 col-lg-3">
-          <div class="f-card">
-            <div class="f-icon">PY</div>
-            <h6>Payments</h6>
-            <p>Link payments with event registration and store payment status.</p>
-          </div>
+        <div class="spl-ft"><span class="spl-ft-note">4 events this month</span><span class="spl-ft-link">View all events →</span></div>
+      </div>
+      <div class="reveal d1">
+        <div class="eyebrow"><span class="eyebrow-line"></span>Deep dive</div>
+        <h2 class="section-h2">Events that<br><em>run themselves</em></h2>
+        <p class="section-desc">The events module handles the full lifecycle — from creation to post-event records — with smart registration controls and seamless payment integration.</p>
+        <div class="module-list">
+          <div class="mod-item"><div class="mod-icon g">📋</div><div class="mod-text"><h6>Smart Registration</h6><p>Capacity-aware sign-ups that automatically close when full. Students see real-time availability at a glance.</p></div></div>
+          <div class="mod-item"><div class="mod-icon b">💳</div><div class="mod-text"><h6>Payment Integration</h6><p>Paid events link directly to the payment module — registrations are only confirmed once fees are recorded.</p></div></div>
+          <div class="mod-item"><div class="mod-icon a">📊</div><div class="mod-text"><h6>Admin Overview</h6><p>Admins and Staff see who's registered, payment status, and event fill-rates without digging through records.</p></div></div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- HOW IT WORKS -->
-  <section id="how" class="section">
-    <div class="container">
-      <h2 class="section-title">How it works</h2>
-      <p class="section-sub">Simple, secure flow — easy to explain in viva.</p>
-
-      <div class="row g-3 mt-3">
-        <div class="col-md-4">
-          <div class="step">
-            <div class="step-num">1</div>
-            <div>
-              <h6>Register</h6>
-              <p>Student/Staff creates an account and submits details.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="step">
-            <div class="step-num">2</div>
-            <div>
-              <h6>Admin approval</h6>
-              <p>Admin verifies and approves the account to activate access.</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4">
-          <div class="step">
-            <div class="step-num">3</div>
-            <div>
-              <h6>Role dashboard</h6>
-              <p>User logs in and is redirected to the correct dashboard.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="d-flex gap-2 flex-wrap mt-4">
-        <a class="btn btn-pill btn-primary-cc" href="{% url 'accounts:register' %}">Register</a>
-        <a class="btn btn-pill btn-ghost" href="{% url 'accounts:login' %}">Login</a>
-      </div>
+<!-- ROLES -->
+<section id="roles" class="section roles-section">
+  <div class="wrap">
+    <div class="eyebrow reveal"><span class="eyebrow-line"></span>Access control</div>
+    <h2 class="section-h2 reveal">Three roles, <em>one platform</em>,<br>zero confusion.</h2>
+    <p class="section-desc reveal">Role-based access ensures every user sees and does exactly what their position requires — secured by admin approval before first login.</p>
+    <div class="roles-grid">
+      <div class="role-card reveal" data-num="1"><span class="role-badge rb-g">● Student</span><h4>The campus citizen</h4><p>Students get a clean, focused interface to engage with campus life — events, notices, and their own records — without administrative clutter.</p><div class="role-perms"><div class="role-perm"><span class="rp-icon rp-g">✓</span> View &amp; browse campus notices</div><div class="role-perm"><span class="rp-icon rp-g">✓</span> Register for events</div><div class="role-perm"><span class="rp-icon rp-g">✓</span> Complete event payments</div><div class="role-perm"><span class="rp-icon rp-g">✓</span> Report lost items</div><div class="role-perm"><span class="rp-icon rp-g">✓</span> Submit found item claims</div><div class="role-perm"><span class="rp-icon rp-g">✓</span> View personal dashboard</div></div></div>
+      <div class="role-card reveal d1" data-num="2"><span class="role-badge rb-b">● Staff</span><h4>The campus organiser</h4><p>Staff members drive campus activity — creating events, communicating through notices, and managing the lost &amp; found system for their area.</p><div class="role-perms"><div class="role-perm"><span class="rp-icon rp-b">✓</span> Create &amp; manage events</div><div class="role-perm"><span class="rp-icon rp-b">✓</span> Publish official notices</div><div class="role-perm"><span class="rp-icon rp-b">✓</span> Manage lost &amp; found items</div><div class="role-perm"><span class="rp-icon rp-b">✓</span> View registration lists</div><div class="role-perm"><span class="rp-icon rp-b">✓</span> Monitor payment records</div><div class="role-perm"><span class="rp-icon rp-b">✓</span> Support student queries</div></div></div>
+      <div class="role-card reveal d2" data-num="3"><span class="role-badge rb-a">● Admin</span><h4>The platform guardian</h4><p>Admins hold complete authority — approving accounts, managing roles, monitoring activity, and maintaining the integrity of the entire platform.</p><div class="role-perms"><div class="role-perm"><span class="rp-icon rp-a">✓</span> Approve user registrations</div><div class="role-perm"><span class="rp-icon rp-a">✓</span> Assign &amp; manage roles</div><div class="role-perm"><span class="rp-icon rp-a">✓</span> Full system oversight</div><div class="role-perm"><span class="rp-icon rp-a">✓</span> Monitor all activity logs</div><div class="role-perm"><span class="rp-icon rp-a">✓</span> Manage all modules</div><div class="role-perm"><span class="rp-icon rp-a">✓</span> Access reports &amp; analytics</div></div></div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- FOOTER -->
-  <footer>
-    <div class="container d-flex flex-column flex-md-row justify-content-between gap-2">
+<!-- PROCESS -->
+<section id="process" class="section">
+  <div class="wrap">
+    <div class="eyebrow reveal"><span class="eyebrow-line"></span>How it works</div>
+    <h2 class="section-h2 reveal">Up and running in<br><em>four simple steps</em></h2>
+    <p class="section-desc reveal">A secure, verifiable onboarding flow keeps the platform trustworthy — every account is human-approved before access is granted.</p>
+    <div class="process-steps reveal">
+      <div class="p-step"><div class="p-num">1</div><h5>Create your account</h5><p>Students or staff register with their details — name, role, and institution info. Takes under two minutes.</p><span class="p-badge pb-g">Self-service</span></div>
+      <div class="p-step"><div class="p-num">2</div><h5>Admin review</h5><p>The platform admin receives the submission and verifies identity before approving. Fraudulent accounts never make it in.</p><span class="p-badge pb-b">Human verification</span></div>
+      <div class="p-step"><div class="p-num">3</div><h5>Role assigned &amp; activated</h5><p>Once approved, the correct role is assigned — Student or Staff — and the account becomes active for login.</p><span class="p-badge pb-a">Role-based</span></div>
+      <div class="p-step"><div class="p-num">4</div><h5>Your dashboard awaits</h5><p>Log in and land directly on a personalised dashboard built for your role. No noise — just what you need, right away.</p><span class="p-badge pb-w">Personalised</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="section testi-section">
+  <div class="wrap">
+    <div class="eyebrow reveal"><span class="eyebrow-line"></span>What people say</div>
+    <h2 class="section-h2 reveal">Trusted by students,<br><em>loved by admins</em></h2>
+    <div class="testi-grid">
+      <div class="testi-card reveal"><div class="testi-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="testi-quote">Registering for events used to mean filling out paper forms and chasing staff. Now it's three clicks. The payment link is seamless — I love how everything is in one place.</p><div class="testi-author"><div class="testi-avatar">R</div><div><div class="testi-name">Riya Sharma</div><div class="testi-role">2nd Year, Computer Science</div></div></div></div>
+      <div class="testi-card reveal d1"><div class="testi-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="testi-quote">Managing events for 300+ students used to be a logistical nightmare. Campus Connect gave us a real system — registration caps, payment tracking, everything visible in one dashboard.</p><div class="testi-author"><div class="testi-avatar">M</div><div><div class="testi-name">Mr. Mehta</div><div class="testi-role">Events Coordinator, Staff</div></div></div></div>
+      <div class="testi-card reveal d2"><div class="testi-stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div><p class="testi-quote">The admin approval workflow is exactly what we needed. No unverified accounts, proper role separation, and I can see everything at a glance. Clean and professional.</p><div class="testi-author"><div class="testi-avatar">P</div><div><div class="testi-name">Prof. Patel</div><div class="testi-role">Campus Administrator</div></div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- COMPARE -->
+<section class="section" style="padding-top:0;background:var(--bg-2);border-top:1px solid var(--border);">
+  <div class="wrap" style="padding-top:80px;">
+    <div class="eyebrow reveal"><span class="eyebrow-line"></span>Why Campus Connect</div>
+    <h2 class="section-h2 reveal">Built different<br><em>by design</em></h2>
+    <p class="section-desc reveal">Compare how Campus Connect stacks up against scattered tools and generic platforms.</p>
+    <table class="compare-table reveal">
+      <thead><tr><th>Feature</th><th class="hl">Campus Connect</th><th>Scattered Tools</th><th>Generic Platform</th></tr></thead>
+      <tbody>
+        <tr><td class="fn">Unified platform</td><td class="hl"><span class="chk-y">✓</span></td><td><span class="chk-n">✗</span></td><td><span class="chk-p">~</span></td></tr>
+        <tr><td class="fn">Admin approval workflow</td><td class="hl"><span class="chk-y">✓</span></td><td><span class="chk-n">✗</span></td><td><span class="chk-n">✗</span></td></tr>
+        <tr><td class="fn">Role-based dashboards</td><td class="hl"><span class="chk-y">✓</span></td><td><span class="chk-n">✗</span></td><td><span class="chk-p">~</span></td></tr>
+        <tr><td class="fn">Event + payment integration</td><td class="hl"><span class="chk-y">✓</span></td><td><span class="chk-n">✗</span></td><td><span class="chk-p">~</span></td></tr>
+        <tr><td class="fn">Lost &amp; found module</td><td class="hl"><span class="chk-y">✓</span></td><td><span class="chk-n">✗</span></td><td><span class="chk-n">✗</span></td></tr>
+        <tr><td class="fn">Campus-specific design</td><td class="hl"><span class="chk-y">✓</span></td><td><span class="chk-n">✗</span></td><td><span class="chk-n">✗</span></td></tr>
+        <tr><td class="fn">Django + MySQL stack</td><td class="hl"><span class="chk-y">✓</span></td><td><span class="chk-p">~</span></td><td><span class="chk-n">✗</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" class="section">
+  <div class="wrap">
+    <div class="eyebrow reveal"><span class="eyebrow-line"></span>FAQ</div>
+    <h2 class="section-h2 reveal">Questions, <em>answered</em></h2>
+    <div class="faq-list">
+      <div class="faq-item reveal" onclick="toggleFaq(this)"><div class="faq-q">Who can register on Campus Connect? <div class="faq-icon">+</div></div><div class="faq-a"><div class="faq-a-inner">Any student or staff member at a participating institution can register. After submitting your details, an admin will review and approve your account before you can log in. This ensures only verified campus members gain access.</div></div></div>
+      <div class="faq-item reveal d1" onclick="toggleFaq(this)"><div class="faq-q">How does the admin approval process work? <div class="faq-icon">+</div></div><div class="faq-a"><div class="faq-a-inner">When you register, your account is placed in a pending state. The campus admin reviews your submission and approves or rejects accordingly. Once approved, you receive access to your role-appropriate dashboard.</div></div></div>
+      <div class="faq-item reveal d2" onclick="toggleFaq(this)"><div class="faq-q">Can staff members create events and notices? <div class="faq-icon">+</div></div><div class="faq-a"><div class="faq-a-inner">Yes. Staff accounts have elevated permissions to create events with capacity limits, publish notices, and manage lost &amp; found entries. They can also view registration lists and payment statuses for events they manage.</div></div></div>
+      <div class="faq-item reveal" onclick="toggleFaq(this)"><div class="faq-q">How does the lost &amp; found system work? <div class="faq-icon">+</div></div><div class="faq-a"><div class="faq-a-inner">Students can report a lost item by describing it and where/when it was lost. Anyone who finds an item can post it as found. When a potential match exists, students submit a claim request which staff verify before releasing the item.</div></div></div>
+      <div class="faq-item reveal d1" onclick="toggleFaq(this)"><div class="faq-q">Is the payment module connected to events? <div class="faq-icon">+</div></div><div class="faq-a"><div class="faq-a-inner">Yes. When an event has a fee, students must complete payment as part of registration. The payment module tracks status (pending, paid, failed) and admins can see a full financial record per student and per event.</div></div></div>
+      <div class="faq-item reveal d2" onclick="toggleFaq(this)"><div class="faq-q">What technology stack is Campus Connect built on? <div class="faq-icon">+</div></div><div class="faq-a"><div class="faq-a-inner">Campus Connect is built using Django (Python) for the backend, MySQL as the database, and Bootstrap 5 for the front-end UI. Authentication uses Django's built-in user model extended with custom role fields and an approval workflow.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-inner wrap">
+    <div class="cta-eyebrow"><span class="cta-eyebrow-line"></span>Get started<span class="cta-eyebrow-line"></span></div>
+    <h2 class="cta-h2">Your campus. Finally connected.</h2>
+    <p class="cta-desc">Stop juggling spreadsheets, group chats, and paper forms. One platform, three roles, and a system that actually makes sense.</p>
+    <div class="cta-btns">
+      <a class="btn-white" href="{% url 'accounts:register' %}">Create your account <span class="arrow">→</span></a>
+      <a class="btn-white-ghost" href="{% url 'accounts:login' %}">Sign in instead</a>
+    </div>
+    <div class="cta-feats">
+      <span class="cta-feat">Free to use</span>
+      <span class="cta-feat">No setup fee</span>
+      <span class="cta-feat">Admin approval flow</span>
+      <span class="cta-feat">Role-based access</span>
+      <span class="cta-feat">Built with Django</span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="footer-top">
       <div>
-        <span class="fw-bold" style="color:var(--text);">Campus Connect</span>
-        <span class="ms-2">•</span>
-        <span>Events • Notices • Lost &amp; Found • Payments</span>
+        <div class="fl-logo"><div class="fl-logo-mark">CC</div><span class="fl-logo-text">Campus<span>Connect</span></span></div>
+        <p class="fl-desc">A modern, role-aware campus management platform built with Django, MySQL, and Bootstrap 5.</p>
+        <div class="fl-badges"><span class="fl-badge">Django</span><span class="fl-badge">MySQL</span><span class="fl-badge">Bootstrap 5</span><span class="fl-badge">Python</span></div>
       </div>
-      <div>© {{ year|default:"2026" }} Campus Connect. All rights reserved.</div>
+      <div class="footer-col"><h6>Platform</h6><div class="footer-links"><a class="footer-link" href="#features">Features</a><a class="footer-link" href="#roles">User Roles</a><a class="footer-link" href="#process">How It Works</a><a class="footer-link" href="#">Changelog</a></div></div>
+      <div class="footer-col"><h6>Modules</h6><div class="footer-links"><a class="footer-link" href="#">Events &amp; Registration</a><a class="footer-link" href="#">Notices</a><a class="footer-link" href="#">Lost &amp; Found</a><a class="footer-link" href="#">Payments</a><a class="footer-link" href="#">Reports <span class="new">Soon</span></a></div></div>
+      <div class="footer-col"><h6>Account</h6><div class="footer-links"><a class="footer-link" href="{% url 'accounts:register' %}">Register</a><a class="footer-link" href="{% url 'accounts:login' %}">Sign In</a><a class="footer-link" href="#">Student Guide</a><a class="footer-link" href="#">Staff Guide</a><a class="footer-link" href="#">Admin Panel</a></div></div>
+      <div class="footer-col"><h6>Support</h6><div class="footer-links"><a class="footer-link" href="#faq">FAQ</a><a class="footer-link" href="#">Documentation</a><a class="footer-link" href="#">Contact Admin</a><a class="footer-link" href="#">Privacy Policy</a></div></div>
     </div>
-  </footer>
+    <hr class="footer-div">
+    <div class="footer-bottom">
+      <div class="footer-bottom-l">
+        <span class="footer-copy">© {{ year|default:"2026" }} Campus Connect. All rights reserved.</span>
+        <div class="footer-legal"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Cookies</a></div>
+      </div>
+      <div class="footer-social"><a class="fsb" href="#">GH</a><a class="fsb" href="#">in</a><a class="fsb" href="#">@</a></div>
+    </div>
+  </div>
+</footer>
 
-  <script>
-    // simple tabs (no extra libraries)
-    const panel = document.getElementById("tabPanel");
-    const tabs = document.querySelectorAll(".tab-btn");
+<script>
+  const obs = new IntersectionObserver(e => { e.forEach(x => { if(x.isIntersecting) x.target.classList.add('up'); }); }, { threshold:0.08, rootMargin:'0px 0px -30px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-    const content = {
-      student: {
-        title: "Student",
-        text: "Students can view notices, register for events, complete payments (if required), and use Lost & Found to report or claim items.",
-        chips: ["View Notices", "Register Events", "Payments", "Lost & Found"]
-      },
-      staff: {
-        title: "Staff",
-        text: "Staff can create and manage events, publish notices, and respond to lost & found claims depending on responsibilities.",
-        chips: ["Create Events", "Publish Notices", "Manage Items", "Support Students"]
-      },
-      admin: {
-        title: "Admin",
-        text: "Admin manages the system: approves accounts, controls access, monitors activity, and maintains platform reliability.",
-        chips: ["Approve Users", "Role Control", "Monitor Activity", "Reports (later)"]
-      }
-    };
+  function toggleFaq(el) {
+    const open = el.classList.contains('open');
+    document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+    if (!open) el.classList.add('open');
+  }
 
-    tabs.forEach(t => {
-      t.addEventListener("click", () => {
-        tabs.forEach(x => x.classList.remove("active"));
-        t.classList.add("active");
-
-        const key = t.getAttribute("data-tab");
-        const data = content[key];
-
-        panel.innerHTML = `
-          <h5>${data.title}</h5>
-          <p>${data.text}</p>
-          <div class="chips">
-            ${data.chips.map(c => `<span class="chip">${c}</span>`).join("")}
-          </div>
-        `;
-      });
-    });
-  </script>
+  const sections = document.querySelectorAll('section[id]');
+  const navAs = document.querySelectorAll('.nav-a');
+  window.addEventListener('scroll', () => {
+    let cur = '';
+    sections.forEach(s => { if(window.scrollY >= s.offsetTop - 120) cur = s.id; });
+    navAs.forEach(a => { a.style.color = a.getAttribute('href') === '#'+cur ? 'var(--green)' : ''; });
+  }, { passive:true });
+</script>
 </body>
 </html>
