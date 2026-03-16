@@ -28,7 +28,11 @@
       min-height: 100vh;
     }
 
-    .wrap{ max-width: 1280px; margin:0 auto; padding: 22px 14px 40px; }
+    .wrap{
+      max-width: 1280px;
+      margin:0 auto;
+      padding: 22px 14px 40px;
+    }
 
     .app-card{
       background:#fff;
@@ -47,6 +51,7 @@
       position:relative;
       overflow:hidden;
     }
+
     .hero:after{
       content:"";
       position:absolute;
@@ -57,9 +62,13 @@
     }
 
     .tag{
-      display:inline-flex; align-items:center; gap:8px;
-      border-radius:999px; padding:.38rem .75rem;
-      font-weight:900; font-size:.85rem;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      border-radius:999px;
+      padding:.38rem .75rem;
+      font-weight:900;
+      font-size:.85rem;
       border:1px solid rgba(255,255,255,.22);
       background: rgba(255,255,255,.16);
       backdrop-filter: blur(8px);
@@ -68,17 +77,21 @@
       z-index:1;
     }
 
-    .pill-btn{ border-radius:999px; font-weight:900; padding: 10px 14px; }
+    .pill-btn{
+      border-radius:999px;
+      font-weight:900;
+      padding: 10px 14px;
+    }
+
     .btn-light.soft{
       background: rgba(255,255,255,.94);
       border: 1px solid rgba(255,255,255,.35);
       color:#0f172a;
     }
-    .muted{ color: var(--muted); }
 
+    .muted{ color: var(--muted); }
     .nice-alert{ border-radius: 16px; border: 1px solid rgba(15,23,42,.10); }
 
-    /* Chips */
     .chip{
       display:inline-flex;
       align-items:center;
@@ -93,6 +106,7 @@
       text-decoration:none;
       white-space: nowrap;
     }
+
     .chip:hover{ background:#f8fafc; }
 
     .cat-general{ background:#f1f5f9; border-color:#e2e8f0; color:#0f172a; }
@@ -101,7 +115,6 @@
     .cat-payment{ background:rgba(245,158,11,.14); border-color:rgba(245,158,11,.24); color:#92400e; }
     .cat-urgent{ background:rgba(239,68,68,.12); border-color:rgba(239,68,68,.22); color:#991b1b; }
 
-    /* Notice card */
     .notice-card{
       border-radius: 18px;
       border: 1px solid rgba(15,23,42,.10);
@@ -110,16 +123,19 @@
       transition: transform .12s ease, box-shadow .12s ease;
       height: 100%;
     }
+
     .notice-card:hover{
       transform: translateY(-2px);
       box-shadow: var(--shadow);
     }
+
     .notice-title{
       font-weight: 950;
       letter-spacing: -.02em;
       margin: 0;
       font-size: 1.05rem;
     }
+
     .clamp-3{
       display:-webkit-box;
       -webkit-line-clamp:3;
@@ -127,7 +143,6 @@
       overflow:hidden;
     }
 
-    /* Urgent highlight */
     .urgent{
       border-color: rgba(239,68,68,.35);
       box-shadow: 0 16px 40px rgba(239,68,68,.10);
@@ -147,13 +162,47 @@
       text-align:center;
       color:#475569;
     }
+
+    .pager-wrap{
+      margin-top: 22px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .pager-info{
+      font-size:.9rem;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .pagination .page-link{
+      border-radius:999px !important;
+      margin:0 4px;
+      border:1px solid rgba(15,23,42,.10);
+      color:#0f172a;
+      font-weight:800;
+      padding:.55rem .9rem;
+    }
+
+    .pagination .page-item.active .page-link{
+      background: linear-gradient(135deg, var(--teal1), var(--teal2));
+      border-color: transparent;
+      color:#fff;
+    }
+
+    .pagination .page-link:hover{
+      background:#f8fafc;
+      color:#0f172a;
+    }
   </style>
 </head>
 
 <body>
   <div class="wrap">
 
-    <!-- Hero -->
     <div class="hero mb-3">
       <div class="d-flex flex-column flex-lg-row align-items-start align-items-lg-center justify-content-between gap-2" style="position:relative; z-index:1;">
         <div>
@@ -183,7 +232,6 @@
       </div>
     {% endif %}
 
-    <!-- Filters -->
     <div class="app-card p-3 mb-3">
       <form method="get" class="row g-2 align-items-center">
         <div class="col-12 col-md-6">
@@ -210,7 +258,6 @@
           </button>
         </div>
 
-        <!-- quick chips -->
         <div class="col-12">
           <div class="d-flex flex-wrap gap-2 mt-1">
             <a class="chip cat-general" href="{% url 'notices:list' %}?category=GENERAL{% if q %}&q={{ q }}{% endif %}">
@@ -237,9 +284,12 @@
           </div>
         </div>
       </form>
+
+      <div class="small muted mt-2">
+        Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }} notice{{ page_obj.paginator.count|pluralize }}.
+      </div>
     </div>
 
-    <!-- Results -->
     {% if notices %}
       <div class="row g-3">
         {% for n in notices %}
@@ -289,6 +339,40 @@
           {% endwith %}
         {% endfor %}
       </div>
+
+      {% if page_obj.paginator.num_pages > 1 %}
+        <div class="pager-wrap">
+          <div class="pager-info">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+          </div>
+
+          <nav aria-label="Notices pagination">
+            <ul class="pagination mb-0 flex-wrap justify-content-center">
+              {% if page_obj.has_previous %}
+                <li class="page-item">
+                  <a class="page-link" href="?page=1{% if q %}&q={{ q }}{% endif %}{% if cat %}&category={{ cat }}{% endif %}">First</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if cat %}&category={{ cat }}{% endif %}">Previous</a>
+                </li>
+              {% endif %}
+
+              <li class="page-item active">
+                <span class="page-link">{{ page_obj.number }}</span>
+              </li>
+
+              {% if page_obj.has_next %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if cat %}&category={{ cat }}{% endif %}">Next</a>
+                </li>
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if q %}&q={{ q }}{% endif %}{% if cat %}&category={{ cat }}{% endif %}">Last</a>
+                </li>
+              {% endif %}
+            </ul>
+          </nav>
+        </div>
+      {% endif %}
     {% else %}
       <div class="app-card p-3">
         <div class="empty">

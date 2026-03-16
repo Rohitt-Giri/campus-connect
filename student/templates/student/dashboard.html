@@ -13,6 +13,11 @@
     :root{
       --g:#16a34a;
       --g2:#22c55e;
+      --teal:#0f766e;
+      --blue:#2563eb;
+      --amber:#d97706;
+      --red:#ef4444;
+
       --bd:rgba(15,23,42,.10);
       --muted:#64748b;
       --card:#ffffff;
@@ -20,6 +25,7 @@
       --bg2:#f7fbff;
       --dark:#0f172a;
       --shadow:0 14px 30px rgba(15,23,42,.06);
+      --shadow-lg:0 18px 50px rgba(15,23,42,.10);
       --radius:18px;
     }
 
@@ -122,6 +128,7 @@
     .navitem:hover{
       background:rgba(255,255,255,.72);
       border-color:var(--bd);
+      color:var(--dark);
     }
 
     .navitem.active{
@@ -218,6 +225,7 @@
 
     .logoutbtn:hover{
       background:#f8fafc;
+      color:var(--dark);
     }
 
     .main{
@@ -273,6 +281,11 @@
       position:relative;
     }
 
+    .circle-btn:hover{
+      color:var(--dark);
+      background:#fff;
+    }
+
     .notif-dot{
       position:absolute;
       top:8px;
@@ -322,7 +335,7 @@
       background:linear-gradient(135deg, #0f766e 0%, #16a34a 55%, #4ade80 100%);
       color:#fff;
       padding:22px;
-      box-shadow:0 18px 50px rgba(15,23,42,.10);
+      box-shadow:var(--shadow-lg);
       position:relative;
       overflow:hidden;
       margin-bottom:18px;
@@ -404,6 +417,7 @@
 
     .btn-primary-hero:hover{
       background:#f8fafc;
+      color:#0f172a;
     }
 
     .btn-ghost-hero{
@@ -414,13 +428,14 @@
 
     .btn-ghost-hero:hover{
       background:rgba(255,255,255,.18);
+      color:#fff;
     }
 
     .hero-side{
       display:flex;
       flex-direction:column;
       gap:12px;
-      min-width:230px;
+      min-width:240px;
     }
 
     .hero-mini{
@@ -448,7 +463,7 @@
 
     .kpi-grid{
       display:grid;
-      grid-template-columns:repeat(3, 1fr);
+      grid-template-columns:repeat(4, 1fr);
       gap:16px;
       margin-bottom:18px;
     }
@@ -474,6 +489,7 @@
     .kpi-top.teal{background:linear-gradient(90deg,#06b6d4,#22c55e);}
     .kpi-top.amber{background:linear-gradient(90deg,#f59e0b,#fbbf24);}
     .kpi-top.blue{background:linear-gradient(90deg,#3b82f6,#8b5cf6);}
+    .kpi-top.green{background:linear-gradient(90deg,#16a34a,#4ade80);}
 
     .kpi-head{
       display:flex;
@@ -512,6 +528,7 @@
     .kpi-icon.teal{color:#0891b2;background:rgba(6,182,212,.08);}
     .kpi-icon.amber{color:#b45309;background:rgba(245,158,11,.10);}
     .kpi-icon.blue{color:#2563eb;background:rgba(59,130,246,.10);}
+    .kpi-icon.green{color:#166534;background:rgba(34,197,94,.12);}
 
     .section-head{
       display:flex;
@@ -536,9 +553,13 @@
       font-size:.95rem;
     }
 
+    .section-link:hover{
+      color:#166534;
+    }
+
     .action-grid{
       display:grid;
-      grid-template-columns:repeat(2, 1fr);
+      grid-template-columns:repeat(3, 1fr);
       gap:16px;
       margin-bottom:18px;
     }
@@ -556,10 +577,12 @@
       text-decoration:none;
       color:var(--dark);
       transition:.16s ease;
+      min-height:126px;
     }
 
     .action-card:hover{
       transform:translateY(-2px);
+      color:var(--dark);
     }
 
     .action-left{
@@ -592,6 +615,12 @@
       border:1px solid rgba(59,130,246,.18);
     }
 
+    .action-icon.amber{
+      background:rgba(245,158,11,.12);
+      color:#92400e;
+      border:1px solid rgba(245,158,11,.18);
+    }
+
     .action-title{
       font-weight:900;
       font-size:1rem;
@@ -617,7 +646,7 @@
 
     .bottom-grid{
       display:grid;
-      grid-template-columns:1fr 1fr;
+      grid-template-columns:1.2fr .8fr;
       gap:16px;
     }
 
@@ -726,16 +755,27 @@
       font-weight:700;
     }
 
+    .empty-mini{
+      color:var(--muted);
+      font-weight:700;
+      font-size:.94rem;
+      padding-top:8px;
+    }
+
+    @media (max-width: 1180px){
+      .kpi-grid{grid-template-columns:repeat(2, 1fr);}
+      .action-grid{grid-template-columns:1fr 1fr;}
+    }
+
     @media (max-width: 1100px){
       .hero-inner{flex-direction:column;}
       .hero-side{flex-direction:row; min-width:unset; width:100%;}
+      .bottom-grid{grid-template-columns:1fr;}
     }
 
     @media (max-width: 900px){
       .sidebar{display:none;}
-      .kpi-grid{grid-template-columns:1fr 1fr;}
       .action-grid{grid-template-columns:1fr;}
-      .bottom-grid{grid-template-columns:1fr;}
     }
 
     @media (max-width: 560px){
@@ -776,7 +816,14 @@
       Events
     </a>
 
-    <!-- ✅ FIXED payments link -->
+    <a class="navitem" href="{% url 'student:my_registrations' %}">
+      <div class="navicon"><i class="bi bi-journal-check"></i></div>
+      My Registrations
+      {% if events_joined_count and events_joined_count > 0 %}
+        <span class="nav-badge">{{ events_joined_count }}</span>
+      {% endif %}
+    </a>
+
     <a class="navitem" href="{% url 'payments:my_payments' %}">
       <div class="navicon"><i class="bi bi-credit-card"></i></div>
       Payments
@@ -859,12 +906,16 @@
           <h1>Welcome back, {{ request.user.username|default:"Student" }} 👋</h1>
 
           <p class="hero-sub">
-            Track event registrations, payment status, latest notices, and lost &amp; found updates — all in one place.
+            Track your event registrations, payment status, latest notices, and lost &amp; found activity — all in one place with a clean student portal experience.
           </p>
 
           <div class="hero-actions">
             <a class="btn-pill btn-primary-hero" href="{% url 'events:list' %}">
               <i class="bi bi-calendar3"></i> View Events
+            </a>
+
+            <a class="btn-pill btn-ghost-hero" href="{% url 'student:my_registrations' %}">
+              <i class="bi bi-journal-check"></i> My Registrations
             </a>
 
             <a class="btn-pill btn-ghost-hero" href="{% url 'lostfound:create' %}">
@@ -889,11 +940,11 @@
           </div>
 
           <div class="hero-mini">
-            <div class="hero-mini-label">Pending</div>
+            <div class="hero-mini-label">Pending Payments</div>
             <div class="hero-mini-value">
               {{ payments_pending_count|default:0 }}
               <span style="font-size:13px;font-weight:700;color:rgba(255,255,255,.82);">
-                verifications
+                awaiting verification
               </span>
             </div>
           </div>
@@ -910,6 +961,17 @@
             <div class="kpi-label">Upcoming Events</div>
           </div>
           <div class="kpi-icon teal"><i class="bi bi-calendar2-week"></i></div>
+        </div>
+      </div>
+
+      <div class="kpi">
+        <div class="kpi-top green"></div>
+        <div class="kpi-head">
+          <div>
+            <div class="kpi-num">{{ events_joined_count|default:0 }}</div>
+            <div class="kpi-label">My Registrations</div>
+          </div>
+          <div class="kpi-icon green"><i class="bi bi-journal-check"></i></div>
         </div>
       </div>
 
@@ -947,7 +1009,18 @@
           <div class="action-icon teal"><i class="bi bi-ticket-perforated"></i></div>
           <div>
             <div class="action-title">Browse Events</div>
-            <div class="action-sub">Register and view your event participation status.</div>
+            <div class="action-sub">Explore active events and register for upcoming campus activities.</div>
+          </div>
+        </div>
+        <span class="action-open">Open</span>
+      </a>
+
+      <a class="action-card" href="{% url 'student:my_registrations' %}">
+        <div class="action-left">
+          <div class="action-icon amber"><i class="bi bi-journal-check"></i></div>
+          <div>
+            <div class="action-title">My Registrations</div>
+            <div class="action-sub">View your event history with filters for paid, free, past, and upcoming.</div>
           </div>
         </div>
         <span class="action-open">Open</span>
@@ -958,7 +1031,7 @@
           <div class="action-icon blue"><i class="bi bi-search-heart"></i></div>
           <div>
             <div class="action-title">Lost &amp; Found</div>
-            <div class="action-sub">Report lost items or claim found items securely.</div>
+            <div class="action-sub">Report lost items or browse found items and submit claims securely.</div>
           </div>
         </div>
         <span class="action-open">Open</span>
@@ -969,6 +1042,7 @@
       <div class="panel">
         <div class="section-head" style="margin-top:0;">
           <h3 class="section-title">Recent Activity</h3>
+          <a class="section-link" href="{% url 'student:my_registrations' %}">See registrations</a>
         </div>
 
         {% if recent_activity %}
@@ -991,7 +1065,7 @@
             </div>
           {% endfor %}
         {% else %}
-          <div class="text-muted" style="font-weight:700;font-size:.95rem;">
+          <div class="empty-mini">
             No recent activity yet.
           </div>
         {% endif %}

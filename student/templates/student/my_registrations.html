@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>My Registrations | Campus Connect</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#f4f8f6;
+      --card:#ffffff;
+      --text:#0f172a;
+      --muted:#64748b;
+      --border:rgba(15,23,42,.10);
+      --shadow:0 18px 50px rgba(15,23,42,.08);
+      --shadow-sm:0 10px 26px rgba(15,23,42,.06);
+
+      --green:#16a34a;
+      --green-dark:#166534;
+      --green-soft:#ecfdf3;
+
+      --blue:#2563eb;
+      --blue-soft:#eff6ff;
+
+      --amber:#d97706;
+      --amber-soft:#fff7ed;
+
+      --radius:20px;
+      --radius-lg:24px;
+    }
+
+    *{ box-sizing:border-box; }
+
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(900px 500px at 0% 0%, rgba(34,197,94,.08), transparent 50%),
+        radial-gradient(800px 450px at 100% 0%, rgba(37,99,235,.06), transparent 50%),
+        var(--bg);
+      color:var(--text);
+    }
+
+    .page-wrap{
+      max-width:1280px;
+      margin:0 auto;
+      padding:28px 16px 40px;
+    }
+
+    .hero{
+      background:linear-gradient(135deg, var(--green-dark), var(--green));
+      color:#fff;
+      border-radius:var(--radius-lg);
+      padding:24px;
+      box-shadow:0 18px 40px rgba(22,163,74,.18);
+      margin-bottom:22px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute;
+      right:-70px;
+      top:-70px;
+      width:220px;
+      height:220px;
+      border-radius:50%;
+      background:rgba(255,255,255,.12);
+    }
+
+    .hero h1{
+      margin:0 0 6px;
+      font-size:1.7rem;
+      font-weight:800;
+      letter-spacing:-.02em;
+      position:relative;
+      z-index:2;
+    }
+
+    .hero p{
+      margin:0;
+      color:rgba(255,255,255,.92);
+      font-weight:500;
+      position:relative;
+      z-index:2;
+    }
+
+    .top-actions{
+      position:relative;
+      z-index:2;
+      margin-top:16px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn-soft{
+      border:none;
+      border-radius:999px;
+      padding:10px 16px;
+      font-weight:800;
+      background:rgba(255,255,255,.92);
+      color:#0f172a;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+    }
+
+    .btn-soft:hover{
+      color:#0f172a;
+      transform:translateY(-1px);
+    }
+
+    .cc-card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow-sm);
+      padding:18px;
+    }
+
+    .filter-label{
+      display:block;
+      font-size:.82rem;
+      font-weight:700;
+      color:var(--muted);
+      margin-bottom:8px;
+    }
+
+    .input-cc,
+    .select-cc{
+      height:48px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text);
+      font-weight:600;
+    }
+
+    .input-cc:focus,
+    .select-cc:focus{
+      border-color:rgba(22,163,74,.35);
+      box-shadow:0 0 0 .2rem rgba(22,163,74,.08);
+    }
+
+    .btn-cc{
+      height:48px;
+      border:none;
+      border-radius:14px;
+      font-weight:800;
+      background:linear-gradient(135deg, var(--green-dark), var(--green));
+      color:#fff;
+    }
+
+    .btn-cc:hover{
+      color:#fff;
+      transform:translateY(-1px);
+    }
+
+    .helper{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:.9rem;
+      font-weight:600;
+    }
+
+    .summary{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:16px;
+    }
+
+    .summary .small-note{
+      color:var(--muted);
+      font-size:.92rem;
+      font-weight:700;
+    }
+
+    .reg-card{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:18px;
+      box-shadow:var(--shadow-sm);
+      padding:18px;
+      height:100%;
+      transition:.15s ease;
+    }
+
+    .reg-card:hover{
+      transform:translateY(-2px);
+      box-shadow:var(--shadow);
+    }
+
+    .reg-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+      margin-bottom:12px;
+    }
+
+    .title{
+      font-size:1.08rem;
+      font-weight:800;
+      line-height:1.3;
+      margin:0;
+      letter-spacing:-.01em;
+    }
+
+    .sub{
+      color:var(--muted);
+      font-size:.9rem;
+      font-weight:600;
+      margin-top:4px;
+    }
+
+    .badge-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      border-radius:999px;
+      padding:.42rem .78rem;
+      font-size:.78rem;
+      font-weight:800;
+      border:1px solid transparent;
+      white-space:nowrap;
+    }
+
+    .badge-paid{
+      background:var(--amber-soft);
+      color:var(--amber);
+      border-color:rgba(217,119,6,.18);
+    }
+
+    .badge-free{
+      background:var(--blue-soft);
+      color:var(--blue);
+      border-color:rgba(37,99,235,.18);
+    }
+
+    .badge-upcoming{
+      background:var(--green-soft);
+      color:var(--green-dark);
+      border-color:rgba(22,163,74,.18);
+    }
+
+    .badge-past{
+      background:#f8fafc;
+      color:#475569;
+      border-color:rgba(15,23,42,.10);
+    }
+
+    .meta-list{
+      display:grid;
+      gap:8px;
+      margin:12px 0 0;
+    }
+
+    .meta-row{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      color:#334155;
+      font-size:.93rem;
+      font-weight:600;
+    }
+
+    .meta-row i{
+      color:var(--muted);
+      margin-top:2px;
+      width:16px;
+    }
+
+    .card-actions{
+      margin-top:16px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+
+    .btn-outline-cc{
+      border-radius:999px;
+      padding:9px 14px;
+      font-weight:800;
+      border:1px solid rgba(15,23,42,.12);
+      background:#fff;
+      color:#0f172a;
+      text-decoration:none;
+    }
+
+    .btn-outline-cc:hover{
+      background:#f8fafc;
+      color:#0f172a;
+    }
+
+    .empty-state{
+      text-align:center;
+      padding:46px 18px;
+      color:var(--muted);
+      border:1px dashed rgba(15,23,42,.14);
+      border-radius:18px;
+      background:#f8fafc;
+    }
+
+    .empty-state h5{
+      color:var(--text);
+      margin-bottom:6px;
+      font-weight:800;
+    }
+
+    .pager-wrap{
+      margin-top:22px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      align-items:center;
+    }
+
+    .pager-info{
+      color:var(--muted);
+      font-size:.92rem;
+      font-weight:700;
+    }
+
+    .pagination .page-link{
+      border-radius:999px !important;
+      margin:0 4px;
+      border:1px solid rgba(15,23,42,.10);
+      color:#0f172a;
+      font-weight:800;
+      padding:.55rem .95rem;
+    }
+
+    .pagination .page-item.active .page-link{
+      background:linear-gradient(135deg, var(--green-dark), var(--green));
+      border-color:transparent;
+      color:#fff;
+    }
+
+    .pagination .page-link:hover{
+      background:#f8fafc;
+      color:#0f172a;
+    }
+
+    @media (max-width: 767.98px){
+      .hero h1{ font-size:1.4rem; }
+      .page-wrap{ padding-top:20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrap">
+
+  <div class="hero">
+    <h1>My Registrations</h1>
+    <p>Track all the events you have registered for, including upcoming and past events.</p>
+
+    <div class="top-actions">
+      <a href="{% url 'student:dashboard' %}" class="btn-soft">
+        <i class="bi bi-arrow-left"></i> Back to Dashboard
+      </a>
+      <a href="{% url 'events:list' %}" class="btn-soft">
+        <i class="bi bi-calendar-event"></i> Browse Events
+      </a>
+    </div>
+  </div>
+
+  <div class="cc-card mb-4">
+    <form method="get" class="row g-3 align-items-end">
+      <div class="col-lg-5 col-md-6">
+        <label class="filter-label">Search</label>
+        <input
+          type="text"
+          name="q"
+          value="{{ q }}"
+          class="form-control input-cc"
+          placeholder="Search by event title or location"
+        >
+      </div>
+
+      <div class="col-lg-2 col-md-6">
+        <label class="filter-label">Type</label>
+        <select name="type" class="form-select select-cc">
+          <option value="all" {% if reg_type == "all" %}selected{% endif %}>All</option>
+          <option value="free" {% if reg_type == "free" %}selected{% endif %}>Free</option>
+          <option value="paid" {% if reg_type == "paid" %}selected{% endif %}>Paid</option>
+        </select>
+      </div>
+
+      <div class="col-lg-2 col-md-6">
+        <label class="filter-label">Time</label>
+        <select name="time" class="form-select select-cc">
+          <option value="all" {% if time_filter == "all" %}selected{% endif %}>All</option>
+          <option value="upcoming" {% if time_filter == "upcoming" %}selected{% endif %}>Upcoming</option>
+          <option value="past" {% if time_filter == "past" %}selected{% endif %}>Past</option>
+        </select>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <button type="submit" class="btn btn-cc w-100">Apply Filters</button>
+      </div>
+    </form>
+
+    <div class="helper">
+      Showing {{ page_obj.start_index }}–{{ page_obj.end_index }} of {{ page_obj.paginator.count }} registration{{ page_obj.paginator.count|pluralize }}.
+    </div>
+  </div>
+
+  {% if registrations %}
+    <div class="summary">
+      <div class="small-note">
+        Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+      </div>
+    </div>
+
+    <div class="row g-3">
+      {% for reg in registrations %}
+        {% with event=reg.event %}
+        <div class="col-md-6 col-xl-4">
+          <div class="reg-card">
+            <div class="reg-head">
+              <div>
+                <h3 class="title">{{ event.title }}</h3>
+                <div class="sub">
+                  Registered on {{ reg.created_at|date:"M d, Y • h:i A" }}
+                </div>
+              </div>
+
+              {% if event.is_paid %}
+                <span class="badge-pill badge-paid">
+                  <i class="bi bi-credit-card"></i> Paid
+                </span>
+              {% else %}
+                <span class="badge-pill badge-free">
+                  <i class="bi bi-check-circle"></i> Free
+                </span>
+              {% endif %}
+            </div>
+
+            <div class="d-flex gap-2 flex-wrap mb-2">
+              {% if event.start_datetime >= now %}
+                <span class="badge-pill badge-upcoming">
+                  <i class="bi bi-clock-history"></i> Upcoming
+                </span>
+              {% else %}
+                <span class="badge-pill badge-past">
+                  <i class="bi bi-calendar-check"></i> Past
+                </span>
+              {% endif %}
+            </div>
+
+            <div class="meta-list">
+              <div class="meta-row">
+                <i class="bi bi-geo-alt"></i>
+                <span>{{ event.location|default:"Location not specified" }}</span>
+              </div>
+
+              <div class="meta-row">
+                <i class="bi bi-calendar-event"></i>
+                <span>{{ event.start_datetime|date:"M d, Y • h:i A" }}</span>
+              </div>
+
+              {% if event.end_datetime %}
+              <div class="meta-row">
+                <i class="bi bi-hourglass-split"></i>
+                <span>Ends {{ event.end_datetime|date:"M d, Y • h:i A" }}</span>
+              </div>
+              {% endif %}
+
+              {% if event.is_paid %}
+              <div class="meta-row">
+                <i class="bi bi-cash-stack"></i>
+                <span>Fee: {{ event.price }}</span>
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="card-actions">
+              <a href="{% url 'events:detail' event.id %}" class="btn-outline-cc">
+                View Event
+              </a>
+            </div>
+          </div>
+        </div>
+        {% endwith %}
+      {% endfor %}
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+      <div class="pager-wrap">
+        <div class="pager-info">
+          Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+        </div>
+
+        <nav aria-label="My registrations pagination">
+          <ul class="pagination mb-0 flex-wrap justify-content-center">
+            {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page=1{% if q %}&q={{ q }}{% endif %}{% if reg_type %}&type={{ reg_type }}{% endif %}{% if time_filter %}&time={{ time_filter }}{% endif %}">First</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if reg_type %}&type={{ reg_type }}{% endif %}{% if time_filter %}&time={{ time_filter }}{% endif %}">Previous</a>
+              </li>
+            {% endif %}
+
+            <li class="page-item active">
+              <span class="page-link">{{ page_obj.number }}</span>
+            </li>
+
+            {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if reg_type %}&type={{ reg_type }}{% endif %}{% if time_filter %}&time={{ time_filter }}{% endif %}">Next</a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if q %}&q={{ q }}{% endif %}{% if reg_type %}&type={{ reg_type }}{% endif %}{% if time_filter %}&time={{ time_filter }}{% endif %}">Last</a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      </div>
+    {% endif %}
+  {% else %}
+    <div class="empty-state">
+      <h5>No registrations found</h5>
+      <div>Try changing the filters or register for an event first.</div>
+      <div class="mt-3">
+        <a href="{% url 'events:list' %}" class="btn btn-cc px-4">
+          Browse Events
+        </a>
+      </div>
+    </div>
+  {% endif %}
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,20 +1,24 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db.models import Q
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
 from django.urls import reverse
+from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from audit.utils import log_action
+import csv
+from django.http import HttpResponse
 from accounts.models import User
-from payments.models import PaymentProof
+from audit.utils import log_action
 from notifications.utils import notify
+from payments.models import PaymentProof
 
 from events.email_utils import send_event_registration_email
-from .models import Event, EventRegistration
 from .forms import EventForm, EventRegistrationForm
+from .models import Event, EventRegistration
 
 
 def _staff_or_admin(user):
@@ -27,14 +31,35 @@ def _staff_or_admin(user):
 
 @login_required
 def events_list_view(request):
-    # Students see only published + active
     events = Event.objects.filter(status="published", is_active=True).order_by("start_datetime")
-    return render(request, "events/events_list.html", {"events": events})
+
+    q = (request.GET.get("q") or "").strip()
+    event_type = (request.GET.get("type") or "all").strip()
+
+    if q:
+        events = events.filter(
+            Q(title__icontains=q) | Q(location__icontains=q)
+        ).order_by("start_datetime")
+
+    if event_type == "free":
+        events = events.filter(is_paid=False)
+    elif event_type == "paid":
+        events = events.filter(is_paid=True)
+
+    paginator = Paginator(events, 6)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "events/events_list.html", {
+        "events": page_obj,
+        "page_obj": page_obj,
+        "q": q,
+        "event_type": event_type,
+    })
 
 
 @login_required
 def event_create_view(request):
-    # ✅ Staff/Admin only
     if not _staff_or_admin(request.user):
         messages.error(request, "Only staff/admin can create events.")
         return redirect("events:list")
@@ -48,17 +73,14 @@ def event_create_view(request):
             will_publish = (event.status == "published")
             now = timezone.now()
 
-            # set published timestamp if publishing now
             if will_publish and not getattr(event, "published_at", None):
                 event.published_at = now
 
-            # ensure active default
             if getattr(event, "is_active", None) is None:
                 event.is_active = True
 
             event.save()
 
-            # ✅ In-app notification (students) only once
             if will_publish and not getattr(event, "notified_at", None):
                 students = User.objects.filter(
                     role=User.Role.STUDENT,
@@ -90,7 +112,6 @@ def event_create_view(request):
 
 @login_required
 def event_edit_view(request, pk):
-    # ✅ Staff/Admin only
     if not _staff_or_admin(request.user):
         return HttpResponseForbidden("Not allowed")
 
@@ -101,7 +122,6 @@ def event_edit_view(request, pk):
         if form.is_valid():
             updated = form.save(commit=False)
 
-            # if draft -> published, set published_at
             if updated.status == "published" and not updated.published_at:
                 updated.published_at = timezone.now()
 
@@ -114,88 +134,35 @@ def event_edit_view(request, pk):
     else:
         form = EventForm(instance=event)
 
-    return render(request, "events/event_form.html", {"form": form, "event": event, "is_edit": True})
-
-
-@login_required
-def event_archive_confirm_view(request, pk):
-    # ✅ Staff/Admin only
-    if not _staff_or_admin(request.user):
-        return HttpResponseForbidden("Not allowed")
-
-    event = get_object_or_404(Event, pk=pk)
-    return render(request, "events/event_archive_confirm.html", {"event": event})
-
-
-@login_required
-@require_POST
-def event_archive_view(request, pk):
-    # ✅ Staff/Admin only
-    if not _staff_or_admin(request.user):
-        return HttpResponseForbidden("Not allowed")
-
-    event = get_object_or_404(Event, pk=pk)
-
-    event.is_active = False
-    # optional but nice: once archived, it shouldn't remain "published"
-    if event.status == "published":
-        event.status = "draft"
-
-    # this field is optional - only if you added it in DB
-    if hasattr(event, "archived_at"):
-        event.archived_at = timezone.now()
-
-    # save safely depending on your model fields
-    update_fields = ["is_active", "status"]
-    if hasattr(event, "archived_at"):
-        update_fields.append("archived_at")
-
-    event.save(update_fields=update_fields)
-
-    messages.success(request, "Event archived ✅")
-    return redirect("events:list")
+    return render(request, "events/event_form.html", {"form": form, "is_edit": True, "event": event})
 
 
 @login_required
 def event_detail_view(request, pk):
-    # Staff/Admin can open any event (draft/archived too)
     if _staff_or_admin(request.user):
         event = get_object_or_404(Event, pk=pk)
     else:
-        # Students: only published + active
         event = get_object_or_404(Event, pk=pk, status="published", is_active=True)
 
-    registration = EventRegistration.objects.filter(event=event, user=request.user).first()
-    is_registered = registration is not None
+    already_registered = EventRegistration.objects.filter(event=event, user=request.user).exists()
 
-    payment_proof = None
-    if is_registered and event.is_paid:
-        payment_proof = getattr(registration, "payment_proof", None)
-
-    return render(request, "events/event_detail.html", {
-        "event": event,
-        "registration": registration,
-        "is_registered": is_registered,
-        "payment_proof": payment_proof,
-        "PAYMENT_QR_URL": getattr(settings, "PAYMENT_QR_URL", ""),
-        "now": timezone.now(),
-    })
+    return render(
+        request,
+        "events/event_detail.html",
+        {
+            "event": event,
+            "already_registered": already_registered,
+        },
+    )
 
 
 @login_required
 def event_register_view(request, pk):
-    # Students can only register published + active
     event = get_object_or_404(Event, pk=pk, status="published", is_active=True)
 
-    # ✅ Only students can register (admin superuser allowed)
-    if not (request.user.is_superuser or request.user.role == User.Role.STUDENT):
-        messages.error(request, "Only students can register for events.")
-        return redirect("events:detail", pk=event.id)
-
-    # ✅ Prevent duplicate registration
     if EventRegistration.objects.filter(event=event, user=request.user).exists():
         messages.info(request, "You are already registered for this event.")
-        return redirect("events:detail", pk=event.id)
+        return redirect("events:detail", pk=event.pk)
 
     if request.method == "POST":
         form = EventRegistrationForm(request.POST)
@@ -205,66 +172,177 @@ def event_register_view(request, pk):
             reg.user = request.user
             reg.save()
 
-            # ✅ Send email (FREE vs PAID)
-            email_sent = send_event_registration_email(reg)
+            try:
+                send_event_registration_email(registration=reg)
+            except Exception:
+                pass
 
-            # ✅ Audit log
-            log_action(
-                request=request,
-                actor=request.user,
-                action="EVENT_REGISTER",
-                message=f"Registered for event: {event.title}"
-                        + (" (email sent)" if email_sent else " (no email)"),
-                target=reg,
-                metadata={
-                    "event_id": event.id,
-                    "is_paid": bool(getattr(event, "is_paid", False)),
-                    "price": str(getattr(event, "price", 0)),
-                    "email_sent": email_sent,
-                    "email": getattr(request.user, "email", "") or "",
-                }
-            )
+            messages.success(request, "Registration submitted successfully ✅")
 
-            if email_sent:
-                messages.success(request, "Registration successful ✅ (Email sent)")
-            else:
-                messages.success(request, "Registration successful ✅ (No email on your account)")
+            if event.is_paid:
+                return redirect("payments:submit", registration_id=reg.id)
 
-            return redirect("events:detail", pk=event.id)
-
-        messages.error(request, "Please fix the errors below.")
+            return redirect("events:detail", pk=event.pk)
     else:
-        form = EventRegistrationForm(initial={"email": getattr(request.user, "email", "") or ""})
+        initial = {
+            "full_name": request.user.get_full_name() if hasattr(request.user, "get_full_name") else "",
+            "email": getattr(request.user, "email", ""),
+        }
+        form = EventRegistrationForm(initial=initial)
 
-    return render(request, "events/event_register.html", {"event": event, "form": form})
+    return render(
+        request,
+        "events/event_register.html",
+        {
+            "event": event,
+            "form": form,
+        },
+    )
 
 
 @login_required
 def event_registrations_view(request, pk):
-    # ✅ Staff/Admin only
     if not _staff_or_admin(request.user):
         return HttpResponseForbidden("Not allowed")
 
     event = get_object_or_404(Event, pk=pk)
 
-    registrations = (
-        EventRegistration.objects
-        .select_related("user", "event")
-        .filter(event=event)
-        .order_by("-registered_at")
+    registrations = event.registrations.select_related("user").all()
+
+    q = (request.GET.get("q") or "").strip()
+    payment_status = (request.GET.get("payment_status") or "all").strip()
+
+    if q:
+        registrations = registrations.filter(
+            Q(full_name__icontains=q) |
+            Q(email__icontains=q) |
+            Q(phone__icontains=q) |
+            Q(user__username__icontains=q)
+        )
+
+    proofs_qs = PaymentProof.objects.filter(registration__event=event).select_related(
+        "registration",
+        "verified_by"
     )
 
-    proof_map = {}
-    if event.is_paid:
-        proofs = (
-            PaymentProof.objects
-            .select_related("verified_by", "registration", "registration__user", "registration__event")
-            .filter(registration__in=registrations)
-        )
-        proof_map = {p.registration_id: p for p in proofs}
+    proof_map = {proof.registration_id: proof for proof in proofs_qs}
 
-    return render(request, "events/event_registrations.html", {
-        "event": event,
-        "registrations": registrations,
-        "proof_map": proof_map,
-    })
+    rows = []
+    for reg in registrations:
+        proof = proof_map.get(reg.id)
+
+        if event.is_paid:
+            if payment_status == "pending":
+                if not proof or proof.status != "pending":
+                    continue
+            elif payment_status == "approved":
+                if not proof or proof.status != "approved":
+                    continue
+            elif payment_status == "rejected":
+                if not proof or proof.status != "rejected":
+                    continue
+            elif payment_status == "not_submitted":
+                if proof:
+                    continue
+
+        rows.append({
+            "registration": reg,
+            "payment_proof": proof,
+        })
+
+    paginator = Paginator(rows, 10)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(
+        request,
+        "events/event_registrations.html",
+        {
+            "event": event,
+            "rows": page_obj,
+            "page_obj": page_obj,
+            "q": q,
+            "payment_status": payment_status,
+        },
+    )
+
+
+@login_required
+def event_registrations_export_csv_view(request, pk):
+    if not _staff_or_admin(request.user):
+        return HttpResponseForbidden("Not allowed")
+
+    event = get_object_or_404(Event, pk=pk)
+
+    registrations = event.registrations.select_related("user").all()
+
+    proofs = PaymentProof.objects.filter(registration__event=event)
+    proof_map = {p.registration_id: p for p in proofs}
+
+    response = HttpResponse(content_type="text/csv")
+    response["Content-Disposition"] = f'attachment; filename="event_{event.id}_registrations.csv"'
+
+    writer = csv.writer(response)
+
+    writer.writerow([
+        "Full Name",
+        "Username",
+        "Email",
+        "Phone",
+        "Registered At",
+        "Payment Status"
+    ])
+
+    for reg in registrations:
+        proof = proof_map.get(reg.id)
+
+        if event.is_paid:
+            payment_status = proof.status if proof else "not_submitted"
+        else:
+            payment_status = "free"
+
+        writer.writerow([
+            reg.full_name or reg.user.username,
+            reg.user.username,
+            reg.email or "",
+            reg.phone or "",
+            reg.registered_at.strftime("%Y-%m-%d %H:%M"),
+            payment_status
+        ])
+
+    return response
+
+@login_required
+def event_archive_confirm_view(request, pk):
+    if not _staff_or_admin(request.user):
+        return HttpResponseForbidden("Not allowed")
+
+    event = get_object_or_404(Event, pk=pk)
+    return render(request, "events/event_archive_confirm.html", {"event": event})
+
+
+@require_POST
+@login_required
+def event_archive_view(request, pk):
+    if not _staff_or_admin(request.user):
+        return HttpResponseForbidden("Not allowed")
+
+    event = get_object_or_404(Event, pk=pk)
+
+    event.is_active = False
+    event.archived_at = timezone.now()
+    event.save(update_fields=["is_active", "archived_at"])
+
+    try:
+        log_action(
+            actor=request.user,
+            action="EVENT_UPDATE",
+            target=event,
+            message=f"Archived event: {event.title}",
+            request=request,
+        )
+    except Exception:
+        pass
+
+    messages.success(request, "Event archived successfully.")
+    return redirect("events:list")

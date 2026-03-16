@@ -1,5 +1,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -10,23 +12,27 @@ from .permissions import can_manage_notices
 
 @login_required
 def notice_list_view(request):
-    # Students see active only, Staff/Admin can optionally see archived (later)
-    notices = Notice.objects.filter(is_active=True)
+    notices = Notice.objects.filter(is_active=True).order_by("-created_at")
 
-    q = request.GET.get("q", "").strip()
-    cat = request.GET.get("category", "").strip()
+    q = (request.GET.get("q") or "").strip()
+    cat = (request.GET.get("category") or "").strip()
 
     if q:
-        notices = notices.filter(title__icontains=q) | notices.filter(content__icontains=q)
+        notices = notices.filter(Q(title__icontains=q) | Q(content__icontains=q))
 
     if cat:
         notices = notices.filter(category=cat)
+
+    paginator = Paginator(notices, 6)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
 
     return render(
         request,
         "notices/notice_list.html",
         {
-            "notices": notices,
+            "notices": page_obj,
+            "page_obj": page_obj,
             "q": q,
             "cat": cat,
             "can_manage": can_manage_notices(request.user),

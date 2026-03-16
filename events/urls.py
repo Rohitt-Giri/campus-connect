@@ -9,6 +9,7 @@ urlpatterns = [
     path("<int:pk>/", views.event_detail_view, name="detail"),
     path("<int:pk>/register/", views.event_register_view, name="register"),
     path("<int:pk>/registrations/", views.event_registrations_view, name="registrations"),
+    path("<int:pk>/registrations/export/", views.event_registrations_export_csv_view, name="registrations_export"),
 
     # ✅ Edit + Archive (like notices)
     path("<int:pk>/edit/", views.event_edit_view, name="edit"),
