@@ -6,13 +6,15 @@
   <title>Campus Connect | Register</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
   <style>
     :root{ --cc-bg-1:#fdfbfb; --cc-bg-2:#e7ffe9; --cc-bg-3:#f6f0ff; --cc-dark:#0f172a; --cc-muted:#6b7280; }
     body{
       min-height:100vh;
       background: linear-gradient(120deg,var(--cc-bg-1) 0%,var(--cc-bg-2) 50%,var(--cc-bg-3) 100%);
-      font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, "Segoe UI", sans-serif;
       color:var(--cc-dark);
     }
     .cc-wrap{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem 1rem; }
@@ -26,7 +28,10 @@
       background: linear-gradient(135deg, rgba(15,23,42,0.95), rgba(16,185,129,0.65));
       color:#fff;
       padding:2.25rem;
+      position: relative; overflow: hidden;
     }
+    .cc-hero::before { content: ""; position: absolute; bottom: -60px; left: -60px; width: 200px; height: 200px; border-radius: 50%; background: rgba(255,255,255,.06); pointer-events: none; }
+    .cc-hero::after { content: ""; position: absolute; top: -40px; right: -40px; width: 160px; height: 160px; border-radius: 50%; background: rgba(255,255,255,.08); pointer-events: none; }
     .cc-form{
       padding:2.25rem;
       background: radial-gradient(circle at top left, #fef9c3, #ecfeff 55%, #f5f3ff 95%);
@@ -40,6 +45,10 @@
     .cc-input,.cc-select{ border-radius:999px; padding:.65rem 1rem; }
     .cc-muted{ color:var(--cc-muted); }
     @media(max-width:992px){ .cc-hero{ display:none; } .cc-card{ max-width:600px; } }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    .cc-card { animation: fadeUp 0.35s ease; }
+    .cc-input:focus, .cc-input:focus-within { outline: none; box-shadow: 0 0 0 3px rgba(16,185,129,0.18); border-color: #10b981 !important; }
+    .form-control:focus { outline: none; box-shadow: 0 0 0 3px rgba(16,185,129,0.18) !important; border-color: #10b981 !important; }
   </style>
 </head>
 
@@ -127,7 +136,10 @@
 
           <div class="mb-3">
             <label class="form-label fw-semibold">Password</label>
-            <input class="form-control cc-input" type="password" name="password1" placeholder="Create password" required>
+            <div class="input-group">
+              <input class="form-control cc-input" type="password" name="password1" placeholder="Create password" required id="regPwd1" style="border-radius:999px 0 0 999px !important; border-right:0;">
+              <button class="btn btn-outline-secondary" type="button" onclick="togglePwd('regPwd1',this)" style="border-radius:0 999px 999px 0; border-left:0; background:#fff;"><i class="bi bi-eye"></i></button>
+            </div>
             {% if form.password1.errors %}
               <div class="text-danger small mt-1">{{ form.password1.errors|striptags }}</div>
             {% endif %}
@@ -141,7 +153,7 @@
             {% endif %}
           </div>
 
-          <button class="btn btn-dark cc-pill w-100 mt-3" type="submit">Create Account</button>
+          <button class="btn btn-dark cc-pill w-100 mt-3" type="submit"><i class="bi bi-person-plus me-2"></i>Create Account</button>
 
           <div class="text-center mt-3 cc-muted">
             Already have an account?
@@ -158,5 +170,18 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+  function togglePwd(id, btn) {
+    var input = document.getElementById(id);
+    if (!input) return;
+    if (input.type === 'password') {
+      input.type = 'text';
+      btn.innerHTML = '<i class="bi bi-eye-slash"></i>';
+    } else {
+      input.type = 'password';
+      btn.innerHTML = '<i class="bi bi-eye"></i>';
+    }
+  }
+  </script>
 </body>
 </html>

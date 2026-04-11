@@ -177,13 +177,25 @@ AUTH_USER_MODEL = "accounts.User"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # ---------------------------------------------------
-# PAYMENT SETTINGS (OPTIONAL INFO ONLY)
-# We DO NOT use PAYMENT_QR_URL anymore
-# because we load QR via {% static %}
+# PAYMENT SETTINGS
 # ---------------------------------------------------
 
 PAYMENT_RECEIVER_NAME = "Rohit Giri"
-PAYMENT_NOTE = "Pay and upload screenshot proof."
+
+# ============================
+# eSEWA PAYMENT GATEWAY
+# ============================
+# Sandbox (testing) - these are publicly available test credentials
+# No merchant signup needed for sandbox!
+ESEWA_SECRET_KEY = "8gBm/:&EnhH.1/q"   # eSewa sandbox HMAC key (public)
+ESEWA_PRODUCT_CODE = "EPAYTEST"           # eSewa sandbox product code (public)
+ESEWA_LIVE_MODE = False                   # False = Sandbox, True = Production
+
+# eSewa Sandbox test credentials (for paying on eSewa page):
+#   eSewa ID: 9806800001 (or 9806800002, 9806800003, 9806800004, 9806800005)
+#   Password: Nepal@123
+#   MPIN: 1122
+#   OTP: 123456
 
 # ============================
 # EMAIL (SMTP) CONFIG

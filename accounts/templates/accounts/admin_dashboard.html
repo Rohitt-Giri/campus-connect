@@ -7,6 +7,8 @@
   <title>Campus Connect | Admin Dashboard</title>
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
   <style>
   :root{
@@ -35,7 +37,7 @@
   }
 
   body{
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, "Segoe UI", sans-serif;
     background:
       radial-gradient(1100px 550px at 15% 12%, rgba(45,212,191,.22), transparent 55%),
       radial-gradient(900px 450px at 90% 0%, rgba(32,201,151,.18), transparent 55%),
@@ -194,8 +196,10 @@
     background: rgba(255,255,255,.05);
     color: #fff;
     text-decoration:none;
-    display:block;
-    text-align:center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     transition: background .12s ease, transform .12s ease;
   }
   .logout-btn:hover{
@@ -484,6 +488,13 @@
     .side{ display:none; }
     .main{ padding: 14px 14px 36px; }
   }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+body { animation: fadeIn 0.3s ease; }
+.nav-ico { font-size: 16px; }
+.table tbody tr { transition: background .12s ease; }
+.table tbody tr:hover { background: rgba(15,23,42,.02); }
+.stat .mini { font-size: 18px; color: var(--teal2); background: rgba(45,212,191,.10); border-color: rgba(45,212,191,.18); }
 </style>
 </head>
 
@@ -506,52 +517,52 @@
 
       <a class="nav-item {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}"
          href="{% url 'accounts:admin_dashboard' %}">
-        <span class="nav-ico">🏠</span> Dashboard
+        <span class="nav-ico"><i class="bi bi-house-fill"></i></span> Dashboard
       </a>
 
       <a class="nav-item {% if request.resolver_match.url_name == 'admin_users' %}active{% endif %}"
          href="{% url 'accounts:admin_users' %}">
-        <span class="nav-ico">👥</span> Manage Users
+        <span class="nav-ico"><i class="bi bi-people-fill"></i></span> Manage Users
       </a>
 
       <a class="nav-item {% if request.resolver_match.app_name == 'notices' %}active{% endif %}"
          href="{% url 'notices:list' %}">
-        <span class="nav-ico">📌</span> Notices
+        <span class="nav-ico"><i class="bi bi-megaphone-fill"></i></span> Notices
       </a>
 
       <a class="nav-item {% if request.resolver_match.app_name == 'events' %}active{% endif %}"
          href="{% url 'events:list' %}">
-        <span class="nav-ico">📅</span> Events
+        <span class="nav-ico"><i class="bi bi-calendar-event-fill"></i></span> Events
       </a>
 
       <a class="nav-item {% if request.resolver_match.app_name == 'payments' %}active{% endif %}"
-         href="{% url 'payments:staff_list' %}?status=pending">
-        <span class="nav-ico">✅</span> Verify Payments
+         href="{% url 'payments:staff_list' %}">
+        <span class="nav-ico"><i class="bi bi-credit-card-fill"></i></span> Payments
       </a>
 
       <a class="nav-item {% if request.resolver_match.url_name == 'staff_claims' %}active{% endif %}"
          href="{% url 'lostfound:staff_claims' %}">
-        <span class="nav-ico">🧾</span> Claim Requests
+        <span class="nav-ico"><i class="bi bi-clipboard-check-fill"></i></span> Claim Requests
       </a>
 
       <a class="nav-item {% if request.resolver_match.url_name == 'staff_items' %}active{% endif %}"
          href="{% url 'lostfound:staff_items' %}">
-        <span class="nav-ico">📦</span> Lost &amp; Found
+        <span class="nav-ico"><i class="bi bi-box-seam-fill"></i></span> Lost &amp; Found
       </a>
 
       <a class="nav-item {% if request.resolver_match.app_name == 'audit' %}active{% endif %}"
          href="{% url 'audit:admin_logs' %}">
-        <span class="nav-ico">🕒</span> Activity Logs
+        <span class="nav-ico"><i class="bi bi-clock-history"></i></span> Activity Logs
       </a>
 
       <!-- ✅ REPORTS ADDED -->
       <a class="nav-item {% if request.resolver_match.url_name == 'admin_reports' %}active{% endif %}"
          href="{% url 'accounts:admin_reports' %}">
-        <span class="nav-ico">📊</span> Reports
+        <span class="nav-ico"><i class="bi bi-bar-chart-fill"></i></span> Reports
       </a>
 
       <a class="nav-item" href="/admin/">
-        <span class="nav-ico">⚙️</span> Django Admin
+        <span class="nav-ico"><i class="bi bi-gear-fill"></i></span> Django Admin
       </a>
 
     </div>
@@ -559,7 +570,7 @@
 
   <!-- PINNED FOOTER -->
   <div class="side-footer">
-    <a class="logout-btn" href="{% url 'accounts:logout' %}">Logout</a>
+    <a class="logout-btn" href="{% url 'accounts:logout' %}"><i class="bi bi-box-arrow-right"></i> Sign Out</a>
   </div>
 </aside>
 
@@ -569,12 +580,12 @@
     <!-- TOPBAR -->
     <div class="topbar">
       <div class="search">
-        <span class="meta">🔎</span>
+        <span class="meta"><i class="bi bi-search"></i></span>
         <input placeholder="Search users, payments, claims, notices..." />
       </div>
 
       <a class="circle-btn" href="{% url 'notifications:list' %}" title="Notifications">
-        🔔
+        <i class="bi bi-bell-fill"></i>
         {% if unread_count and unread_count > 0 %}
           <span class="badge-count">{{ unread_count }}</span>
         {% endif %}
@@ -601,22 +612,22 @@
     <section class="hero">
       <div class="d-flex flex-column flex-lg-row justify-content-between gap-3" style="position:relative; z-index:1;">
         <div>
-          <div class="kicker">🛡️ Admin Dashboard</div>
+          <div class="kicker"><i class="bi bi-shield-fill-check"></i> Admin Dashboard</div>
           <h1>Welcome back, {{ request.user.username|default:"Admin" }} 👋</h1>
           <p>
-            Approve student/staff accounts, oversee events &amp; notices, and verify payments—fast and securely.
+            Approve student/staff accounts, oversee events &amp; notices, and view payments—fast and securely.
           </p>
 
           <div class="hero-actions">
             <a class="btn-pill dark" href="{% url 'accounts:admin_users' %}">Approve Users</a>
-            <a class="btn-pill" href="{% url 'payments:staff_list' %}?status=pending">Pending Payments</a>
+            <a class="btn-pill" href="{% url 'payments:staff_list' %}">View Payments</a>
             <a class="btn-pill" href="{% url 'lostfound:staff_claims' %}?status=pending">Pending Claims</a>
           </div>
         </div>
 
         <div class="d-flex gap-2 flex-wrap align-content-start">
           <span class="chip pending">Pending Approvals: {{ stats.pending_total|default:0 }}</span>
-          <span class="chip pending">Pending Payments: {{ stats.pending_payments|default:0 }}</span>
+          <span class="chip pending">Payments: {{ stats.pending_payments|default:0 }}</span>
           <span class="chip pending">Pending Claims: {{ stats.pending_claims|default:0 }}</span>
         </div>
       </div>
@@ -630,7 +641,7 @@
             <div class="label">Active Students</div>
             <div class="value">{{ stats.students_total|default:0 }}</div>
           </div>
-          <div class="mini">ST</div>
+          <div class="mini"><i class="bi bi-mortarboard-fill"></i></div>
         </div>
       </div>
 
@@ -640,7 +651,7 @@
             <div class="label">Active Staff</div>
             <div class="value">{{ stats.staff_total|default:0 }}</div>
           </div>
-          <div class="mini">SF</div>
+          <div class="mini"><i class="bi bi-person-badge-fill"></i></div>
         </div>
       </div>
 
@@ -650,7 +661,7 @@
             <div class="label">Events</div>
             <div class="value">{{ stats.events_total|default:0 }}</div>
           </div>
-          <div class="mini">EV</div>
+          <div class="mini"><i class="bi bi-calendar-event-fill"></i></div>
         </div>
       </div>
 
@@ -660,7 +671,7 @@
             <div class="label">Notices</div>
             <div class="value">{{ stats.notices_total|default:0 }}</div>
           </div>
-          <div class="mini">NO</div>
+          <div class="mini"><i class="bi bi-megaphone-fill"></i></div>
         </div>
       </div>
     </div>
@@ -668,15 +679,15 @@
     <!-- PANELS -->
     <div class="row g-3 mb-3">
 
-      <!-- PENDING PAYMENTS -->
+      <!-- PAYMENTS -->
       <div class="col-lg-6">
         <div class="cardx panel h-100">
           <div class="panel-head">
             <div>
-              <p class="panel-title mb-0">Pending Payment Verifications</p>
-              <div class="meta">Proofs waiting for review</div>
+              <p class="panel-title mb-0">Recent Payments</p>
+              <div class="meta">Latest payment transactions</div>
             </div>
-            <a class="link" href="{% url 'payments:staff_list' %}?status=pending">View all</a>
+            <a class="link" href="{% url 'payments:staff_list' %}">View all</a>
           </div>
 
           {% if overview.payments_pending %}
@@ -694,7 +705,7 @@
               </div>
             {% endfor %}
           {% else %}
-            <div class="meta">No pending payment proofs ✅</div>
+            <div class="meta"><i class="bi bi-check-circle-fill text-success me-1"></i> No payments yet</div>
           {% endif %}
         </div>
       </div>
@@ -721,7 +732,7 @@
               </div>
             {% endfor %}
           {% else %}
-            <div class="meta">No pending claims ✅</div>
+            <div class="meta"><i class="bi bi-check-circle-fill text-success me-1"></i> No pending claims</div>
           {% endif %}
         </div>
       </div>
@@ -788,7 +799,7 @@
             {% empty %}
               <tr>
                 <td colspan="5" class="text-center py-4 meta">
-                  No pending approvals 🎉
+                  No pending approvals — all clear
                 </td>
               </tr>
             {% endfor %}

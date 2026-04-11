@@ -144,14 +144,28 @@ def event_detail_view(request, pk):
     else:
         event = get_object_or_404(Event, pk=pk, status="published", is_active=True)
 
-    already_registered = EventRegistration.objects.filter(event=event, user=request.user).exists()
+    registration = None
+    payment_proof = None
+    is_registered = False
+
+    if request.user.is_authenticated:
+        try:
+            registration = EventRegistration.objects.get(event=event, user=request.user)
+            is_registered = True
+            # Get payment proof if exists
+            payment_proof = getattr(registration, "payment_proof", None)
+        except EventRegistration.DoesNotExist:
+            pass
 
     return render(
         request,
         "events/event_detail.html",
         {
             "event": event,
-            "already_registered": already_registered,
+            "is_registered": is_registered,
+            "already_registered": is_registered,
+            "registration": registration,
+            "payment_proof": payment_proof,
         },
     )
 
