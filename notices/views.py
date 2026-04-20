@@ -12,7 +12,11 @@ from .permissions import can_manage_notices
 
 @login_required
 def notice_list_view(request):
-    notices = Notice.objects.filter(is_active=True).order_by("-created_at")
+    show_archived = request.GET.get("show") == "archived" and can_manage_notices(request.user)
+    if show_archived:
+        notices = Notice.objects.filter(is_active=False).order_by("-created_at")
+    else:
+        notices = Notice.objects.filter(is_active=True).order_by("-created_at")
 
     q = (request.GET.get("q") or "").strip()
     cat = (request.GET.get("category") or "").strip()
@@ -36,6 +40,7 @@ def notice_list_view(request):
             "q": q,
             "cat": cat,
             "can_manage": can_manage_notices(request.user),
+            "show_archived": show_archived,
         },
     )
 

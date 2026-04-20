@@ -88,7 +88,9 @@ def staff_dashboard_view(request):
     # CLAIMS
     # =========================
     pending_claims_count = 0
+    pending_claims_qs = []
     if ClaimRequest:
+        pending_claims_qs = ClaimRequest.objects.filter(status="pending").select_related("item", "student").order_by("-created_at")[:5]
         pending_claims_count = ClaimRequest.objects.filter(status="pending").count()
 
     context = {
@@ -103,16 +105,15 @@ def staff_dashboard_view(request):
         "payments_pending_count": payments_pending_count,
         "pending_proofs": pending_proofs,
 
-        # claims
-        "pending_claims_count": pending_claims_count,
-
         # events
         "published_events_count": published_events_count,
         "active_events": active_events_count,
         "recent_events": recent_events,
 
-        # aliases for template
-        "pending_claims": pending_claims_count,
+        # claims — pending_claims MUST come after pending_claims_count
+        # to avoid Django template variable resolution issues
+        "pending_claims_count": pending_claims_count,
+        "pending_claims": list(pending_claims_qs),
 
         # UI
         "refresh_seconds": 30,

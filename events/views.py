@@ -31,10 +31,17 @@ def _staff_or_admin(user):
 
 @login_required
 def events_list_view(request):
-    events = Event.objects.filter(status="published", is_active=True).order_by("start_datetime")
+    event_type = (request.GET.get("type") or "all").strip()
+
+    # Special filters for staff/admin
+    if event_type == "drafts" and _staff_or_admin(request.user):
+        events = Event.objects.filter(status="draft", is_active=True).order_by("-created_at")
+    elif event_type == "archived" and _staff_or_admin(request.user):
+        events = Event.objects.filter(is_active=False).order_by("-archived_at")
+    else:
+        events = Event.objects.filter(status="published", is_active=True).order_by("start_datetime")
 
     q = (request.GET.get("q") or "").strip()
-    event_type = (request.GET.get("type") or "all").strip()
 
     if q:
         events = events.filter(
@@ -89,13 +96,16 @@ def event_create_view(request):
                 ).only("id")
 
                 for student in students:
-                    notify(
-                        student,
-                        title="New event published ✅",
-                        message=f"{event.title} is now available. Tap to view & register.",
-                        url=reverse("events:detail", kwargs={"pk": event.id}),
-                        category="event",
-                    )
+                    try:
+                        notify(
+                            student,
+                            title="New event published ✅",
+                            message=f"{event.title} is now available. Tap to view & register.",
+                            url=reverse("events:detail", kwargs={"pk": event.id}),
+                            category="events",
+                        )
+                    except Exception as e:
+                        print(f"[NOTIFY ERROR] Event publish notify failed: {e}")
 
                 event.notified_at = now
                 event.save(update_fields=["notified_at"])
@@ -187,9 +197,21 @@ def event_register_view(request, pk):
             reg.save()
 
             try:
-                send_event_registration_email(registration=reg)
-            except Exception:
-                pass
+                send_event_registration_email(reg)
+            except Exception as e:
+                print(f"[EMAIL ERROR] Registration email failed: {e}")
+
+            # In-app notification
+            try:
+                notify(
+                    user=request.user,
+                    title="Event registration confirmed ✅",
+                    message=f"You registered for '{event.title}'.",
+                    url=f"/events/{event.pk}/",
+                    category="events",
+                )
+            except Exception as e:
+                print(f"[NOTIFY ERROR] Registration notification failed: {e}")
 
             messages.success(request, "Registration submitted successfully ✅")
 

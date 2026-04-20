@@ -39,7 +39,7 @@ except Exception:
 
 # Optional: email helper (only if you already have it)
 try:
-    from .email_utils import send_approval_email
+    from .email_utils import send_user_approved_email as send_approval_email
 except Exception:
     send_approval_email = None
 
@@ -275,8 +275,8 @@ def resend_approval_email_view(request, user_id):
         try:
             send_approval_email(user)
             messages.success(request, f"Approval email resent to {user.email}")
-        except Exception:
-            messages.error(request, "Failed to send email.")
+        except Exception as e:
+            messages.error(request, f"Failed to send email: {e}")
     else:
         messages.warning(request, "Email helper not configured.")
 

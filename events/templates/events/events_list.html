@@ -511,6 +511,10 @@
             <option value="all" {% if event_type == "all" %}selected{% endif %}>All types</option>
             <option value="free" {% if event_type == "free" %}selected{% endif %}>Free only</option>
             <option value="paid" {% if event_type == "paid" %}selected{% endif %}>Paid only</option>
+            {% if request.user.role == "STAFF" or request.user.role == "ADMIN" or request.user.is_superuser %}
+            <option value="drafts" {% if event_type == "drafts" %}selected{% endif %}>📝 My Drafts</option>
+            <option value="archived" {% if event_type == "archived" %}selected{% endif %}>📦 Archived</option>
+            {% endif %}
           </select>
         </div>
 
@@ -557,6 +561,12 @@
                 <span class="badge-soft badge-paid"><i class="bi bi-credit-card me-1"></i> {{ e.price }}</span>
               {% else %}
                 <span class="badge-soft badge-free"><i class="bi bi-check2-circle me-1"></i> Free</span>
+              {% endif %}
+              {% if e.status == "draft" %}
+                <span class="badge-soft" style="background:#fef3c7;border-color:#fcd34d;color:#92400e;"><i class="bi bi-pencil-square me-1"></i> Draft</span>
+              {% endif %}
+              {% if not e.is_active %}
+                <span class="badge-soft" style="background:#f3f4f6;border-color:#d1d5db;color:#6b7280;"><i class="bi bi-archive me-1"></i> Archived</span>
               {% endif %}
             </div>
 

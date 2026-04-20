@@ -440,30 +440,10 @@
 
         <hr class="my-3">
 
-        <form method="post" id="reviewForm">
-          {% csrf_token %}
-
-          <!-- Optional staff note (won't break even if you ignore it in backend) -->
-          <label class="form-label fw-bold">Staff note (optional)</label>
-          <textarea class="form-control" name="staff_note" id="staffNote" rows="3"
-                    placeholder="Add a short note (e.g., missing txn ID / amount not visible / verified).">{{ proof.staff_note|default:"" }}</textarea>
-          <div class="small muted mt-1">Visible for audit trail and future review.</div>
-
-          <div class="d-flex gap-2 flex-wrap mt-4">
-            <button class="btn btn-success pill-btn" name="action" value="approve" type="submit">
-              <i class="bi bi-check2-circle me-1"></i> Approve
-            </button>
-
-            <button class="btn btn-outline-danger pill-btn" name="action" value="reject" type="submit" id="rejectBtn">
-              <i class="bi bi-x-circle me-1"></i> Reject
-            </button>
-          </div>
-
-          <div class="small muted mt-3">
-            <i class="bi bi-info-circle me-1"></i>
-            Rejections should include a reason so the student can re-upload correctly.
-          </div>
-        </form>
+        <div class="alert alert-info nice-alert mb-0">
+          <i class="bi bi-info-circle me-1"></i>
+          Payments are automatically verified through eSewa gateway. No manual action required.
+        </div>
 
       </div>
     </div>

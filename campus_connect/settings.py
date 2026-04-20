@@ -207,7 +207,7 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 EMAIL_HOST_USER = "giri.rohit74755@gmail.com"
-EMAIL_HOST_PASSWORD = "hkxzvuozumpodqum"
+EMAIL_HOST_PASSWORD = "arljsaexnekzdzfv"
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 

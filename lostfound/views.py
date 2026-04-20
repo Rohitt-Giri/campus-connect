@@ -13,6 +13,10 @@ from .models import ClaimRequest, LostFoundItem
 
 from lostfound.email_utils import send_claim_status_email, send_item_returned_email
 from audit.utils import log_action
+try:
+    from notifications.utils import notify
+except Exception:
+    notify = None
 
 # If you used this somewhere else, import it (you were calling it)
 try:
@@ -149,6 +153,7 @@ def claim_create_view(request, pk):
                     email_sent = send_claim_received_email(claim)
                 except Exception:
                     email_sent = False
+                    print(f"[EMAIL ERROR] {e}")
 
             log_action(
                 request=request,
@@ -324,6 +329,19 @@ def staff_claim_review_view(request, pk):
             )
 
             messages.success(request, "Claim approved ✅ Item marked returned." + (" (Email sent)" if email_sent else ""))
+
+            if notify:
+                try:
+                    notify(
+                        user=claim.student,
+                        title="Claim approved ✅",
+                        message=f"Your claim for '{claim.item.title}' has been approved.",
+                        url=f"/lostfound/my-claims/",
+                        category="lostfound",
+                    )
+                except Exception:
+                    pass
+
             return redirect("lostfound:staff_claims")
 
         # reject

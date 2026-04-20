@@ -15,6 +15,10 @@ from events.models import EventRegistration
 from .models import PaymentProof
 from .esewa import build_esewa_payment_form_data, verify_esewa_payment
 from payments.email_utils import send_payment_received_email, send_payment_status_email
+try:
+    from notifications.utils import notify
+except Exception:
+    notify = None
 
 from django.conf import settings
 
@@ -157,8 +161,21 @@ def esewa_success_view(request):
 
     try:
         send_payment_status_email(proof)
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[EMAIL ERROR] Payment status email failed: {e}")
+
+    # In-app notification
+    if notify:
+        try:
+            notify(
+                user=reg.user,
+                title="Payment confirmed ✅",
+                message=f"Your payment for '{event.title}' has been verified.",
+                url=f"/events/{event.pk}/",
+                category="payments",
+            )
+        except Exception as e:
+            print(f"[NOTIFY ERROR] {e}")
 
     log_action(
         request=request,
@@ -309,8 +326,8 @@ def staff_payment_action_view(request, proof_id):
 
     try:
         send_payment_status_email(proof)
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[EMAIL ERROR] Payment status email failed: {e}")
 
     messages.success(request, "Payment approved ✅" if proof.status == "approved" else "Payment rejected ❌")
     return redirect(request.META.get("HTTP_REFERER", "/payments/staff/?status=pending"))
